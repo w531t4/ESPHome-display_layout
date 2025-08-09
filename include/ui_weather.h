@@ -28,6 +28,8 @@ inline bool is_night_hour(int hour, int night_start = 21, int night_end = 6) {
     return (hour >= night_start) || (hour < night_end);
 }
 
+// The following contains a post which outlines the possible weather states
+// https://community.home-assistant.io/t/met-no-weather-condition-possible-states/405353/6
 inline void draw_weather_image(esphome::display::Display &it,
                                int x, int y,
                                const std::string &state,
