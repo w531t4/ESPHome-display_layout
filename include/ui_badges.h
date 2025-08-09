@@ -26,10 +26,6 @@ inline void draw_badge(esphome::display::Display &it,
                        int x, int y,           // top-left corner
                        const char *text,       // e.g. "12"
                        int pad_x = 6, int pad_y = 2, int radius = 6) {
-    using esphome::Color;
-    Color ORANGE(255, 152, 0);
-    Color WHITE(255, 255, 255);
-
     int x1, y1, tw, th;
     it.get_text_bounds(0, 0, text, font, esphome::display::TextAlign::TOP_LEFT, &x1, &y1, &tw, &th);
     const int w = tw + pad_x * 2;
