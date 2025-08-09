@@ -66,4 +66,10 @@ inline void draw_update_badge_top_right(esphome::display::Display &it,
     draw_badge(it, font, x, y, buf, pad_x, pad_y, radius);
     }
 
+inline void draw_printer_status(esphome::display::Display &it,
+                                esphome::font::Font *font,
+                                int x, int y,
+                                auto state) {
+    it.printf(x, y, font, PINK, "%.0f%s", state, "%");
+};
 } // namespace ui
