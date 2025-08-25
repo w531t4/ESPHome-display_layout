@@ -1,6 +1,7 @@
 #pragma once
 #include "esphome/components/display/display.h"
 #include "esphome/components/image/image.h"
+#include "esphome/core/time.h"
 #include "ui_colors.h"
 
 namespace ui {
@@ -9,7 +10,7 @@ inline void draw_monthday(esphome::display::Display &it,
                           esphome::font::Font *font_month,
                           esphome::font::Font *font_day,
                           int x, int y,
-                          auto now) {
+                          const esphome::ESPTime now) {
     char month_text[4];
     now.strftime(month_text, sizeof(month_text), "%b");  // e.g., "Jun"
     std::string month_string(month_text);
@@ -24,7 +25,7 @@ inline void draw_hms(esphome::display::Display &it,
                      esphome::font::Font *font_hourminute,
                      esphome::font::Font *font_second,
                      int x, int y,
-                     auto now) {
+                     const esphome::ESPTime now) {
     it.strftime(x     , y    , font_hourminute, ORANGE, "%H:%M", now);
     it.strftime(x + 87, y + 5, font_second,     ORANGE, "%S",    now);
 };
