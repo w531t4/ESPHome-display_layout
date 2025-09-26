@@ -8,6 +8,11 @@
 namespace ui {
 
     struct Box { int x1=-1, y1=-1, w=0, h=0; };
+    struct Coord {
+        int x;
+        int y;
+        constexpr Coord(int x_, int y_) : x{x_}, y{y_} {}
+    };
     inline bool box_valid(const Box &b) { return b.w > 0 && b.h > 0; }
     inline int  box_x2(const Box &b)    { return b.x1 + b.w; }  // exclusive
     inline int  box_y2(const Box &b)    { return b.y1 + b.h; }  // exclusive

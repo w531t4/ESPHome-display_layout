@@ -9,7 +9,7 @@ namespace ui {
 
     inline void draw_month(esphome::display::Display &it,
                            esphome::font::Font *font,
-                           int x, int y,
+                           const Coord anchor,
                            esphome::ESPTime now) {
         static int last_mon = -1;
         static Box prev_box;
@@ -20,8 +20,8 @@ namespace ui {
         last_mon = now.month;
         wipe_and_print(&it,
                        font,
-                       x,
-                       y,
+                       anchor.x,
+                       anchor.y,
                        buf,
                        esphome::display::TextAlign::LEFT,
                        BLACK,
@@ -32,7 +32,7 @@ namespace ui {
 
     inline void draw_day(esphome::display::Display &it,
                          esphome::font::Font *font,
-                         int x, int y,
+                         const Coord anchor,
                          esphome::ESPTime now) {
         static int last_d = -1;
         static Box prev_box;
@@ -43,8 +43,8 @@ namespace ui {
         last_d = now.day_of_month;
         wipe_and_print(&it,
                        font,
-                       x,
-                       y,
+                       anchor.x,
+                       anchor.y,
                        buf,
                        esphome::display::TextAlign::LEFT,
                        BLACK,
@@ -55,7 +55,7 @@ namespace ui {
 
     inline void draw_time_hm(esphome::display::Display &it,
                              esphome::font::Font *font,
-                             int x, int y,
+                             const Coord anchor,
                              const esphome::ESPTime now) {
         static int last_h = -1, last_m = -1;
         static Box prev_box;
@@ -68,8 +68,8 @@ namespace ui {
 
         wipe_and_print(&it,
                        font,
-                       x,
-                       y,
+                       anchor.x,
+                       anchor.y,
                        buf,
                        esphome::display::TextAlign::LEFT,
                        BLACK,
@@ -80,7 +80,7 @@ namespace ui {
 
     inline void draw_time_s(esphome::display::Display &it,
                             esphome::font::Font *font,
-                            int x, int y,
+                            const Coord anchor,
                             const esphome::ESPTime now) {
         static int last_s = -1;
         static Box prev_box;
@@ -93,8 +93,8 @@ namespace ui {
 
         wipe_and_print(&it,
                        font,
-                       x,
-                       y,
+                       anchor.x,
+                       anchor.y,
                        buf,
                        esphome::display::TextAlign::LEFT,
                        BLACK,

@@ -12,7 +12,7 @@
 namespace ui {
     inline void draw_badge(esphome::display::Display &it,
                            esphome::font::Font *font,
-                           int x, int y,           // top-left corner
+                           const Coord anchor,           // top-left corner
                            const char *text,       // e.g. "12"
                            Box &prev_box,
                            int pad_x = 6, int pad_y = 2, int radius = 6
@@ -28,19 +28,19 @@ namespace ui {
         if (radius * 2 > h) {
             radius = h / 2;
         }
-        Box filled_rect = {x + radius, y, w - 2 * radius, h+1};
+        Box filled_rect = {anchor.x + radius, anchor.y, w - 2 * radius, h+1};
         // Draw center bar (full height)
         it.filled_rectangle(filled_rect.x1, filled_rect.y1, filled_rect.w, filled_rect.h, ORANGE);
 
         // Draw left and right end-caps as full circles (overlaps rectangle, no seams)
-        Box filled_circle1 = {x, (y + h / 2) - radius, radius*2, radius*2};
-        it.filled_circle(x + radius, y + h / 2, radius, ORANGE);
-        Box filled_circle2 = {(x + w - radius - 1) - radius, (y + h / 2) - radius, radius*2, radius*2};
-        it.filled_circle(x + w - radius - 1, y + h / 2, radius, ORANGE);
+        Box filled_circle1 = {anchor.x, (anchor.y + h / 2) - radius, radius*2, radius*2};
+        it.filled_circle(anchor.x + radius, anchor.y + h / 2, radius, ORANGE);
+        Box filled_circle2 = {(anchor.x + w - radius - 1) - radius, (anchor.y + h / 2) - radius, radius*2, radius*2};
+        it.filled_circle(anchor.x + w - radius - 1, anchor.y + h / 2, radius, ORANGE);
 
         // Text
-        Box textbox = {x + w / 2, y + h / 2, w, h};
-        it.print(x + w / 2, y + h / 2, font, BLACK,
+        Box textbox = {anchor.x + w / 2, anchor.y + h / 2, w, h};
+        it.print(anchor.x + w / 2, anchor.y + h / 2, font, BLACK,
                  esphome::display::TextAlign::CENTER, text);
         prev_box = enclosing_box({textbox, filled_rect, filled_circle1, filled_circle2}).value();
     }
@@ -67,14 +67,14 @@ namespace ui {
         // const int y = margin; // <-- use this for top
         const int y = it.get_height() - margin - th;
         // draw_badge(it, font, x, y, buf, pad_x, pad_y, radius);
-        draw_badge(it, font, x, y, buf, prev_box, pad_x, pad_y, radius);
+        draw_badge(it, font, ui::Coord(x, y), buf, prev_box, pad_x, pad_y, radius);
     }
 
     inline void draw_printer_status(esphome::display::Display &it,
                                     esphome::font::Font *font,
-                                    int x, int y,
+                                    const Coord anchor,
                                     auto state) {
-        it.printf(x, y, font, PINK, "%.0f%s", state, "%");
+        it.printf(anchor.x, anchor.y, font, PINK, "%.0f%s", state, "%");
     };
 
     // Network TX/RX
@@ -82,21 +82,21 @@ namespace ui {
     struct NetTXTag {};
     inline void draw_net_rx(esphome::display::Display &it,
                             esphome::font::Font *font,
-                            int x, int y, float t) {
-        clean_draw_float<NetRXTag>(it, font, x, y, t, TEAL, BLACK, esphome::display::TextAlign::RIGHT, "%.0f RX", 8);
+                            const Coord anchor, float t) {
+        clean_draw_float<NetRXTag>(it, font, anchor.x, anchor.y, t, TEAL, BLACK, esphome::display::TextAlign::RIGHT, "%.0f RX", 8);
     }
     inline void draw_net_tx(esphome::display::Display &it,
                             esphome::font::Font *font,
-                            int x, int y, float t) {
-        clean_draw_float<NetTXTag>(it, font, x, y, t, RED, BLACK, esphome::display::TextAlign::RIGHT, "%.0f TX", 8);
+                            const Coord anchor, float t) {
+        clean_draw_float<NetTXTag>(it, font, anchor.x, anchor.y, t, RED, BLACK, esphome::display::TextAlign::RIGHT, "%.0f TX", 8);
     }
     inline void draw_network_throughput(esphome::display::Display &it,
                                         esphome::font::Font *font,
-                                        int x, int y,
+                                        const Coord anchor,
                                         const float rx,
                                         const float tx) {
-        draw_net_tx(it, font, x, y, tx);
-        draw_net_rx(it, font, x, y + 11, rx);
+        draw_net_tx(it, font, anchor, tx);
+        draw_net_rx(it, font, Coord(anchor.x, anchor.y + 11), rx);
     };
 
     // PSN
@@ -104,13 +104,13 @@ namespace ui {
     struct NickTag {};
     inline void draw_phil_psn_status(esphome::display::Display &it,
                                      esphome::font::Font *font,
-                                     int x, int y, const std::string t) {
-        clean_draw_string<PhilTag>(it, font, x, y, t, GREEN, BLACK, esphome::display::TextAlign::RIGHT, "Phil - %s", 25);
+                                     const Coord anchor, const std::string t) {
+        clean_draw_string<PhilTag>(it, font, anchor.x, anchor.y, t, GREEN, BLACK, esphome::display::TextAlign::RIGHT, "Phil - %s", 25);
     }
     inline void draw_nick_psn_status(esphome::display::Display &it,
                                      esphome::font::Font *font,
-                                     int x, int y, const std::string t) {
-        clean_draw_string<NickTag>(it, font, x, y, t, GREEN, BLACK, esphome::display::TextAlign::RIGHT, "Nick - %s", 25);
+                                     const Coord anchor, const std::string t) {
+        clean_draw_string<NickTag>(it, font, anchor.x, anchor.y, t, GREEN, BLACK, esphome::display::TextAlign::RIGHT, "Nick - %s", 25);
     }
 
     // TWITCH CHAT
@@ -121,7 +121,7 @@ namespace ui {
     template <typename Tag>
     inline void draw_twitchchat_slot(esphome::display::Display &it,
                                      esphome::font::Font *font,
-                                     int x, int y, const std::string t, const int max_length) {
-        clean_draw_string<Tag>(it, font, x, y, t, YELLOW, BLACK, esphome::display::TextAlign::LEFT, "%s", max_length);
+                                     const Coord anchor, const std::string t, const int max_length) {
+        clean_draw_string<Tag>(it, font, anchor.x, anchor.y, t, YELLOW, BLACK, esphome::display::TextAlign::LEFT, "%s", max_length);
     }
 } // namespace ui
