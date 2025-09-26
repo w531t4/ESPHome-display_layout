@@ -1,35 +1,26 @@
 #pragma once
 // #warning "USING ui_badges.h FROM <your path here>"
+#include <algorithm>
+#include <initializer_list>
+#include <string>
 #include "esphome.h"
 #include "esphome/components/font/font.h"
 #include "esphome/components/display/display.h"
 #include "ui_colors.h"
+#include "ui_shared.h"
 
 namespace ui {
-
-inline void draw_hi_current_low_temp(esphome::display::Display &it,
-                                     esphome::font::Font *font,
-                                     int x,
-                                     int y,
-                                     float high,
-                                     float current,
-                                     float low
-                                     ) {
-     it.printf(x, y + (11*0), font, RED,  "%.0f", high);
-     it.printf(x, y + (11*1), font, TEAL, "%.0f", current);
-     it.printf(x, y + (11*2), font, BLUE, "%.0f", low);
-};
-
 inline void draw_badge(esphome::display::Display &it,
                        esphome::font::Font *font,
                        int x, int y,           // top-left corner
                        const char *text,       // e.g. "12"
-                       int pad_x = 6, int pad_y = 2, int radius = 6) {
+                       Box &prev_box,
+                       int pad_x = 6, int pad_y = 2, int radius = 6
+                       ) {
     int x1, y1, tw, th;
     it.get_text_bounds(0, 0, text, font,
                        esphome::display::TextAlign::TOP_LEFT,
                        &x1, &y1, &tw, &th);
-
     const int w = tw + pad_x * 2;
     const int h = th + pad_y * 2;
 
@@ -37,24 +28,35 @@ inline void draw_badge(esphome::display::Display &it,
     if (radius * 2 > h) {
         radius = h / 2;
     }
-
+    Box filled_rect = {x + radius, y, w - 2 * radius, h+1};
     // Draw center bar (full height)
-    it.filled_rectangle(x + radius, y, w - 2 * radius, h+1, ORANGE);
+    it.filled_rectangle(filled_rect.x1, filled_rect.y1, filled_rect.w, filled_rect.h, ORANGE);
 
     // Draw left and right end-caps as full circles (overlaps rectangle, no seams)
+    Box filled_circle1 = {x, (y + h / 2) - radius, radius*2, radius*2};
     it.filled_circle(x + radius, y + h / 2, radius, ORANGE);
+    Box filled_circle2 = {(x + w - radius - 1) - radius, (y + h / 2) - radius, radius*2, radius*2};
     it.filled_circle(x + w - radius - 1, y + h / 2, radius, ORANGE);
 
     // Text
+    Box textbox = {x + w / 2, y + h / 2, w, h};
     it.print(x + w / 2, y + h / 2, font, BLACK,
              esphome::display::TextAlign::CENTER, text);
+    prev_box = enclosing_box({textbox, filled_rect, filled_circle1, filled_circle2}).value();
 }
 
 // Convenience: draw numeric badge in top-right if count > 0
-inline void draw_update_badge_top_right(esphome::display::Display &it,
-                                        esphome::font::Font *font,
-                                        int count, int margin = 4) {
-    if (count <= 0) return;
+inline void draw_update_badge_bottom_right(esphome::display::Display &it,
+                                           esphome::font::Font *font,
+                                           int count, int margin = 4) {
+    static int last_count = -1;
+    static Box prev_box;
+
+    if (last_count == count) return;
+    if (count <= 0 && prev_box.w > 0) {
+         it.filled_rectangle(prev_box.x1, prev_box.y1, prev_box.w, prev_box.h, BLACK);
+         if (count == 0) return;
+    }
     char buf[8];
     snprintf(buf, sizeof(buf), "%d", count);
     int x1, y1, tw, th;
@@ -62,8 +64,10 @@ inline void draw_update_badge_top_right(esphome::display::Display &it,
     const int pad_x = 6, pad_y = 2, radius = 6;
     const int w = tw + pad_x * 2;
     const int x = it.get_width() - w - margin;
-    const int y = margin;
-    draw_badge(it, font, x, y, buf, pad_x, pad_y, radius);
+    // const int y = margin; // <-- use this for top
+    const int y = it.get_height() - margin - th;
+    // draw_badge(it, font, x, y, buf, pad_x, pad_y, radius);
+    draw_badge(it, font, x, y, buf, prev_box, pad_x, pad_y, radius);
     }
 
 inline void draw_printer_status(esphome::display::Display &it,
@@ -72,4 +76,52 @@ inline void draw_printer_status(esphome::display::Display &it,
                                 auto state) {
     it.printf(x, y, font, PINK, "%.0f%s", state, "%");
 };
+
+    // Network TX/RX
+    struct NetRXTag {};
+    struct NetTXTag {};
+    inline void draw_net_rx(esphome::display::Display &it,
+                            esphome::font::Font *font,
+                            int x, int y, float t) {
+        clean_draw_float<NetRXTag>(it, font, x, y, t, TEAL, BLACK, esphome::display::TextAlign::RIGHT, "%.0f RX", 8);
+    }
+    inline void draw_net_tx(esphome::display::Display &it,
+                            esphome::font::Font *font,
+                            int x, int y, float t) {
+        clean_draw_float<NetTXTag>(it, font, x, y, t, RED, BLACK, esphome::display::TextAlign::RIGHT, "%.0f TX", 8);
+    }
+    inline void draw_network_throughput(esphome::display::Display &it,
+                                        esphome::font::Font *font,
+                                        int x, int y,
+                                        const float rx,
+                                        const float tx) {
+        draw_net_tx(it, font, x, y, tx);
+        draw_net_rx(it, font, x, y + 11, rx);
+    };
+
+    // PSN
+    struct PhilTag {};
+    struct NickTag {};
+    inline void draw_phil_psn_status(esphome::display::Display &it,
+                                     esphome::font::Font *font,
+                                     int x, int y, const std::string t) {
+        clean_draw_string<PhilTag>(it, font, x, y, t, GREEN, BLACK, esphome::display::TextAlign::RIGHT, "Phil - %s", 25);
+    }
+    inline void draw_nick_psn_status(esphome::display::Display &it,
+                                     esphome::font::Font *font,
+                                     int x, int y, const std::string t) {
+        clean_draw_string<NickTag>(it, font, x, y, t, GREEN, BLACK, esphome::display::TextAlign::RIGHT, "Nick - %s", 25);
+    }
+
+    // TWITCH CHAT
+    struct TCSlotOneTag {};
+    struct TCSlotTwoTag {};
+    struct TCSlotThreeTag {};
+
+    template <typename Tag>
+    inline void draw_twitchchat_slot(esphome::display::Display &it,
+                                     esphome::font::Font *font,
+                                     int x, int y, const std::string t, const int max_length) {
+        clean_draw_string<Tag>(it, font, x, y, t, YELLOW, BLACK, esphome::display::TextAlign::LEFT, "%s", max_length);
+    }
 } // namespace ui

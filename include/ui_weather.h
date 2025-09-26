@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include "esphome/components/display/display.h"
 #include "esphome/components/image/image.h"
+#include "ui_colors.h"
 
 namespace ui {
 
@@ -36,6 +37,10 @@ inline void draw_weather_image(esphome::display::Display &it,
                                int this_hour,
                                int night_start = 21,
                                int night_end = 6) {
+    const int img_width = 32, img_height = 32;
+    static std::string last_state = "junk_state";
+    if (last_state == state) return;
+
     auto itf = icon_registry().find(state);
     if (itf == icon_registry().end()) return;
 
@@ -43,8 +48,40 @@ inline void draw_weather_image(esphome::display::Display &it,
     esphome::image::Image *img = night ? itf->second.night : itf->second.day;
     if (!img) return;
 
-    //   img->next_frame();                         // advance animation if applicable
     it.image(x, y, img, COLOR_ON, COLOR_OFF);  // draw
+    last_state = state;
 }
+
+    struct HighTempTag {};
+    struct CurrentTempTag {};
+    struct LowTempTag {};
+
+    inline void draw_temp_high(esphome::display::Display &it,
+                               esphome::font::Font *font,
+                               int x, int y, float t) {
+        clean_draw_float<HighTempTag>(it, font, x, y, t, RED, BLACK, esphome::display::TextAlign::LEFT);
+    }
+    inline void draw_temp_current(esphome::display::Display &it,
+                                  esphome::font::Font *font,
+                                  int x, int y, float t) {
+        clean_draw_float<CurrentTempTag>(it, font, x, y, t, TEAL, BLACK, esphome::display::TextAlign::LEFT);
+    }
+    inline void draw_temp_low(esphome::display::Display &it,
+                              esphome::font::Font *font,
+                              int x, int y, float t) {
+        clean_draw_float<LowTempTag>(it, font, x, y, t, BLUE, BLACK, esphome::display::TextAlign::LEFT);
+    }
+    inline void draw_hi_current_low_temp(esphome::display::Display &it,
+                                         esphome::font::Font *font,
+                                         int x,
+                                         int y,
+                                         float high,
+                                         float current,
+                                         float low
+                                         ) {
+        draw_temp_high(   it, font, x, y + (11*0), high);
+        draw_temp_current(it, font, x, y + (11*1), current);
+        draw_temp_low(    it, font, x, y + (11*2), low);
+    };
 
 } // namespace ui
