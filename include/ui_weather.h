@@ -55,22 +55,6 @@ namespace ui {
     struct HighTempTag {};
     struct CurrentTempTag {};
     struct LowTempTag {};
-
-    inline void draw_temp_high(esphome::display::Display &it,
-                               esphome::font::Font *font,
-                               const Coord anchor, float t) {
-        clean_draw_float<HighTempTag>(it, font, anchor.x, anchor.y, t, RED, BLACK, esphome::display::TextAlign::LEFT);
-    }
-    inline void draw_temp_current(esphome::display::Display &it,
-                                  esphome::font::Font *font,
-                                  const Coord anchor, float t) {
-        clean_draw_float<CurrentTempTag>(it, font, anchor.x, anchor.y, t, TEAL, BLACK, esphome::display::TextAlign::LEFT);
-    }
-    inline void draw_temp_low(esphome::display::Display &it,
-                              esphome::font::Font *font,
-                              const Coord anchor, float t) {
-        clean_draw_float<LowTempTag>(it, font, anchor.x, anchor.y, t, BLUE, BLACK, esphome::display::TextAlign::LEFT);
-    }
     inline void draw_hi_current_low_temp(esphome::display::Display &it,
                                          esphome::font::Font *font,
                                          const Coord anchor,
@@ -78,9 +62,9 @@ namespace ui {
                                          float current,
                                          float low
                                          ) {
-        draw_temp_high(   it, font, Coord(anchor.x, anchor.y + (11*0)), high);
-        draw_temp_current(it, font, Coord(anchor.x, anchor.y + (11*1)), current);
-        draw_temp_low(    it, font, Coord(anchor.x, anchor.y + (11*2)), low);
+        clean_draw_float<HighTempTag>(   it, font, anchor.x, anchor.y + (11*0), high,    RED,  BLACK, esphome::display::TextAlign::LEFT);
+        clean_draw_float<CurrentTempTag>(it, font, anchor.x, anchor.y + (11*1), current, TEAL, BLACK, esphome::display::TextAlign::LEFT);
+        clean_draw_float<LowTempTag>(    it, font, anchor.x, anchor.y + (11*2), low,     BLUE, BLACK, esphome::display::TextAlign::LEFT);
     };
 
 } // namespace ui
