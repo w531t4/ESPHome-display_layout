@@ -102,15 +102,11 @@ namespace ui {
     // PSN
     struct PhilTag {};
     struct NickTag {};
-    inline void draw_phil_psn_status(esphome::display::Display &it,
-                                     esphome::font::Font *font,
-                                     const Coord anchor, const std::string t) {
-        clean_draw_string<PhilTag>(it, font, anchor.x, anchor.y, t, GREEN, BLACK, esphome::display::TextAlign::RIGHT, "Phil - %s", 25);
-    }
-    inline void draw_nick_psn_status(esphome::display::Display &it,
-                                     esphome::font::Font *font,
-                                     const Coord anchor, const std::string t) {
-        clean_draw_string<NickTag>(it, font, anchor.x, anchor.y, t, GREEN, BLACK, esphome::display::TextAlign::RIGHT, "Nick - %s", 25);
+    template <typename Tag>
+    inline void draw_psn_status(esphome::display::Display &it,
+                                esphome::font::Font *font,
+                                const Coord anchor, const std::string t, const std::string fmt) {
+        clean_draw_string<Tag>(it, font, anchor.x, anchor.y, t, GREEN, BLACK, esphome::display::TextAlign::RIGHT, fmt, 25);
     }
 
     // TWITCH CHAT
