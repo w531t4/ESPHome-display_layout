@@ -80,23 +80,13 @@ namespace ui {
     // Network TX/RX
     struct NetRXTag {};
     struct NetTXTag {};
-    inline void draw_net_rx(esphome::display::Display &it,
-                            esphome::font::Font *font,
-                            const Coord anchor, float t) {
-        clean_draw_float<NetRXTag>(it, font, anchor.x, anchor.y, t, TEAL, BLACK, esphome::display::TextAlign::RIGHT, "%.0f RX", 8);
-    }
-    inline void draw_net_tx(esphome::display::Display &it,
-                            esphome::font::Font *font,
-                            const Coord anchor, float t) {
-        clean_draw_float<NetTXTag>(it, font, anchor.x, anchor.y, t, RED, BLACK, esphome::display::TextAlign::RIGHT, "%.0f TX", 8);
-    }
     inline void draw_network_throughput(esphome::display::Display &it,
                                         esphome::font::Font *font,
                                         const Coord anchor,
                                         const float rx,
                                         const float tx) {
-        draw_net_tx(it, font, anchor, tx);
-        draw_net_rx(it, font, Coord(anchor.x, anchor.y + 11), rx);
+        clean_draw_float<NetTXTag>(it, font, anchor.x, anchor.y,      tx, RED,  BLACK, esphome::display::TextAlign::RIGHT, "%.0f TX", 8);
+        clean_draw_float<NetRXTag>(it, font, anchor.x, anchor.y + 11, rx, TEAL, BLACK, esphome::display::TextAlign::RIGHT, "%.0f RX", 8);
     };
 
     // PSN
