@@ -5,6 +5,10 @@
 #include <iostream>
 
 namespace ui {
+    struct FloatRunArgs {
+        float value = -1;
+    };
+
     template <std::size_t BufSize>
     class FloatWidget : public Widget {
     private:
@@ -58,18 +62,16 @@ namespace ui {
             ui::myprint(it, font, anchor.x, anchor.y, buf, align, font_color, prev_box);
         }
 
-        void run(const float value) {
-            if (!is_different(value)) return;
-            prep(value, "%0.f");
-            blank();
-            write();
+        void run(const RunArgs& args) {
+            if (args.extras.has_value()) {
+                const FloatRunArgs *run_args_ptr = std::any_cast<const FloatRunArgs>(&args.extras);
+                if (run_args_ptr != nullptr) {
+                    if (!is_different(run_args_ptr->value)) return;
+                    prep(run_args_ptr->value, "%0.f");
+                    blank();
+                    write();
+                }
+            }
         }
-        // void execute() override {
-        //     std::cout << "Executing main logic\n";
-        // }
-
-        // void cleanup() override {
-        //     std::cout << "Cleaning up resources\n";
-        // }
     };
 }

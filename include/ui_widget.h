@@ -21,6 +21,9 @@ struct InitArgs {
     // Widget-specific payload (type-erased)
     std::any extras;
 };
+struct RunArgs {
+    std::any extras;
+};
 
 class Widget {
 public:
@@ -46,6 +49,8 @@ public:
 
     // write-out to display
     virtual void write() = 0;
+
+    virtual void run(const RunArgs& args) = 0;
     // ----- Optional (can be overridden but not required) -----
 
     // // Provide default behavior
