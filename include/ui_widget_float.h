@@ -21,20 +21,23 @@ namespace ui {
 
     public:
         // constexpr std::size_t size() const noexcept { return BufSize; }
-        void initialize(esphome::display::Display &it,
-                        const ui::Coord anchor,
-                        const esphome::Color blank_color,
-                        esphome::font::Font *font,
-                        esphome::display::TextAlign align,
-                        esphome::Color font_color) {
-            this->it = &it;
-            this->anchor = anchor;
-            this->align = align;
-            this->font = font;
-            this->font_color = font_color;
-            this->blank_color = blank_color;
+        void initialize(const InitArgs& a) override {
+            this->it = a.it;
+            this->anchor = a.anchor;
+            this->font = a.font;
+            this->align = a.align.value_or(esphome::display::TextAlign::LEFT);
+            this->font_color = a.font_color.value_or(esphome::Color::WHITE);
+            this->blank_color = a.blank_color.value_or(esphome::Color::BLACK);
             last = -400.0;
 
+            // if (a.extras.has_value()) {
+            //     const FloatInit *float_init_ptr =
+            //         std::any_cast<const FloatInit>(&a.extras);
+            //     if (float_init_ptr != nullptr) {
+            //         // char buf[float_init_ptr->bufsize];
+            //         // use float_init_ptr->bufsize, float_init_ptr->precision, float_init_ptr->show_units ...
+            //     }
+            // }
         }
         // blank applicable space
         void blank() override {
