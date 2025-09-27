@@ -14,7 +14,6 @@ namespace ui {
     private:
         esphome::display::Display *it = nullptr;
         ui::Box prev_box{};
-        ui::Coord anchor{-1, -1};
         esphome::display::TextAlign align = esphome::display::TextAlign::LEFT;
         esphome::font::Font *font = nullptr;
         esphome::Color font_color = esphome::Color::WHITE;

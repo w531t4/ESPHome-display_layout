@@ -28,6 +28,7 @@ struct RunArgs {
 class Widget {
 protected:
     bool initialized = false;
+    ui::Coord anchor{-1, -1};
 
 public:
     // Virtual destructor: mandatory in base classes with virtual functions

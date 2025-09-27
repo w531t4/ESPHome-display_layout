@@ -9,7 +9,6 @@ template <std::size_t numWidgets>
 class CompositeWidget: public Widget {
 protected:
     std::array<std::unique_ptr<Widget>, numWidgets> members;
-    ui::Coord anchor{-1, -1};
 public:
     // Virtual destructor: mandatory in base classes with virtual functions
     virtual ~CompositeWidget() = default;
