@@ -50,6 +50,27 @@ namespace ui {
         return enclosing_box({a, b});
     }
 
+    inline void mywipe(esphome::display::Display *it,
+                       Box &prev_box,
+                       esphome::Color blank_color) {
+        if (prev_box.w > 0 && prev_box.h > 0) {
+            it->filled_rectangle(prev_box.x1, prev_box.y1, prev_box.w + 1, prev_box.h, blank_color);
+        }
+    }
+    inline void myprint(esphome::display::Display *it,
+                        esphome::font::Font *font,
+                        int x, int y,
+                        char *buf,
+                        esphome::display::TextAlign align,
+                        esphome::Color font_color,
+                        Box &prev_box
+                        ) {
+        int x1, y1, w, h;
+        it->get_text_bounds(x, y, buf, font,
+                            align, &x1, &y1, &w, &h);
+        it->printf(x, y, font, font_color, align, "%s", buf);
+        prev_box = {x1, y1, w, h};
+    }
     inline void wipe_and_print(esphome::display::Display *it,
                                esphome::font::Font *font,
                                int x, int y,
@@ -58,14 +79,8 @@ namespace ui {
                                esphome::Color blank_color,
                                esphome::Color font_color,
                                Box &prev_box) {
-        if (prev_box.w > 0 && prev_box.h > 0) {
-            it->filled_rectangle(prev_box.x1, prev_box.y1, prev_box.w + 1, prev_box.h, blank_color);
-        }
-        int x1, y1, w, h;
-        it->get_text_bounds(x, y, buf, font,
-                            align, &x1, &y1, &w, &h);
-        it->printf(x, y, font, font_color, align, "%s", buf);
-        prev_box = {x1, y1, w, h};
+        mywipe(it, prev_box, blank_color);
+        myprint(it, font, x, y, buf, align, font_color, prev_box);
     }
 
     // must create unique (see below) when used
