@@ -27,6 +27,7 @@ namespace ui {
             members[1]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(a.anchor.x, a.anchor.y + (11*1)), .font = a.font, .font_color = TEAL});
             members[2] = std::make_unique<NumericWidget<float,float_bufsize>>(); // LOW
             members[2]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(a.anchor.x, a.anchor.y + (11*2)), .font = a.font, .font_color = BLUE});
+            initialized = true;
         }
 
         // void run(std::span<const float> values) {

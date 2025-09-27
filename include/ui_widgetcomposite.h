@@ -18,6 +18,7 @@ public:
     // // Must perform initialization
     void initialize(const InitArgs& a) override {
         this->anchor = a.anchor;
+        initialized = true;
     }
 
     void blank() {

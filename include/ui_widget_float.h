@@ -33,6 +33,7 @@ namespace ui {
             this->font_color = a.font_color.value_or(esphome::Color::WHITE);
             this->blank_color = a.blank_color.value_or(esphome::Color::BLACK);
             last = -400.0;
+            initialized = true;
 
             // if (a.extras.has_value()) {
             //     const FloatInit *float_init_ptr =

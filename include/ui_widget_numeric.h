@@ -61,6 +61,8 @@ namespace ui {
             this->fmt         = a.fmt.value_or(this->default_fmt());
 
             this->last.reset();
+            buf[0] = '\0';
+            initialized = true;
         }
 
         void blank() override {
@@ -76,6 +78,7 @@ namespace ui {
         };
 
         void run(const RunArgs& args) override {
+            if (!initialized) return;
             const NumericRunArgs<T>* run_args_ptr =
                 std::any_cast<const NumericRunArgs<T>>(&args.extras);
 

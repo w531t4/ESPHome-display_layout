@@ -26,6 +26,9 @@ struct RunArgs {
 };
 
 class Widget {
+protected:
+    bool initialized = false;
+
 public:
     // Virtual destructor: mandatory in base classes with virtual functions
     virtual ~Widget() = default;
