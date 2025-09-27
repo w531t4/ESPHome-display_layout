@@ -5,7 +5,7 @@
 #include <span>
 #include "ui_widget.h"
 #include "ui_widgetcomposite.h"
-#include "ui_widget_float.h"
+#include "ui_widget_numeric.h"
 #include "ui_shared.h"
 #include "ui_colors.h"
 
@@ -21,11 +21,11 @@ namespace ui {
             // std::array<std::unique_ptr<Widget>, 3> members;
             CompositeWidget<3>::initialize(a);
             constexpr int float_bufsize = 4;
-            members[0] = std::make_unique<FloatWidget<float_bufsize>>(); // HIGH
+            members[0] = std::make_unique<NumericWidget<float,float_bufsize>>(); // HIGH
             members[0]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(a.anchor.x, a.anchor.y + (11*0)), .font = a.font, .font_color = RED});
-            members[1] = std::make_unique<FloatWidget<float_bufsize>>(); // CURRENT
+            members[1] = std::make_unique<NumericWidget<float,float_bufsize>>(); // CURRENT
             members[1]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(a.anchor.x, a.anchor.y + (11*1)), .font = a.font, .font_color = TEAL});
-            members[2] = std::make_unique<FloatWidget<float_bufsize>>(); // LOW
+            members[2] = std::make_unique<NumericWidget<float,float_bufsize>>(); // LOW
             members[2]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(a.anchor.x, a.anchor.y + (11*2)), .font = a.font, .font_color = BLUE});
         }
 
@@ -37,7 +37,7 @@ namespace ui {
                     const std::size_t n = std::min(members.size(), run_args_ptr->values.size());
                     for (std::size_t i = 0; i < n; i++) {
                         if (members[i]) {
-                            members[i]->run(RunArgs{.extras = ui::FloatRunArgs{.value = run_args_ptr->values[i]}});
+                            members[i]->run(RunArgs{.extras = ui::NumericRunArgs<float>{.value = run_args_ptr->values[i]}});
                         }
                     }
                 }
