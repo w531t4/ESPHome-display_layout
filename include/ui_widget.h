@@ -17,7 +17,7 @@ struct InitArgs {
     std::optional<esphome::display::TextAlign> align;
     std::optional<esphome::Color> font_color;
     std::optional<esphome::Color> blank_color;
-
+    std::optional<std::string> fmt;
     // Widget-specific payload (type-erased)
     std::any extras;
 };
