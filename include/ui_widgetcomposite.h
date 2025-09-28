@@ -34,6 +34,14 @@ public:
         }
     }
 
+    void update() {
+        for (auto &ptr : members) {
+            if (ptr) {
+                ptr->update();
+            }
+        }
+    }
+
     const int width() override {
         bool found = false;
         int min_x = std::numeric_limits<int>::max();

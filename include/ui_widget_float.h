@@ -19,6 +19,7 @@ namespace ui {
         esphome::Color font_color;
         esphome::Color blank_color;
         float last;
+        float new_value;
         char buf[BufSize];
         int priority;
 
@@ -32,6 +33,7 @@ namespace ui {
             this->font_color = a.font_color.value_or(esphome::Color::WHITE);
             this->blank_color = a.blank_color.value_or(esphome::Color::BLACK);
             last = -400.0;
+            new_value = -400.0;
             initialized = true;
 
             // if (a.extras.has_value()) {
@@ -66,13 +68,18 @@ namespace ui {
             if (args.extras.has_value()) {
                 const FloatPostArgs *post_args_ptr = std::any_cast<const FloatPostArgs>(&args.extras);
                 if (post_args_ptr != nullptr) {
-                    if (!is_different(post_args_ptr->value)) return;
-                    prep(post_args_ptr->value, "%0.f");
-                    blank();
-                    write();
+                    new_value = post_args_ptr->value;
                 }
             }
         }
+
+        void update() {
+            if (!is_different(new_value)) return;
+            prep(new_value, "%0.f");
+            blank();
+            write();
+        }
+
         const int width() {
             if (!initialized) return 0;
             int x1, y1, w, h;

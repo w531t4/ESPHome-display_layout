@@ -20,6 +20,7 @@ namespace ui {
         esphome::Color blank_color = esphome::Color::BLACK;
         std::string fmt;
         // Remember last value
+        std::optional<T> new_value{};
         std::optional<T> last{};
 
         char buf[BufSize];
@@ -60,6 +61,7 @@ namespace ui {
             this->fmt         = a.fmt.value_or(this->default_fmt());
 
             this->last.reset();
+            this->new_value.reset();
             buf[0] = '\0';
             initialized = true;
         }
@@ -84,7 +86,12 @@ namespace ui {
             if (post_args_ptr == nullptr) return;
 
             T value = post_args_ptr->value;
-            if (!is_different(value)) return;
+            new_value = value;
+        }
+
+        void update() {
+            if (!initialized) return;
+            if (new_value.has_value() && !is_different(*new_value)) return;
 
             // const char* fmt = default_fmt();
             // if (args.extras.has_value()) {
@@ -92,7 +99,7 @@ namespace ui {
             //     if (ni != nullptr && ni->fmt != nullptr) fmt = ni->fmt;
             // }
 
-            prep(value, fmt.c_str());
+            prep(*new_value, fmt.c_str());
             blank();
             write();
         }

@@ -57,6 +57,8 @@ public:
     // use to push value into the widget, but don't process until update()
     virtual void post(const PostArgs& args) = 0;
 
+    virtual void update() = 0;
+
     ui::Coord anchor_value() const noexcept { return anchor; }   // non-virtual is fine if stored in base
     virtual const int width() = 0;
     // ----- Optional (can be overridden but not required) -----
