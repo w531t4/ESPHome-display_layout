@@ -34,4 +34,21 @@ public:
         }
     }
 
+    const int width() override {
+        bool found = false;
+        int min_x = std::numeric_limits<int>::max();
+        int max_right = std::numeric_limits<int>::min();
+
+        for (const auto& p : members) {
+            if (!p) continue;
+            int x = p->anchor_value().x;
+            int right = x + p->width();   // child’s right edge
+            if (!found || x < min_x)      min_x = x;
+            if (!found || right > max_right) max_right = right;
+            found = true;
+        }
+
+        return found ? (max_right - min_x) : 0;
+    }
+
 };

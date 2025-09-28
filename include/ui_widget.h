@@ -55,6 +55,9 @@ public:
     virtual void write() = 0;
 
     virtual void run(const RunArgs& args) = 0;
+
+    ui::Coord anchor_value() const noexcept { return anchor; }   // non-virtual is fine if stored in base
+    virtual const int width() = 0;
     // ----- Optional (can be overridden but not required) -----
 
     // // Provide default behavior

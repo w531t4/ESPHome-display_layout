@@ -73,5 +73,12 @@ namespace ui {
                 }
             }
         }
+        const int width() {
+            if (!initialized) return 0;
+            int x1, y1, w, h;
+            it->get_text_bounds(anchor.x, anchor.y, buf, font,
+                                align, &x1, &y1, &w, &h);
+            return w;
+        }
     };
 }
