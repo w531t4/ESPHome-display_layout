@@ -5,7 +5,7 @@
 #include <iostream>
 
 namespace ui {
-    struct FloatRunArgs {
+    struct FloatPostArgs {
         float value = -1;
     };
 
@@ -62,12 +62,12 @@ namespace ui {
             ui::myprint(it, font, anchor.x, anchor.y, buf, align, font_color, prev_box);
         }
 
-        void run(const RunArgs& args) {
+        void post(const PostArgs& args) {
             if (args.extras.has_value()) {
-                const FloatRunArgs *run_args_ptr = std::any_cast<const FloatRunArgs>(&args.extras);
-                if (run_args_ptr != nullptr) {
-                    if (!is_different(run_args_ptr->value)) return;
-                    prep(run_args_ptr->value, "%0.f");
+                const FloatPostArgs *post_args_ptr = std::any_cast<const FloatPostArgs>(&args.extras);
+                if (post_args_ptr != nullptr) {
+                    if (!is_different(post_args_ptr->value)) return;
+                    prep(post_args_ptr->value, "%0.f");
                     blank();
                     write();
                 }

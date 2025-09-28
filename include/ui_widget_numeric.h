@@ -5,7 +5,7 @@
 
 namespace ui {
     template <typename T>
-    struct NumericRunArgs {
+    struct NumericPostArgs {
         T value;
     };
 
@@ -76,14 +76,14 @@ namespace ui {
             const char* fmt = default_fmt();
         };
 
-        void run(const RunArgs& args) override {
+        void post(const PostArgs& args) override {
             if (!initialized) return;
-            const NumericRunArgs<T>* run_args_ptr =
-                std::any_cast<const NumericRunArgs<T>>(&args.extras);
+            const NumericPostArgs<T>* post_args_ptr =
+                std::any_cast<const NumericPostArgs<T>>(&args.extras);
 
-            if (run_args_ptr == nullptr) return;
+            if (post_args_ptr == nullptr) return;
 
-            T value = run_args_ptr->value;
+            T value = post_args_ptr->value;
             if (!is_different(value)) return;
 
             // const char* fmt = default_fmt();

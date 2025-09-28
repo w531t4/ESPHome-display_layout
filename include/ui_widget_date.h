@@ -11,7 +11,7 @@
 #include "ui_colors.h"
 
 namespace ui {
-    struct DateRunArgs {
+    struct DatePostArgs {
         uint8_t day;
         uint8_t month;
     };
@@ -31,15 +31,15 @@ namespace ui {
             initialized = true;
         }
 
-        void run(const RunArgs& args) {
+        void post(const PostArgs& args) {
             if (args.extras.has_value()) {
-                const DateRunArgs *run_args_ptr = std::any_cast<const DateRunArgs>(&args.extras);
-                if (run_args_ptr != nullptr) {
-                    members[0]->run(RunArgs{.extras = ui::NumericRunArgs<uint8_t>{.value = run_args_ptr->day}});
-                    // const std::size_t n = std::min(members.size(), run_args_ptr->values.size());
+                const DatePostArgs *post_args_ptr = std::any_cast<const DatePostArgs>(&args.extras);
+                if (post_args_ptr != nullptr) {
+                    members[0]->post(PostArgs{.extras = ui::NumericPostArgs<uint8_t>{.value = post_args_ptr->day}});
+                    // const std::size_t n = std::min(members.size(), post_args_ptr->values.size());
                     // for (std::size_t i = 0; i < n; i++) {
                     //     if (members[i]) {
-                    //         members[i]->run(RunArgs{.extras = ui::NumericRunArgs<int>{.value = run_args_ptr->values[i]}});
+                    //         members[i]->run(PostArgs{.extras = ui::NumericPostArgs<int>{.value = post_args_ptr->values[i]}});
                     //     }
                     // }
                 }

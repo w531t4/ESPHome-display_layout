@@ -10,7 +10,7 @@
 #include "ui_colors.h"
 
 namespace ui {
-    struct TemperatureRunArgs {
+    struct TemperaturePostArgs {
         std::span<const float> values{};
     };
 
@@ -31,14 +31,14 @@ namespace ui {
         }
 
         // void run(std::span<const float> values) {
-        void run(const RunArgs& args) {
+        void post(const PostArgs& args) {
             if (args.extras.has_value()) {
-                const TemperatureRunArgs *run_args_ptr = std::any_cast<const TemperatureRunArgs>(&args.extras);
-                if (run_args_ptr != nullptr) {
-                    const std::size_t n = std::min(members.size(), run_args_ptr->values.size());
+                const TemperaturePostArgs *post_args_ptr = std::any_cast<const TemperaturePostArgs>(&args.extras);
+                if (post_args_ptr != nullptr) {
+                    const std::size_t n = std::min(members.size(), post_args_ptr->values.size());
                     for (std::size_t i = 0; i < n; i++) {
                         if (members[i]) {
-                            members[i]->run(RunArgs{.extras = ui::NumericRunArgs<float>{.value = run_args_ptr->values[i]}});
+                            members[i]->post(PostArgs{.extras = ui::NumericPostArgs<float>{.value = post_args_ptr->values[i]}});
                         }
                     }
                 }

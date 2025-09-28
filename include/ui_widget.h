@@ -21,7 +21,7 @@ struct InitArgs {
     // Widget-specific payload (type-erased)
     std::any extras;
 };
-struct RunArgs {
+struct PostArgs {
     std::any extras;
 };
 
@@ -54,7 +54,8 @@ public:
     // write-out to display
     virtual void write() = 0;
 
-    virtual void run(const RunArgs& args) = 0;
+    // use to push value into the widget, but don't process until update()
+    virtual void post(const PostArgs& args) = 0;
 
     ui::Coord anchor_value() const noexcept { return anchor; }   // non-virtual is fine if stored in base
     virtual const int width() = 0;
