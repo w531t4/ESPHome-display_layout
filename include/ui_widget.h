@@ -18,6 +18,8 @@ struct InitArgs {
     std::optional<esphome::Color> font_color;
     std::optional<esphome::Color> blank_color;
     std::optional<std::string> fmt;
+    std::optional<esphome::font::Font*> font2;
+    std::optional<esphome::Color> font2_color;
     // Widget-specific payload (type-erased)
     std::any extras;
 };
