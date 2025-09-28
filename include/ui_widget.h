@@ -27,13 +27,14 @@ struct PostArgs {
 
 class Widget {
 protected:
+    bool enabled = true;
     bool initialized = false;
     ui::Coord anchor{-1, -1};
 
 public:
     // Virtual destructor: mandatory in base classes with virtual functions
     virtual ~Widget() = default;
-
+    bool is_enabled() const noexcept { return enabled; }
     // ----- Mandatory functions for derived classes -----
 
     // Must return a name
