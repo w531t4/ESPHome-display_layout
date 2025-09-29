@@ -16,6 +16,7 @@ public:
 
     // // Must perform initialization
     void initialize(const InitArgs& a) override {
+        this->priority = a.priority;
         this->anchor = a.anchor;
         initialized = true;
     }

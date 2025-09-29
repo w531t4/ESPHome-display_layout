@@ -49,6 +49,7 @@ namespace ui {
             this->blank_color = a.blank_color.value_or(esphome::Color::BLACK);
             this->fmt         = a.fmt.value_or(this->default_fmt());
 
+            this->priority    = a.priority;
             this->last.reset();
             this->new_value.reset();
             buf[0] = '\0';

@@ -12,7 +12,7 @@ struct InitArgs {
     esphome::display::Display* it = nullptr;   // common
     ui::Coord anchor{0,0};                     // common
     esphome::font::Font* font = nullptr;       // often common
-
+    uint8_t priority = 0;
     // Optional commons (only some widgets care)
     std::optional<esphome::display::TextAlign> align;
     std::optional<esphome::Color> font_color;
@@ -29,6 +29,7 @@ struct PostArgs {
 
 class Widget {
 protected:
+    uint8_t priority = 0;
     bool enabled = true;
     bool initialized = false;
     ui::Coord anchor{-1, -1};
@@ -37,6 +38,7 @@ public:
     // Virtual destructor: mandatory in base classes with virtual functions
     virtual ~Widget() = default;
     bool is_enabled() const noexcept { return enabled; }
+    uint8_t get_priority() const noexcept { return priority; }
     // ----- Mandatory functions for derived classes -----
 
     // Must return a name
