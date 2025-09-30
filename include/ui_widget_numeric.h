@@ -2,6 +2,7 @@
 #include "ui_widget.h"
 #include "ui_shared.h"
 #include <iostream>
+#include <algorithm>
 
 namespace ui {
     template <typename T>
@@ -24,6 +25,7 @@ namespace ui {
         std::optional<T> last{};
 
         char buf[BufSize];
+        int max_width = -1;
 
         // Pick a default printf format based on T
         static constexpr const std::string default_fmt() {
@@ -59,6 +61,10 @@ namespace ui {
             this->font_color  = a.font_color.value_or(esphome::Color::WHITE);
             this->blank_color = a.blank_color.value_or(esphome::Color::BLACK);
             this->fmt         = a.fmt.value_or(this->default_fmt());
+
+            this->use_max_width_as_width = a.use_max_width_as_width.value_or(true);
+            if (a.max_width_padding_char.has_value())
+                this->max_width_padding_char = *a.max_width_padding_char;
 
             this->priority    = a.priority;
             this->last.reset();
@@ -104,12 +110,27 @@ namespace ui {
             blank();
             write();
         }
-        const int width() {
+
+        const int width(const char* buffer) {
             if (!initialized) return 0;
             int x1, y1, w, h;
-            it->get_text_bounds(anchor.x, anchor.y, buf, font,
+            it->get_text_bounds(anchor.x, anchor.y, buffer, font,
                                 align, &x1, &y1, &w, &h);
             return w;
+        }
+
+        const int get_max_width(const char padding_value) {
+            if (max_width >= 0) return max_width;
+            char fullwidth_buf[BufSize];
+            std::fill_n(fullwidth_buf, BufSize - 1, padding_value);
+            fullwidth_buf[BufSize - 1] = '\0';
+            max_width = width(fullwidth_buf);
+            return max_width;
+        }
+
+        const int width() {
+            if (use_max_width_as_width) return get_max_width(max_width_padding_char);
+            return width(buf);
         }
     };
 }
