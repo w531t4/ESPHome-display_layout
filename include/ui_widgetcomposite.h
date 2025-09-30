@@ -43,6 +43,15 @@ public:
         }
     }
 
+    void horizontal_shift(const int pixels) {
+        this->anchor.x = this->anchor.x + pixels;
+        for (auto &ptr : members) {
+            if (ptr) {
+                ptr->horizontal_shift(pixels);
+            }
+        }
+    }
+
     const int width() override {
         bool found = false;
         int min_x = std::numeric_limits<int>::max();

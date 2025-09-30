@@ -63,7 +63,9 @@ public:
     virtual void post(const PostArgs& args) = 0;
 
     virtual void update() = 0;
-
+    virtual void horizontal_shift(const int pixels) {
+        this->anchor.x = this->anchor.x + pixels;
+    }
     ui::Coord anchor_value() const noexcept { return anchor; }   // non-virtual is fine if stored in base
     virtual const int width() = 0;
     // ----- Optional (can be overridden but not required) -----
