@@ -6,8 +6,8 @@
 #include "esphome/core/time.h"
 #include "ui_widget.h"
 #include "ui_widgetcomposite.h"
-#include "ui_widget_numeric.h"
-#include "ui_widget_string.h"
+#include "ui_widget_text_numeric.h"
+#include "ui_widget_text_string.h"
 #include "ui_shared.h"
 #include "ui_colors.h"
 

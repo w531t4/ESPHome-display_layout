@@ -5,14 +5,9 @@
 #include <algorithm>
 
 namespace ui {
-    template <typename T>
-    struct NumericPostArgs {
-        T value;
-    };
-
-    template <typename T, std::size_t BufSize>
-    class NumericWidget : public Widget {
-    private:
+    template <typename T, typename P, std::size_t BufSize>
+    class TextWidget : public Widget {
+    protected:
         esphome::display::Display *it = nullptr;
         ui::Box prev_box{};
         esphome::display::TextAlign align = esphome::display::TextAlign::LEFT;
@@ -28,24 +23,9 @@ namespace ui {
         int max_width = -1;
 
         // Pick a default printf format based on T
-        static constexpr const std::string default_fmt() {
-            if constexpr (std::is_integral<T>::value) {
-                return std::string("%d");
-            } else {
-                return std::string("%0.f");
-            }
-        }
+        virtual constexpr const std::string default_fmt() = 0;
 
-        // Format into buf and update last
-        void prep(T value, const char* fmt) {
-            if constexpr (std::is_integral<T>::value) {
-                //std::snprintf(buf, sizeof(buf), fmt, static_cast<long long>(value));
-                std::snprintf(buf, sizeof(buf), fmt, value);
-            } else {
-                std::snprintf(buf, sizeof(buf), fmt, static_cast<double>(value));
-            }
-            last = value;
-        }
+        virtual void prep(T value, const char *fmt) = 0;
 
         bool is_different(T value) const {
             if (!last.has_value()) return true;
@@ -81,14 +61,10 @@ namespace ui {
             ui::myprint(it, font, anchor.x, anchor.y, buf, align, font_color, prev_box);
         }
 
-        struct NumericInit {
-            const char* fmt = default_fmt();
-        };
-
         void post(const PostArgs& args) override {
             if (!initialized) return;
-            const NumericPostArgs<T>* post_args_ptr =
-                std::any_cast<const NumericPostArgs<T>>(&args.extras);
+            const P* post_args_ptr =
+                std::any_cast<const P>(&args.extras);
 
             if (post_args_ptr == nullptr) return;
 
@@ -99,13 +75,6 @@ namespace ui {
         void update() {
             if (!initialized) return;
             if (new_value.has_value() && !is_different(*new_value)) return;
-
-            // const char* fmt = default_fmt();
-            // if (args.extras.has_value()) {
-            //     const NumericInit* ni = std::any_cast<const NumericInit>(&args.extras);
-            //     if (ni != nullptr && ni->fmt != nullptr) fmt = ni->fmt;
-            // }
-
             prep(*new_value, fmt.c_str());
             blank();
             write();
