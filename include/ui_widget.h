@@ -31,6 +31,7 @@ struct PostArgs {
 
 class Widget {
 protected:
+    esphome::display::Display *it = nullptr;
     uint8_t priority = 0;
     bool enabled = true;
     bool initialized = false;
@@ -48,7 +49,11 @@ public:
     // virtual std::string getName() const = 0;
 
     // // Must perform initialization
-    virtual void initialize(const InitArgs& args) = 0;;
+    virtual void initialize(const InitArgs& args) {
+        this->it = args.it;
+        this->anchor = args.anchor;
+        this->priority = args.priority;
+    }
 
     // // // Must perform main work
     // // virtual void execute() = 0;

@@ -8,7 +8,6 @@ namespace ui {
     template <typename T, typename P, std::size_t BufSize>
     class TextWidget : public Widget {
     protected:
-        esphome::display::Display *it = nullptr;
         ui::Box prev_box{};
         esphome::display::TextAlign align = esphome::display::TextAlign::LEFT;
         esphome::font::Font *font = nullptr;
@@ -34,8 +33,7 @@ namespace ui {
 
     public:
         void initialize(const InitArgs& a) override {
-            this->it          = a.it;
-            this->anchor      = a.anchor;
+            Widget::initialize(a);
             this->font        = a.font;
             this->align       = a.align.value_or(esphome::display::TextAlign::LEFT);
             this->font_color  = a.font_color.value_or(esphome::Color::WHITE);
@@ -46,7 +44,6 @@ namespace ui {
             if (a.max_width_padding_char.has_value())
                 this->max_width_padding_char = *a.max_width_padding_char;
 
-            this->priority    = a.priority;
             this->last.reset();
             this->new_value.reset();
             buf[0] = '\0';
