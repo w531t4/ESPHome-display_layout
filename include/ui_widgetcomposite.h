@@ -17,7 +17,6 @@ public:
     // // Must perform initialization
     void initialize(const InitArgs& a) override {
         Widget::initialize(a);
-        initialized = true;
     }
 
     void blank() {
