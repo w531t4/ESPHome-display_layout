@@ -11,9 +11,9 @@
 struct InitArgs {
     esphome::display::Display* it = nullptr;   // common
     ui::Coord anchor{0,0};                     // common
-    esphome::font::Font* font = nullptr;       // often common
     uint8_t priority = 0;
     // Optional commons (only some widgets care)
+    std::optional<esphome::font::Font*> font = nullptr;
     std::optional<esphome::display::TextAlign> align;
     std::optional<esphome::Color> font_color;
     std::optional<esphome::Color> blank_color;

@@ -34,7 +34,11 @@ namespace ui {
     public:
         void initialize(const InitArgs& a) override {
             Widget::initialize(a);
-            this->font        = a.font;
+            if (!a.font.has_value()) {
+                ESP_LOGE("text_widget","Required font parameter missing\n");
+                return;
+            }
+            this->font        = *a.font;
             this->align       = a.align.value_or(esphome::display::TextAlign::LEFT);
             this->font_color  = a.font_color.value_or(esphome::Color::WHITE);
             this->blank_color = a.blank_color.value_or(esphome::Color::BLACK);
