@@ -10,6 +10,9 @@ namespace ui {
 
   template <std::size_t MaxWidgets>
   class WidgetRegistry {
+  private:
+    std::array<Widget*, MaxWidgets> items_{};  // non-owning raw pointers
+    std::size_t count_ = 0;
   public:
     // Typed handle so callers can do handle->post(...)
     template <class W>
@@ -72,9 +75,6 @@ namespace ui {
     void set_gap_x(int) {}
     void set_right_anchored(bool) {}
 
-  private:
-    std::array<Widget*, MaxWidgets> items_{};  // non-owning raw pointers
-    std::size_t count_ = 0;
   };
 
 } // namespace ui
