@@ -86,5 +86,9 @@ namespace ui {
         const int width() {
             return 32;
         }
+
+        const int height() {
+            return 32;
+        }
     };
 }

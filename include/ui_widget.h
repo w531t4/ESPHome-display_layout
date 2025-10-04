@@ -76,6 +76,7 @@ public:
     }
     ui::Coord anchor_value() const noexcept { return anchor; }   // non-virtual is fine if stored in base
     virtual const int width() = 0;
+    virtual const int height() = 0;
     // ----- Optional (can be overridden but not required) -----
 
     // // Provide default behavior

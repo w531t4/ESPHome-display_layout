@@ -62,7 +62,7 @@ namespace ui {
             if (use_max_width_as_width) {
                 // printf will start drawing at the first pixel of a character, ignoring leading
                 // whitespace in buffer.
-                const int curr_buf_width = width(buf);
+                const int curr_buf_width = bounds(buf).w;
                 const int x_draw = anchor.x + (max_width - curr_buf_width);
                 ui::myprint(it, font, x_draw, anchor.y, buf, align, font_color, prev_box);
             } else {
@@ -89,12 +89,11 @@ namespace ui {
             write();
         }
 
-        const int width(const char* buffer) {
-            if (!initialized) return 0;
+        const ui::Box bounds(const char* buffer) {
             int x1, y1, w, h;
             it->get_text_bounds(anchor.x, anchor.y, buffer, font,
                                 align, &x1, &y1, &w, &h);
-            return w;
+            return ui::Box{x1, y1, w, h};
         }
 
         const int get_max_width(const char padding_value) {
@@ -102,13 +101,19 @@ namespace ui {
             char fullwidth_buf[BufSize];
             std::fill_n(fullwidth_buf, BufSize - 1, padding_value);
             fullwidth_buf[BufSize - 1] = '\0';
-            max_width = width(fullwidth_buf);
+            max_width = bounds(fullwidth_buf).w;
             return max_width;
         }
 
         const int width() {
+            if (!initialized) return 0;
             if (use_max_width_as_width) return get_max_width(max_width_padding_char);
-            return width(buf);
+            return bounds(buf).w;
+        }
+
+        const int height() {
+            if (!initialized) return 0;
+            return bounds(buf).h;
         }
     };
 }

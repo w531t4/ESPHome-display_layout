@@ -67,4 +67,20 @@ public:
         return found ? (max_right - min_x) : 0;
     }
 
+    const int height() override {
+        bool found = false;
+        int min_y = std::numeric_limits<int>::max();
+        int max_bottom = std::numeric_limits<int>::min();
+
+        for (const auto& p : members) {
+            if (!p) continue;
+            const int y = p->anchor_value().y;   // child's top
+            const int bottom = y + p->height();  // child's bottom
+            if (!found || y < min_y)          min_y = y;
+            if (!found || bottom > max_bottom) max_bottom = bottom;
+            found = true;
+        }
+        if (min_y < 0) min_y = 0;
+        return found ? (max_bottom - min_y) : 0;
+    }
 };
