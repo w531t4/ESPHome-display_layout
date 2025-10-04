@@ -61,6 +61,10 @@ public:
     // // check if blank is necessary
     // virtual bool is_different() = 0;
 
+    virtual void draw_outline(const esphome::Color &color) {
+        this->it->rectangle(this->anchor.x, this->anchor.y, this->width(), this->height(), color);
+    }
+
     // blank applicable space
     virtual void blank() = 0;
 
