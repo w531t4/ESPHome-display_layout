@@ -59,7 +59,15 @@ namespace ui {
         }
 
         void write() override {
-            ui::myprint(it, font, anchor.x, anchor.y, buf, align, font_color, prev_box);
+            if (use_max_width_as_width) {
+                // printf will start drawing at the first pixel of a character, ignoring leading
+                // whitespace in buffer.
+                const int curr_buf_width = width(buf);
+                const int x_draw = anchor.x + (max_width - curr_buf_width);
+                ui::myprint(it, font, x_draw, anchor.y, buf, align, font_color, prev_box);
+            } else {
+                ui::myprint(it, font, anchor.x, anchor.y, buf, align, font_color, prev_box);
+            }
         }
 
         void post(const PostArgs& args) override {
