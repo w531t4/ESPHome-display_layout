@@ -8,6 +8,8 @@ namespace ui {
     struct TextInitArgs {
         std::optional<bool> use_max_width_as_width;
         std::optional<char> max_width_padding_char;
+        std::optional<int> trim_pixels_top;         // Use top/bottom to remove pixels from top/bottom of characters for certain fonts
+        std::optional<int> trim_pixels_bottom;
     };
     template <typename T, typename P, std::size_t BufSize>
     class TextWidget : public Widget {
@@ -21,6 +23,8 @@ namespace ui {
         bool use_max_width_as_width = true;
         char max_width_padding_char = '8';
         // Remember last value
+        uint8_t trim_pixels_top = 0;
+        uint8_t trim_pixels_bottom = 0;
         std::optional<T> new_value{};
         std::optional<T> last{};
 
@@ -55,6 +59,10 @@ namespace ui {
                 this->use_max_width_as_width = textinit_extraargs_ptr->use_max_width_as_width.value_or(this->use_max_width_as_width);
                 if (textinit_extraargs_ptr->max_width_padding_char.has_value())
                     this->max_width_padding_char = *textinit_extraargs_ptr->max_width_padding_char;
+                if (textinit_extraargs_ptr->trim_pixels_top.has_value())
+                    this->trim_pixels_top = *textinit_extraargs_ptr->trim_pixels_top;
+                if (textinit_extraargs_ptr->trim_pixels_bottom.has_value())
+                    this->trim_pixels_bottom = *textinit_extraargs_ptr->trim_pixels_bottom;
             }
             this->last.reset();
             this->new_value.reset();
@@ -67,14 +75,15 @@ namespace ui {
         }
 
         void write() override {
+            const int y = anchor.y - trim_pixels_top;
             if (use_max_width_as_width) {
                 // printf will start drawing at the first pixel of a character, ignoring leading
                 // whitespace in buffer.
                 const int curr_buf_width = bounds(buf).w;
                 const int x_draw = anchor.x + (max_width - curr_buf_width);
-                ui::myprint(it, font, x_draw, anchor.y, buf, align, font_color, prev_box);
+                ui::myprint(it, font, x_draw, y, buf, align, font_color, prev_box);
             } else {
-                ui::myprint(it, font, anchor.x, anchor.y, buf, align, font_color, prev_box);
+                ui::myprint(it, font, anchor.x, y, buf, align, font_color, prev_box);
             }
         }
 
@@ -121,7 +130,7 @@ namespace ui {
 
         const int height() {
             if (!initialized) return 0;
-            return bounds(buf).h;
+            return bounds(buf).h - trim_pixels_top - trim_pixels_bottom;
         }
     };
 }
