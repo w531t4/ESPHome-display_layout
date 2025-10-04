@@ -5,6 +5,10 @@
 #include <algorithm>
 
 namespace ui {
+    struct TextInitArgs {
+        std::optional<bool> use_max_width_as_width;
+        std::optional<char> max_width_padding_char;
+    };
     template <typename T, typename P, std::size_t BufSize>
     class TextWidget : public Widget {
     protected:
@@ -14,6 +18,8 @@ namespace ui {
         esphome::Color font_color = esphome::Color::WHITE;
         esphome::Color blank_color = esphome::Color::BLACK;
         std::string fmt;
+        bool use_max_width_as_width = true;
+        char max_width_padding_char = '8';
         // Remember last value
         std::optional<T> new_value{};
         std::optional<T> last{};
@@ -44,10 +50,12 @@ namespace ui {
             this->blank_color = a.blank_color.value_or(esphome::Color::BLACK);
             this->fmt         = a.fmt.value_or(this->default_fmt());
 
-            this->use_max_width_as_width = a.use_max_width_as_width.value_or(true);
-            if (a.max_width_padding_char.has_value())
-                this->max_width_padding_char = *a.max_width_padding_char;
-
+            const TextInitArgs* textinit_extraargs_ptr = std::any_cast<const TextInitArgs>(&a.extras);
+            if (textinit_extraargs_ptr) {
+                this->use_max_width_as_width = textinit_extraargs_ptr->use_max_width_as_width.value_or(this->use_max_width_as_width);
+                if (textinit_extraargs_ptr->max_width_padding_char.has_value())
+                    this->max_width_padding_char = *textinit_extraargs_ptr->max_width_padding_char;
+            }
             this->last.reset();
             this->new_value.reset();
             buf[0] = '\0';

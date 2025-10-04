@@ -20,8 +20,6 @@ struct InitArgs {
     std::optional<std::string> fmt;
     std::optional<esphome::font::Font*> font2;
     std::optional<esphome::Color> font2_color;
-    std::optional<bool> use_max_width_as_width;
-    std::optional<char> max_width_padding_char;
     // Widget-specific payload (type-erased)
     std::any extras;
 };
@@ -36,8 +34,6 @@ protected:
     bool enabled = true;
     bool initialized = false;
     ui::Coord anchor{-1, -1};
-    bool use_max_width_as_width = false;
-    char max_width_padding_char = '8';
 public:
     // Virtual destructor: mandatory in base classes with virtual functions
     virtual ~Widget() = default;
