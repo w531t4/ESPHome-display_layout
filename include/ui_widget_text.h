@@ -71,7 +71,15 @@ namespace ui {
         }
 
         void blank() override {
+            if (trim_pixels_top > 0 || trim_pixels_bottom > 0) {
+                // we clip here because prev_box isn't updated correctly from myprint()
+                //                                                         this + 1 feels like a hack.
+                it->start_clipping(anchor.x, anchor.y, anchor.x + max_width + 1, anchor.y + height());
+            }
             ui::mywipe(it, prev_box, blank_color);
+            if (trim_pixels_top > 0 || trim_pixels_bottom > 0) {
+                it->end_clipping();
+            }
         }
 
         void write() override {
