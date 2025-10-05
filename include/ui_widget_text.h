@@ -6,6 +6,7 @@
 
 namespace ui {
     struct TextInitArgs {
+        std::optional<bool> right_align;
         std::optional<bool> use_max_width_as_width;
         std::optional<char> max_width_padding_char;
         std::optional<int> trim_pixels_top;         // Use top/bottom to remove pixels from top/bottom of characters for certain fonts
@@ -20,6 +21,7 @@ namespace ui {
         esphome::Color font_color = esphome::Color::WHITE;
         esphome::Color blank_color = esphome::Color::BLACK;
         std::string fmt;
+        bool right_align = false;
         bool use_max_width_as_width = true;
         char max_width_padding_char = '8';
         // Remember last value
@@ -63,6 +65,8 @@ namespace ui {
                     this->trim_pixels_top = *textinit_extraargs_ptr->trim_pixels_top;
                 if (textinit_extraargs_ptr->trim_pixels_bottom.has_value())
                     this->trim_pixels_bottom = *textinit_extraargs_ptr->trim_pixels_bottom;
+                if (textinit_extraargs_ptr->right_align.has_value())
+                    this->right_align = *textinit_extraargs_ptr->right_align;
             }
             this->last.reset();
             this->new_value.reset();
@@ -84,7 +88,7 @@ namespace ui {
 
         void write() override {
             const int y = anchor.y - trim_pixels_top;
-            if (use_max_width_as_width) {
+            if (use_max_width_as_width && right_align) {
                 // printf will start drawing at the first pixel of a character, ignoring leading
                 // whitespace in buffer.
                 const int curr_buf_width = bounds(buf).w;
