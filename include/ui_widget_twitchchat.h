@@ -5,7 +5,7 @@
 #include "esphome/core/time.h"
 #include "ui_widget.h"
 #include "ui_widgetcomposite.h"
-#include "ui_widget_text_string.h"
+#include "ui_widget_dyntext_string.h"
 #include "ui_shared.h"
 #include "ui_colors.h"
 
@@ -22,18 +22,25 @@ namespace ui {
         void initialize(const InitArgs& a) override {
             CompositeWidget<3>::initialize(a);
             const esphome::Color font_color = YELLOW;
-            members[0] = std::make_unique<StringWidget<BufSize>>();
+            members[0] = std::make_unique<DynStringWidget<BufSize>>();
             members[0]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(anchor.x, anchor.y),      .font = *a.font,
                                             .font_color = font_color});
-            members[1] = std::make_unique<StringWidget<BufSize>>();
+            members[1] = std::make_unique<DynStringWidget<BufSize>>();
             members[1]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(anchor.x, anchor.y + 11), .font = *a.font,
                                             .font_color = font_color});
-            members[2] = std::make_unique<StringWidget<BufSize>>();
+            members[2] = std::make_unique<DynStringWidget<BufSize>>();
             members[2]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(anchor.x, anchor.y + 21), .font = *a.font,
                                             .font_color = font_color});
             initialized = true;
         }
-
+        void set_capacity(const std::size_t cap, const bool preserve = true) {
+            for (auto &p : members) {
+                if (!p) continue;
+                // All three members are created as DynStringWidget<BufSize> in initialize()
+                auto *row = static_cast<DynStringWidget<BufSize>*>(p.get());
+                row->set_capacity(cap, preserve);
+            }
+        }
         void post(const PostArgs& args) {
             if (args.extras.has_value()) {
                 const TwitchChatPostArgs *post_args_ptr = std::any_cast<const TwitchChatPostArgs>(&args.extras);
