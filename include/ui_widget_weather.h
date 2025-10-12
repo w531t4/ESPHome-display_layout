@@ -16,7 +16,6 @@ namespace ui {
     protected:
         ui::Box prev_box{};
         esphome::Color blank_color = esphome::Color::BLACK;
-        std::string fmt;
         // Remember last value
         std::optional<T> new_value{};
         std::optional<T> last{};
@@ -25,9 +24,6 @@ namespace ui {
         int night_start = 21;
         int night_end = 6;
         // Pick a default printf format based on T
-        // virtual constexpr const std::string default_fmt() = 0;
-
-        // virtual void prep(T value, const char *fmt) = 0;
 
         bool is_different(T value) const {
             if (!last.has_value()) return true;
@@ -78,7 +74,6 @@ namespace ui {
             if (itf == icon_registry().end()) return;
             img = ui::is_night_hour(new_value->this_hour, night_start, night_end) ? itf->second.night : itf->second.day;
             if (!img) return;
-            // prep(*new_value, fmt.c_str());
             blank();
             write();
         }
