@@ -56,17 +56,16 @@ namespace ui {
             this->blank_color = a.blank_color.value_or(esphome::Color::BLACK);
             this->fmt         = a.fmt.value_or(this->default_fmt());
 
-            const TextInitArgs* textinit_extraargs_ptr = std::any_cast<const TextInitArgs>(&a.extras);
-            if (textinit_extraargs_ptr) {
-                this->use_max_width_as_width = textinit_extraargs_ptr->use_max_width_as_width.value_or(this->use_max_width_as_width);
-                if (textinit_extraargs_ptr->max_width_padding_char.has_value())
-                    this->max_width_padding_char = *textinit_extraargs_ptr->max_width_padding_char;
-                if (textinit_extraargs_ptr->trim_pixels_top.has_value())
-                    this->trim_pixels_top = *textinit_extraargs_ptr->trim_pixels_top;
-                if (textinit_extraargs_ptr->trim_pixels_bottom.has_value())
-                    this->trim_pixels_bottom = *textinit_extraargs_ptr->trim_pixels_bottom;
-                if (textinit_extraargs_ptr->right_align.has_value())
-                    this->right_align = *textinit_extraargs_ptr->right_align;
+            if (auto* t = a.extras.get<TextInitArgs>()) {
+                this->use_max_width_as_width = t->use_max_width_as_width.value_or(this->use_max_width_as_width);
+                if (t->max_width_padding_char.has_value())
+                    this->max_width_padding_char = *t->max_width_padding_char;
+                if (t->trim_pixels_top.has_value())
+                    this->trim_pixels_top = *t->trim_pixels_top;
+                if (t->trim_pixels_bottom.has_value())
+                    this->trim_pixels_bottom = *t->trim_pixels_bottom;
+                if (t->right_align.has_value())
+                    this->right_align = *t->right_align;
             }
             this->last.reset();
             this->new_value.reset();

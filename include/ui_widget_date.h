@@ -4,6 +4,7 @@
 #include <array>
 #include <span>
 #include "esphome/core/time.h"
+#include "argsbag.h"
 #include "ui_widget.h"
 #include "ui_widgetcomposite.h"
 #include "ui_widget_text_numeric.h"
@@ -34,7 +35,7 @@ namespace ui {
             members[0] = std::make_unique<NumericWidget<uint8_t,3>>(); // DAY
             members[0]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(anchor.x, anchor.y + 10), .font = a.font,
                                             .font_color = PURPLE, .fmt = std::string("%02d"),
-                                            .extras = TextInitArgs{.trim_pixels_top = 9, .trim_pixels_bottom = 9}});
+                                            .extras = ArgsBag::of(TextInitArgs{.trim_pixels_top = 9, .trim_pixels_bottom = 9})});
             members[1] = std::make_unique<StringWidget<4>>(); // MONTH
             members[1]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(anchor.x + 10 + 2, anchor.y), .font = *a.font2, .font_color = PINK});
             // members[1] = std::make_unique<NumericWidget<float,float_bufsize>>(); // CURRENT

@@ -4,6 +4,7 @@
 #include <optional>
 #include <any>
 #include "esphome.h"
+#include "argsbag.h"
 #include "esphome/components/font/font.h"
 #include "esphome/components/display/display.h"
 #include "ui_shared.h"
@@ -21,7 +22,7 @@ struct InitArgs {
     std::optional<esphome::font::Font*> font2;
     std::optional<esphome::Color> font2_color;
     // Widget-specific payload (type-erased)
-    std::any extras;
+    ArgsBag extras;
 };
 struct PostArgs {
     std::any extras;

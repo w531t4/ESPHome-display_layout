@@ -3,6 +3,7 @@
 #include <iostream>
 #include <array>
 #include <span>
+#include "argsbag.h"
 #include "ui_widget.h"
 #include "ui_widgetcomposite.h"
 #include "ui_widget_text_numeric.h"
@@ -22,11 +23,11 @@ namespace ui {
             members[0] = std::make_unique<NumericWidget<float,float_bufsize>>(); // HIGH
             members[0]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(a.anchor.x, a.anchor.y),
                                             .font = a.font, .font_color = RED,  .fmt = std::string("%4.0f TX"),
-                                            .extras = TextInitArgs{.right_align = true}});
+                                            .extras = ArgsBag::of(TextInitArgs{.right_align = true})});
             members[1] = std::make_unique<NumericWidget<float,float_bufsize>>(); // CURRENT
             members[1]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(a.anchor.x, a.anchor.y + 11),
                                             .font = a.font, .font_color = TEAL, .fmt = std::string("%4.0f RX"),
-                                            .extras = TextInitArgs{.right_align = true}});
+                                            .extras = ArgsBag::of(TextInitArgs{.right_align = true})});
             initialized = true;
         }
 
