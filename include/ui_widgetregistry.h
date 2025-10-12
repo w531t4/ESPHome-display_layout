@@ -5,6 +5,7 @@
 #include <type_traits>
 #include "ui_widget.h"
 #include "ui_shared.h"
+#include "magnet.h"
 #include <algorithm>
 #include <limits>
 
@@ -17,6 +18,7 @@ namespace ui {
     std::size_t count_ = 0;
     int gap_x_ = 0;
     int right_edge_base_ = std::numeric_limits<int>::min(); // unset sentinel
+    int left_edge_base_ = 0; // unset sentinel
   public:
     // Typed handle so callers can do handle->post(...)
     template <class W>
@@ -74,14 +76,63 @@ namespace ui {
           items_[i]->write();
     }
 
-    // Placeholders for later phases (no-ops now)
     void relayout() {
+      relayout_left();
+      relayout_right();
+    }
+
+    void relayout_left() {
       if (count_ == 0) return;
       // collect enabled items
       Widget* active[MaxWidgets];
       std::size_t n = 0;
       for (std::size_t i = 0; i < count_; ++i)
-        if (items_[i] && items_[i]->is_enabled())
+        if (items_[i] && items_[i]->is_enabled() && items_[i]->get_magnet() == Magnet::LEFT)
+          active[n++] = items_[i];
+      if (n == 0) return;
+
+      // sort by priority (lower value = higher priority)
+      std::sort(active, active + n,
+                [](const Widget* a, const Widget* b) {
+                  return a->get_priority() < b->get_priority();
+                });
+
+      int left_edge;
+      if (left_edge_base_ < 0) {
+        left_edge = 0;
+      } else {
+        left_edge = std::numeric_limits<int>::min();
+        for (std::size_t i = 0; i < n; ++i) {
+          const ui::Coord a = active[i]->anchor_value();
+          const int l = a.x + active[i]->width();
+          if (l < left_edge) left_edge = l;
+        }
+      }
+
+      // total width including gaps
+      int total = 0;
+      for (std::size_t i = 0; i < n; ++i) total += active[i]->width();
+      total += (n > 0 ? (static_cast<int>(n) - 1) * gap_x_ : 0);
+
+      int x = left_edge;
+      for (std::size_t i = 0; i < n; ++i) {
+        Widget* w = active[i];
+        const int next_x = x + w->width();      // place so its right edge hits current x
+        const int cur_x = w->anchor_value().x;
+        if (cur_x < x)
+          w->horizontal_shift(x - cur_x);
+        x = next_x;                             // move left for next widget
+        if (i + 1 < n) x += gap_x_;
+      }
+    }
+
+    void relayout_right() {
+      if (count_ == 0) return;
+      // collect enabled items
+      Widget* active[MaxWidgets];
+      std::size_t n = 0;
+      for (std::size_t i = 0; i < count_; ++i)
+        if (items_[i] && items_[i]->is_enabled() && items_[i]->get_magnet() == Magnet::RIGHT)
           active[n++] = items_[i];
       if (n == 0) return;
 

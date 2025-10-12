@@ -5,6 +5,7 @@
 #include <any>
 #include "esphome.h"
 #include "argsbag.h"
+#include "magnet.h"
 #include "esphome/components/font/font.h"
 #include "esphome/components/display/display.h"
 #include "ui_shared.h"
@@ -21,6 +22,7 @@ struct InitArgs {
     std::optional<std::string> fmt;
     std::optional<esphome::font::Font*> font2;
     std::optional<esphome::Color> font2_color;
+    std::optional<Magnet> magnet;
     // Widget-specific payload (type-erased)
     ArgsBag extras;
 };
@@ -35,6 +37,8 @@ protected:
     bool enabled = true;
     bool initialized = false;
     ui::Coord anchor{-1, -1};
+    Magnet magnet;
+
 public:
     // Virtual destructor: mandatory in base classes with virtual functions
     virtual ~Widget() = default;
@@ -50,6 +54,7 @@ public:
         this->it = args.it;
         this->anchor = args.anchor;
         this->priority = args.priority;
+        this->magnet = args.magnet.value_or(Magnet::RIGHT);
     }
 
     // // // Must perform main work
@@ -74,6 +79,9 @@ public:
     virtual void update() = 0;
     virtual void horizontal_shift(const int pixels) {
         this->anchor.x = this->anchor.x + pixels;
+    }
+    const Magnet get_magnet() {
+        return this->magnet;
     }
     ui::Coord anchor_value() const noexcept { return anchor; }   // non-virtual is fine if stored in base
     virtual const int width() = 0;
