@@ -11,10 +11,23 @@
 
 namespace ui {
 
+  // ---- add this tiny trait at file scope ---------------------------------
+  // Detects presence of set_capacity(std::size_t, bool) on W
+  template<class T, class = void>
+  struct has_set_capacity : std::false_type {};
+  template<class T>
+  struct has_set_capacity<T,
+    std::void_t<decltype(std::declval<T&>().set_capacity(std::declval<std::size_t>(),
+                                                         std::declval<bool>()))>> : std::true_type {};
+
   template <std::size_t MaxWidgets>
   class WidgetRegistry {
   private:
-    std::array<Widget*, MaxWidgets> items_{};  // non-owning raw pointers
+    struct Entry {
+      Widget* ptr = nullptr;
+      void (*set_capacity)(Widget*, std::size_t, bool) = nullptr; // null if unsupported
+    };
+    std::array<Entry, MaxWidgets> items_{};  // non-owning
     std::size_t count_ = 0;
     int gap_x_ = 0;
     int right_edge_base_ = std::numeric_limits<int>::min(); // unset sentinel
@@ -41,57 +54,99 @@ namespace ui {
     Handle<W> add(W& w) {
       static_assert(std::is_base_of<Widget, W>::value, "W must derive from Widget");
       if (count_ >= MaxWidgets) return {};   // invalid handle
-      items_[count_] = &w;                   // store as base pointer (non-owning)
+
+      items_[count_].ptr = &w;               // store pointer in Entry
+
+      // If W has set_capacity(std::size_t,bool), remember how to call it
+      if constexpr (has_set_capacity<W>::value) {
+        items_[count_].set_capacity = +[](Widget* base, std::size_t cap, bool preserve) {
+          static_cast<W*>(base)->set_capacity(cap, preserve);
+        };
+      } else {
+        items_[count_].set_capacity = nullptr;
+      }
+
       Handle<W> h; h.ptr = &w; h.index = count_;
       ++count_;
       return h;
     }
 
     std::size_t size() const noexcept { return count_; }
-    Widget* at(std::size_t i) noexcept { return (i < count_) ? items_[i] : nullptr; }
-    const Widget* at(std::size_t i) const noexcept { return (i < count_) ? items_[i] : nullptr; }
+    Widget* at(std::size_t i) noexcept { return (i < count_) ? items_[i].ptr : nullptr; }
+    const Widget* at(std::size_t i) const noexcept { return (i < count_) ? items_[i].ptr : nullptr; }
 
     // ----- Phase 2 fan-out (no timing) -----
     void update_all() {
       for (std::size_t i = 0; i < count_; ++i)
-        if (items_[i] && items_[i]->is_enabled())
-          items_[i]->update();
+        if (items_[i].ptr && items_[i].ptr->is_enabled())
+          items_[i].ptr->update();
     }
 
     void post_all(const PostArgs& args) {
       for (std::size_t i = 0; i < count_; ++i)
-        if (items_[i] && items_[i]->is_enabled())
-          items_[i]->post(args);
+        if (items_[i].ptr && items_[i].ptr->is_enabled())
+          items_[i].ptr->post(args);
     }
 
     void blank_all() {
       for (std::size_t i = 0; i < count_; ++i)
-        if (items_[i] && items_[i]->is_enabled())
-          items_[i]->blank();
+        if (items_[i].ptr && items_[i].ptr->is_enabled())
+          items_[i].ptr->blank();
     }
 
     void write_all() {
       for (std::size_t i = 0; i < count_; ++i)
-        if (items_[i] && items_[i]->is_enabled())
-          items_[i]->write();
+        if (items_[i].ptr && items_[i].ptr->is_enabled())
+          items_[i].ptr->write();
     }
 
-    void relayout() {
-      relayout_left();
-      relayout_right();
+    void relayout(int size = -1) {
+      int last_pos = -1, left = -1, right = -1;
+      relayout_left(last_pos);
+      if (last_pos != -1) left = last_pos + gap_x_;
+      last_pos = -1;
+      relayout_right(last_pos);
+      if (last_pos != -1) right = last_pos;
+      int delta = right - left;
+      if (delta > 0 && (right >= 0) && (left >= 0)) {
+        if (size > 0) {
+          relayout_auto(left, size);
+        } else {
+          relayout_auto(left, delta);
+        }
+      }
     }
 
-    void relayout_left() {
+    void relayout_auto(const int edge_anchor, const int cap) {
+      if (count_ == 0) return;
+      for (std::size_t i = 0; i < count_; ++i) {
+        auto& e = items_[i];
+        auto* w = e.ptr;
+        if (!w || !w->is_enabled() || w->get_magnet() != Magnet::AUTO) continue;
+
+        if (e.set_capacity) {  // <<< call via stored fn ptr
+          e.set_capacity(w, cap, true);
+
+          const int cur_x = w->anchor_value().x;
+          if (cur_x != edge_anchor) {
+            ESP_LOGW("registry", "performing shift val=%d", edge_anchor - cur_x);
+            w->horizontal_shift(edge_anchor - cur_x);
+          }
+          return;
+        }
+      }
+    }
+
+    void relayout_left(int &last_pos) {
       if (count_ == 0) return;
       // collect enabled items
       Widget* active[MaxWidgets];
       std::size_t n = 0;
       for (std::size_t i = 0; i < count_; ++i)
-        if (items_[i] && items_[i]->is_enabled() && items_[i]->get_magnet() == Magnet::LEFT)
-          active[n++] = items_[i];
+        if (items_[i].ptr && items_[i].ptr->is_enabled() && items_[i].ptr->get_magnet() == Magnet::LEFT)
+          active[n++] = items_[i].ptr;
       if (n == 0) return;
 
-      // sort by priority (lower value = higher priority)
       std::sort(active, active + n,
                 [](const Widget* a, const Widget* b) {
                   return a->get_priority() < b->get_priority();
@@ -99,9 +154,9 @@ namespace ui {
 
       int left_edge;
       if (left_edge_base_ < 0) {
-        left_edge = 0;
+        left_edge = left_edge_base_;
       } else {
-        left_edge = std::numeric_limits<int>::min();
+        left_edge = 0;
         for (std::size_t i = 0; i < n; ++i) {
           const ui::Coord a = active[i]->anchor_value();
           const int l = a.x + active[i]->width();
@@ -109,40 +164,32 @@ namespace ui {
         }
       }
 
-      // total width including gaps
-      int total = 0;
-      for (std::size_t i = 0; i < n; ++i) total += active[i]->width();
-      total += (n > 0 ? (static_cast<int>(n) - 1) * gap_x_ : 0);
-
       int x = left_edge;
       for (std::size_t i = 0; i < n; ++i) {
         Widget* w = active[i];
-        const int next_x = x + w->width();      // place so its right edge hits current x
+        const int next_x = x + w->width();
         const int cur_x = w->anchor_value().x;
-        if (cur_x < x)
-          w->horizontal_shift(x - cur_x);
-        x = next_x;                             // move left for next widget
+        if (cur_x < x) w->horizontal_shift(x - cur_x);
+        x = next_x;
         if (i + 1 < n) x += gap_x_;
       }
+      last_pos = x;
     }
 
-    void relayout_right() {
+    void relayout_right(int &last_pos) {
       if (count_ == 0) return;
-      // collect enabled items
       Widget* active[MaxWidgets];
       std::size_t n = 0;
       for (std::size_t i = 0; i < count_; ++i)
-        if (items_[i] && items_[i]->is_enabled() && items_[i]->get_magnet() == Magnet::RIGHT)
-          active[n++] = items_[i];
+        if (items_[i].ptr && items_[i].ptr->is_enabled() && items_[i].ptr->get_magnet() == Magnet::RIGHT)
+          active[n++] = items_[i].ptr;
       if (n == 0) return;
 
-      // sort by priority (lower value = higher priority)
       std::sort(active, active + n,
                 [](const Widget* a, const Widget* b) {
                   return a->get_priority() < b->get_priority();
                 });
 
-      // choose right edge: use configured base if set, else infer from current layout
       int right_edge;
       if (right_edge_base_ != std::numeric_limits<int>::min()) {
         right_edge = right_edge_base_;
@@ -155,28 +202,23 @@ namespace ui {
         }
       }
 
-      // total width including gaps
-      int total = 0;
-      for (std::size_t i = 0; i < n; ++i) total += active[i]->width();
-      total += (n > 0 ? (static_cast<int>(n) - 1) * gap_x_ : 0);
-
       int x = right_edge;
       for (std::size_t i = 0; i < n; ++i) {
         Widget* w = active[i];
         const int wpx = w->width();
-        const int target_x = x - wpx;             // place so its right edge hits current x
+        const int target_x = x - wpx;
         const int cur_x = w->anchor_value().x;
         const int dx = target_x - cur_x;
-        if (dx != 0) w->horizontal_shift(dx);     // updates anchor & redraws
-        x = target_x;                             // move left for next widget
+        if (dx != 0) w->horizontal_shift(dx);
+        x = target_x;
         if (i + 1 < n) x -= gap_x_;
       }
+      last_pos = x;
     }
 
     void set_right_edge_x(int px) { right_edge_base_ = px; }
     void set_gap_x(int px) { gap_x_ = px; }
     void set_right_anchored(bool) {}
-
   };
 
 } // namespace ui

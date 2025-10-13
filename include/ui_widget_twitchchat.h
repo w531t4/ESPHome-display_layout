@@ -15,13 +15,25 @@ namespace ui {
         std::string row2;
         std::string row3;
     };
+    struct TwitchChatInitArgs {
+        std::optional<int> pixels_per_character;
+    };
 
     template <std::size_t BufSize>
-    class TwitchChatWidget : public CompositeWidget<3> {
+    class TwitchChatWidget : public CompositeWidget<3>{
+    private:
+        int pixels_per_character = 6;
     public:
         void initialize(const InitArgs& a) override {
             CompositeWidget<3>::initialize(a);
+            if (auto* t = a.extras.get<TwitchChatInitArgs>()) {
+                this->pixels_per_character = t->pixels_per_character.value_or(4);
+                if (this->pixels_per_character <= 0) {
+                    this->pixels_per_character = 1;
+                }
+            }
             const esphome::Color font_color = YELLOW;
+
             members[0] = std::make_unique<TwitchStringWidget<BufSize>>();
             members[0]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(anchor.x, anchor.y),      .font = *a.font,
                                             .font_color = font_color});
@@ -34,12 +46,17 @@ namespace ui {
             initialized = true;
         }
         void set_capacity(const std::size_t cap, const bool preserve = true) {
+            if (!initialized) return;
+            if (cap < 1) return;
+            int num_chars = static_cast<int>(cap / this->pixels_per_character);
             for (auto &p : members) {
                 if (!p) continue;
                 // All three members are created as DynStringWidget<BufSize> in initialize()
                 auto *row = static_cast<TwitchStringWidget<BufSize>*>(p.get());
-                row->set_capacity(cap, preserve);
+                row->set_capacity(num_chars, preserve);
             }
+            this->blank();
+            this->write();
         }
         void post(const PostArgs& args) {
             if (args.extras.has_value()) {

@@ -90,5 +90,4 @@ public:
 
     // // Provide default behavior
     // virtual void cleanup() { /* default no-op */ };
-
 };

@@ -2,14 +2,12 @@
 #include "ui_widget.h"
 #include "ui_shared.h"
 #include "ui_widget_text.h"
+#include "ui_capabilities.h"
 #include <iostream>
 #include <algorithm>
 #include <vector>
 
 namespace ui {
-    struct IBufferResizable {
-        virtual void set_capacity(std::size_t cap, bool preserve = true) = 0;
-    };
     // struct TextInitArgs {
     //     std::optional<bool> right_align;
     //     std::optional<bool> use_max_width_as_width;
@@ -18,7 +16,7 @@ namespace ui {
     //     std::optional<int> trim_pixels_bottom;
     // };
     template <typename T, typename P, std::size_t BufSize>
-    class DynTextWidget : public Widget, public IBufferResizable {
+    class DynTextWidget : public Widget, public ui::IBufferResizable {
     protected:
         ui::Box prev_box{};
         esphome::display::TextAlign align = esphome::display::TextAlign::LEFT;
@@ -89,6 +87,10 @@ namespace ui {
                 it->end_clipping();
             }
         }
+        void horizontal_shift(const int pixels) override {
+            Widget::horizontal_shift(pixels);
+            this->prev_box = ui::Box{this->prev_box.x1 + pixels, this->prev_box.y1, this->prev_box.w, this->prev_box.h};
+        }
 
         void write() override {
             const int y = anchor.y - trim_pixels_top;
@@ -151,7 +153,7 @@ namespace ui {
         // Set buffer capacity at runtime (chars incl. '\0').
         // If preserve=true, keep existing contents (truncated if shrinking).
         // If preserve=false, clear/fill with NULs.
-        void set_capacity(std::size_t cap, bool preserve = true) {
+        void set_capacity(std::size_t cap, bool preserve = true) override {
             cap = std::max<std::size_t>(cap, 2);        // always leave room for '\0'
             if (preserve) {
                 buf.resize(cap);
@@ -160,6 +162,7 @@ namespace ui {
                 buf.assign(cap, '\0');                  // zero-fill
             }
             max_width = -1;                             // invalidate cached slot width
+            this->prev_box = ui::Box{this->prev_box.x1, this->prev_box.y1, this->width(), this->prev_box.h};
         }
 
         std::size_t capacity() const { return buf.size(); }
