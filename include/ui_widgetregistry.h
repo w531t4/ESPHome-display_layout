@@ -102,22 +102,27 @@ namespace ui {
 
     void relayout(int size = -1) {
       int last_pos = -1, left = -1, right = -1;
-      relayout_left(last_pos);
+      bool redraw_needed = false;
+      relayout_left(last_pos, redraw_needed);
       if (last_pos != -1) left = last_pos + gap_x_;
       last_pos = -1;
-      relayout_right(last_pos);
+      relayout_right(last_pos, redraw_needed);
       if (last_pos != -1) right = last_pos;
       int delta = right - left;
       if (delta > 0 && (right >= 0) && (left >= 0)) {
         if (size > 0) {
-          relayout_auto(left, size);
+          relayout_auto(left, size, redraw_needed);
         } else {
-          relayout_auto(left, delta);
+          relayout_auto(left, delta, redraw_needed);
         }
+      }
+      if (redraw_needed) {
+        this->blank_all();
+        this->write_all();
       }
     }
 
-    void relayout_auto(const int edge_anchor, const int cap) {
+    void relayout_auto(const int edge_anchor, const int cap, bool &redraw_needed) {
       if (count_ == 0) return;
       for (std::size_t i = 0; i < count_; ++i) {
         auto& e = items_[i];
@@ -130,14 +135,16 @@ namespace ui {
           const int cur_x = w->anchor_value().x;
           if (cur_x != edge_anchor) {
             ESP_LOGW("registry", "performing shift val=%d", edge_anchor - cur_x);
+            w->blank();
             w->horizontal_shift(edge_anchor - cur_x);
+            redraw_needed = true;
           }
           return;
         }
       }
     }
 
-    void relayout_left(int &last_pos) {
+    void relayout_left(int &last_pos, bool &redraw_needed) {
       if (count_ == 0) return;
       // collect enabled items
       Widget* active[MaxWidgets];
@@ -169,14 +176,18 @@ namespace ui {
         Widget* w = active[i];
         const int next_x = x + w->width();
         const int cur_x = w->anchor_value().x;
-        if (cur_x < x) w->horizontal_shift(x - cur_x);
+        if (cur_x < x) {
+          w->blank();
+          w->horizontal_shift(x - cur_x);
+          redraw_needed = true;
+        }
         x = next_x;
         if (i + 1 < n) x += gap_x_;
       }
       last_pos = x;
     }
 
-    void relayout_right(int &last_pos) {
+    void relayout_right(int &last_pos, bool &redraw_needed) {
       if (count_ == 0) return;
       Widget* active[MaxWidgets];
       std::size_t n = 0;
@@ -209,7 +220,11 @@ namespace ui {
         const int target_x = x - wpx;
         const int cur_x = w->anchor_value().x;
         const int dx = target_x - cur_x;
-        if (dx != 0) w->horizontal_shift(dx);
+        if (dx != 0) {
+          w->blank();
+          w->horizontal_shift(dx);
+          redraw_needed = true;
+        }
         x = target_x;
         if (i + 1 < n) x -= gap_x_;
       }
