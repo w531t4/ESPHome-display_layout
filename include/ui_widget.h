@@ -43,6 +43,7 @@ public:
     // Virtual destructor: mandatory in base classes with virtual functions
     virtual ~Widget() = default;
     bool is_enabled() const noexcept { return enabled; }
+    void set_enabled(const bool state) { this->enabled = state; }
     uint8_t get_priority() const noexcept { return priority; }
     // ----- Mandatory functions for derived classes -----
 
