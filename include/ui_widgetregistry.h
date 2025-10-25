@@ -20,12 +20,20 @@ namespace ui {
     std::void_t<decltype(std::declval<T&>().set_capacity(std::declval<std::size_t>(),
                                                          std::declval<bool>()))>> : std::true_type {};
 
+                                                         // Detects presence of size_t capacity() const on W
+  template<class T, class = void>
+  struct has_get_capacity : std::false_type {};
+  template<class T>
+  struct has_get_capacity<T,
+    std::void_t<decltype(std::declval<const T&>().get_capacity())>> : std::true_type {};
+
   template <std::size_t MaxWidgets>
   class WidgetRegistry {
   private:
     struct Entry {
       Widget* ptr = nullptr;
       void (*set_capacity)(Widget*, std::size_t, bool) = nullptr; // null if unsupported
+      std::size_t (*get_capacity)(const Widget*) = nullptr;         // ← add this
     };
     std::array<Entry, MaxWidgets> items_{};  // non-owning
     std::size_t count_ = 0;
@@ -66,6 +74,13 @@ namespace ui {
         items_[count_].set_capacity = nullptr;
       }
 
+      if constexpr (has_get_capacity<W>::value) {
+        items_[count_].get_capacity = +[](const Widget* base) -> std::size_t {
+          return static_cast<const W*>(base)->get_capacity();
+        };
+      } else {
+        items_[count_].get_capacity = nullptr;
+      }
       Handle<W> h; h.ptr = &w; h.index = count_;
       ++count_;
       return h;
@@ -129,8 +144,11 @@ namespace ui {
         auto* w = e.ptr;
         if (!w || !w->is_enabled() || w->get_magnet() != Magnet::AUTO) continue;
 
-        if (e.set_capacity) {  // <<< call via stored fn ptr
-          e.set_capacity(w, cap, true);
+        if (e.set_capacity && e.get_capacity) {
+          if (e.get_capacity(w) != cap) {
+            ESP_LOGW("registry","setting new dynamic widget capacity to cap=%d, current=%d", cap, e.get_capacity(w));
+            e.set_capacity(w, cap, true);
+          }
 
           const int cur_x = w->anchor_value().x;
           if (cur_x != edge_anchor) {

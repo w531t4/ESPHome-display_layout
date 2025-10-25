@@ -23,6 +23,7 @@ namespace ui {
     class TwitchChatWidget : public CompositeWidget<3>{
     private:
         int pixels_per_character = 6;
+        int pixel_capacity = -1;
     public:
         void initialize(const InitArgs& a) override {
             CompositeWidget<3>::initialize(a);
@@ -43,6 +44,7 @@ namespace ui {
             members[2] = std::make_unique<TwitchStringWidget<BufSize>>();
             members[2]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(anchor.x, anchor.y + 21), .font = *a.font,
                                             .font_color = font_color});
+            this->set_capacity(100, true);
             initialized = true;
         }
         void set_capacity(const std::size_t cap, const bool preserve = true) {
@@ -57,7 +59,13 @@ namespace ui {
             }
             this->blank();
             this->write();
+            this->pixel_capacity = cap;
         }
+
+        const size_t get_capacity() const {
+            return this->pixel_capacity;
+        }
+
         void post(const PostArgs& args) {
             if (args.extras.has_value()) {
                 const TwitchChatPostArgs *post_args_ptr = std::any_cast<const TwitchChatPostArgs>(&args.extras);

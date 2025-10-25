@@ -165,6 +165,10 @@ namespace ui {
             this->prev_box = ui::Box{this->prev_box.x1, this->prev_box.y1, this->width(), this->prev_box.h};
         }
 
+        const size_t get_capacity() const {
+            return this->buf.size();
+        }
+
         std::size_t capacity() const { return buf.size(); }
 
         std::size_t length() const {
