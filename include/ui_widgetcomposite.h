@@ -21,21 +21,21 @@ public:
 
     void blank() {
         for (auto &ptr : members) {          // ptr is a std::unique_ptr<Widget>&
-            if (ptr)                          // check it’s not empty
+            if (ptr && ptr->is_enabled())    // check it’s not empty and enabled
                 ptr->blank();                  // call Widget’s member
         }
     }
 
     void write() {
         for (auto &ptr : members) {          // ptr is a std::unique_ptr<Widget>&
-            if (ptr)                          // check it’s not empty
+            if (ptr && ptr->is_enabled())    // check it’s not empty and enabled
                 ptr->write();                  // call Widget’s member
         }
     }
 
     void update() {
         for (auto &ptr : members) {
-            if (ptr) {
+            if (ptr && ptr->is_enabled()) {
                 ptr->update();
             }
         }

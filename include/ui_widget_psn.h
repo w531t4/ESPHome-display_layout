@@ -15,8 +15,6 @@ namespace ui {
     };
 
     class PSNWidget : public CompositeWidget<2> {
-    private:
-        bool should_show;
     public:
         void initialize(const InitArgs& a) override {
             CompositeWidget<2>::initialize(a);
@@ -24,20 +22,19 @@ namespace ui {
             members[0]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(anchor.x, anchor.y), .font = *a.font, .font_color = GREEN});
             members[1] = std::make_unique<StringWidget<2>>(); // Nick
             members[1]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(anchor.x, anchor.y+20), .font = *a.font, .font_color = PINK});
-            should_show = false;
             initialized = true;
         }
         void post(const PostArgs& args) {
             if (args.extras.has_value()) {
                 const PSNPostArgs *post_args_ptr = std::any_cast<const PSNPostArgs>(&args.extras);
                 if (post_args_ptr != nullptr) {
+                    bool should_psn_widget_show = false;
                     if (ui::txt_sensor_has_healthy_state(post_args_ptr->phil)) {
                         if (!members[0]->is_enabled()) members[0]->set_enabled(true);
                         // members[0]->post(PostArgs{.extras = ui::StringPostArgs{.value = post_args_ptr->phil->state.substr(0, 1)}});
                         members[0]->post(PostArgs{.extras = ui::StringPostArgs{.value = std::string("P")}});
-                        this->should_show = true;
+                        should_psn_widget_show = true;
                     } else {
-                        this->should_show = false;
                         if (members[0]->is_enabled()) {
                             members[0]->blank();
                             members[0]->set_enabled(false);
@@ -47,16 +44,21 @@ namespace ui {
                         if (!members[1]->is_enabled()) members[1]->set_enabled(true);
                         // members[1]->post(PostArgs{.extras = ui::StringPostArgs{.value = post_args_ptr->nick->state.substr(0, 1)}});
                         members[1]->post(PostArgs{.extras = ui::StringPostArgs{.value = std::string("N")}});
-                        this->should_show = true;
+                        should_psn_widget_show = true;
                     } else {
-                        this->should_show = false;
                         if (members[1]->is_enabled()) {
                             members[1]->blank();
                             members[1]->set_enabled(false);
                         }
                     }
-                    if (!this->should_show && this->is_enabled()) this->set_enabled(false);
-                    if (this->should_show && !this->is_enabled()) this->set_enabled(true);
+                    const bool current_state = this->is_enabled();
+                    if (should_psn_widget_show && !current_state) {
+                        this->blank();
+                        this->set_enabled(true);
+                    } else if (!should_psn_widget_show && current_state) {
+                        this->blank();
+                        this->set_enabled(false);
+                    }
                 }
             }
         }
