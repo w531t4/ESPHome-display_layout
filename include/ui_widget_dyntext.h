@@ -35,6 +35,7 @@ namespace ui {
 
         std::vector<char> buf;
         int max_width = -1;
+        int max_height = -1;
 
         // Pick a default printf format based on T
         virtual constexpr const std::string default_fmt() = 0;
@@ -118,6 +119,7 @@ namespace ui {
 
         void update() {
             if (!initialized) return;
+            if (!new_value.has_value()) return;
             if (new_value.has_value() && !is_different(*new_value)) return;
             prep(*new_value, fmt.c_str());
             blank();
@@ -147,7 +149,8 @@ namespace ui {
 
         const int height() {
             if (!initialized) return 0;
-            return bounds(buf.data()).h - trim_pixels_top - trim_pixels_bottom;
+            if (this->max_height < 0) this->max_height = bounds(buf.data()).h - trim_pixels_top - trim_pixels_bottom;
+            return this->max_height;
         }
 
         // Set buffer capacity at runtime (chars incl. '\0').
@@ -162,6 +165,7 @@ namespace ui {
                 buf.assign(cap, '\0');                  // zero-fill
             }
             max_width = -1;                             // invalidate cached slot width
+            max_height = -1;
             this->prev_box = ui::Box{this->prev_box.x1, this->prev_box.y1, this->width(), this->prev_box.h};
         }
 
