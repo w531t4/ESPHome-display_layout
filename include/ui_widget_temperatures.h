@@ -23,15 +23,15 @@ namespace ui {
             CompositeWidget<3>::initialize(a);
             constexpr int float_bufsize = 4;
             members[0] = std::make_unique<NumericWidget<float,float_bufsize>>(); // HIGH
-            members[0]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(a.anchor.x, a.anchor.y + (11*0)),
+            members[0]->initialize(InitArgs{.it = a.it, .id = a.id + "[high]", .anchor = ui::Coord(a.anchor.x, a.anchor.y + (11*0)),
                                             .font = a.font, .font_color = RED,  .fmt = std::string("%3.0f"),
                                             .extras = ArgsBag::of(TextInitArgs{.right_align = true})});
             members[1] = std::make_unique<NumericWidget<float,float_bufsize>>(); // CURRENT
-            members[1]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(a.anchor.x, a.anchor.y + (11*1)),
+            members[1]->initialize(InitArgs{.it = a.it, .id = a.id + "[current]", .anchor = ui::Coord(a.anchor.x, a.anchor.y + (11*1)),
                                             .font = a.font, .font_color = TEAL, .fmt = std::string("%3.0f"),
                                             .extras = ArgsBag::of(TextInitArgs{.right_align = true})});
             members[2] = std::make_unique<NumericWidget<float,float_bufsize>>(); // LOW
-            members[2]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(a.anchor.x, a.anchor.y + (11*2)),
+            members[2]->initialize(InitArgs{.it = a.it, .id = a.id + "[low]", .anchor = ui::Coord(a.anchor.x, a.anchor.y + (11*2)),
                                             .font = a.font, .font_color = BLUE, .fmt = std::string("%3.0f"),
                                             .extras = ArgsBag::of(TextInitArgs{.right_align = true})});
             initialized = true;

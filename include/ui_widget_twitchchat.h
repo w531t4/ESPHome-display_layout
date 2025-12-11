@@ -36,13 +36,13 @@ namespace ui {
             const esphome::Color font_color = YELLOW;
 
             members[0] = std::make_unique<TwitchStringWidget<BufSize>>();
-            members[0]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(anchor.x, anchor.y),      .font = *a.font,
+            members[0]->initialize(InitArgs{.it = a.it, .id = a.id + "[line1]", .anchor = ui::Coord(anchor.x, anchor.y),      .font = *a.font,
                                             .font_color = font_color});
             members[1] = std::make_unique<TwitchStringWidget<BufSize>>();
-            members[1]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(anchor.x, anchor.y + 11), .font = *a.font,
+            members[1]->initialize(InitArgs{.it = a.it, .id = a.id + "[line2]", .anchor = ui::Coord(anchor.x, anchor.y + 11), .font = *a.font,
                                             .font_color = font_color});
             members[2] = std::make_unique<TwitchStringWidget<BufSize>>();
-            members[2]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(anchor.x, anchor.y + 21), .font = *a.font,
+            members[2]->initialize(InitArgs{.it = a.it, .id = a.id + "[line3]", .anchor = ui::Coord(anchor.x, anchor.y + 21), .font = *a.font,
                                             .font_color = font_color});
             this->set_capacity(100, true);
             initialized = true;

@@ -19,9 +19,9 @@ namespace ui {
         void initialize(const InitArgs& a) override {
             CompositeWidget<2>::initialize(a);
             members[0] = std::make_unique<StringWidget<2>>(); // Phil
-            members[0]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(anchor.x, anchor.y), .font = *a.font, .font_color = GREEN});
+            members[0]->initialize(InitArgs{.it = a.it, .id = a.id + "[phil]", .anchor = ui::Coord(anchor.x, anchor.y), .font = *a.font, .font_color = GREEN});
             members[1] = std::make_unique<StringWidget<2>>(); // Nick
-            members[1]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(anchor.x, anchor.y+20), .font = *a.font, .font_color = PINK});
+            members[1]->initialize(InitArgs{.it = a.it, .id = a.id + "[nick]", .anchor = ui::Coord(anchor.x, anchor.y+20), .font = *a.font, .font_color = PINK});
             initialized = true;
         }
         void post(const PostArgs& args) {

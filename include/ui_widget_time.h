@@ -32,19 +32,19 @@ namespace ui {
                 return;
             }
             members[0] = std::make_unique<NumericWidget<int,3>>(); // HOURS
-            members[0]->initialize(InitArgs{.it = a.it, .anchor = anchor, .font = a.font,
+            members[0]->initialize(InitArgs{.it = a.it, .id = a.id + "[hours]", .anchor = anchor, .font = a.font,
                                             .font_color = ORANGE, .fmt = std::string("%02d"),
                                             .extras = ArgsBag::of(TextInitArgs{.trim_pixels_top = 6, .trim_pixels_bottom = 6})});
             members[1] = std::make_unique<StringWidget<2>>(); // COLON
-            members[1]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(anchor.x + 27, anchor.y), .font = a.font, //33
+            members[1]->initialize(InitArgs{.it = a.it, .id = a.id + "[colon]", .anchor = ui::Coord(anchor.x + 27, anchor.y), .font = a.font, //33
                                             .font_color = ORANGE,
                                             .extras = ArgsBag::of(TextInitArgs{.right_align = true, .trim_pixels_top = 6, .trim_pixels_bottom = 6})});
             members[2] = std::make_unique<NumericWidget<int,3>>(); // MINUTES
-            members[2]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(anchor.x + 45, anchor.y), .font = a.font,
+            members[2]->initialize(InitArgs{.it = a.it, .id = a.id + "[min]", .anchor = ui::Coord(anchor.x + 45, anchor.y), .font = a.font,
                                             .font_color = ORANGE, .fmt = std::string("%02d"),
                                             .extras = ArgsBag::of(TextInitArgs{.trim_pixels_top = 6, .trim_pixels_bottom = 6})});
             members[3] = std::make_unique<NumericWidget<int,3>>(); // SECONDS
-            members[3]->initialize(InitArgs{.it = a.it, .anchor = ui::Coord(anchor.x + 87, anchor.y), .font = *a.font2,
+            members[3]->initialize(InitArgs{.it = a.it, .id = a.id + "[sec]", .anchor = ui::Coord(anchor.x + 87, anchor.y), .font = *a.font2,
                                             .font_color = ORANGE, .fmt = std::string("%02d")});
             initialized = true;
         }

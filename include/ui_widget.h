@@ -4,6 +4,7 @@
 #include <optional>
 #include <any>
 #include "esphome.h"
+#include "ui_logging.h"
 #include "argsbag.h"
 #include "magnet.h"
 #include "esphome/components/font/font.h"
@@ -12,6 +13,7 @@
 
 struct InitArgs {
     esphome::display::Display* it = nullptr;   // common
+    std::string id;
     ui::Coord anchor{0,0};                     // common
     uint8_t priority = 0;
     // Optional commons (only some widgets care)
@@ -38,6 +40,7 @@ protected:
     bool initialized = false;
     ui::Coord anchor{-1, -1};
     Magnet magnet;
+    std::string id;
 
 public:
     // Virtual destructor: mandatory in base classes with virtual functions
@@ -53,6 +56,7 @@ public:
     // // Must perform initialization
     virtual void initialize(const InitArgs& args) {
         this->it = args.it;
+        this->id = args.id;
         this->anchor = args.anchor;
         this->priority = args.priority;
         this->magnet = args.magnet.value_or(Magnet::RIGHT);
@@ -67,6 +71,9 @@ public:
     virtual void draw_outline(const esphome::Color &color) {
         this->it->rectangle(this->anchor.x, this->anchor.y, this->width(), this->height(), color);
     }
+    const std::string get_name() {
+        return this->id;
+    }
 
     // blank applicable space
     virtual void blank() = 0;
@@ -79,6 +86,7 @@ public:
 
     virtual void update() = 0;
     virtual void horizontal_shift(const int pixels) {
+        ui::log_horizontal_shift(this->id, this->anchor.x, this->anchor.x + pixels);
         this->anchor.x = this->anchor.x + pixels;
     }
     const Magnet get_magnet() {
