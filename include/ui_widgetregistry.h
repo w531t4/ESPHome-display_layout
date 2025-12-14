@@ -179,17 +179,26 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
             }
         }
     }
-
+    std::size_t get_enabled_and_oriented_widgets(Widget *w_array,
+                                                 Magnet orientation) {
+        // Create array of Widget pointers
+        // meeting the following critera:
+        //    - widget is enabled
+        //    - widget matches desired orientation
+        // return number of qualifying items
+        std::size_t n = 0;
+        for (std::size_t i = 0; i < count_; ++i)
+            if (items_[i].ptr && items_[i].ptr->is_enabled() &&
+                items_[i].ptr->get_magnet() == orientation)
+                w_array[n++] = items_[i].ptr;
+        return n;
+    }
     void relayout_left(int &last_pos, bool &redraw_needed) {
         if (count_ == 0)
             return;
         // collect enabled items
         Widget *active[MaxWidgets];
-        std::size_t n = 0;
-        for (std::size_t i = 0; i < count_; ++i)
-            if (items_[i].ptr && items_[i].ptr->is_enabled() &&
-                items_[i].ptr->get_magnet() == Magnet::LEFT)
-                active[n++] = items_[i].ptr;
+        std::size_t n = get_enabled_and_oriented_widgets(active, Magent::LEFT);
         if (n == 0)
             return;
 
@@ -231,11 +240,7 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         if (count_ == 0)
             return;
         Widget *active[MaxWidgets];
-        std::size_t n = 0;
-        for (std::size_t i = 0; i < count_; ++i)
-            if (items_[i].ptr && items_[i].ptr->is_enabled() &&
-                items_[i].ptr->get_magnet() == Magnet::RIGHT)
-                active[n++] = items_[i].ptr;
+        std::size_t n = get_enabled_and_oriented_widgets(active, Magent::RIGHT);
         if (n == 0)
             return;
 
