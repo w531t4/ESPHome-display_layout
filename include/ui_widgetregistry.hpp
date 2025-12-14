@@ -64,25 +64,24 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         if (count_ >= MaxWidgets)
             return {}; // invalid handle
 
-        items_[count_].ptr = &w; // store pointer in Entry
+        Entry &e = this->items_[count_];
+        e.ptr = &w;
 
         // If W has set_capacity(std::size_t,bool), remember how to call it
         if constexpr (has_set_capacity<W>::value) {
-            items_[count_].set_capacity =
-                +[](Widget *base, std::size_t cap, bool preserve) {
-                    static_cast<W *>(base)->set_capacity(cap, preserve);
-                };
+            e.set_capacity = +[](Widget *base, std::size_t cap, bool preserve) {
+                static_cast<W *>(base)->set_capacity(cap, preserve);
+            };
         } else {
-            items_[count_].set_capacity = nullptr;
+            e.set_capacity = nullptr;
         }
 
         if constexpr (has_get_capacity<W>::value) {
-            items_[count_].get_capacity =
-                +[](const Widget *base) -> std::size_t {
+            e.get_capacity = +[](const Widget *base) -> std::size_t {
                 return static_cast<const W *>(base)->get_capacity();
             };
         } else {
-            items_[count_].get_capacity = nullptr;
+            e.get_capacity = nullptr;
         }
         Handle<W> h;
         h.ptr = &w;
@@ -149,7 +148,7 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         if (count_ == 0)
             return;
         for (std::size_t i = 0; i < count_; ++i) {
-            auto &e = items_[i];
+            Entry &e = items_[i];
             auto *w = e.ptr;
             if (!w || !w->is_enabled() || w->get_magnet() != Magnet::AUTO)
                 continue;
