@@ -143,7 +143,7 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         }
     }
 
-    void relayout_auto(const int edge_anchor, const int cap,
+    void relayout_auto(const int edge_anchor, const int new_capacity,
                        bool &redraw_needed) {
         if (count_ == 0)
             return;
@@ -154,12 +154,12 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
                 continue;
 
             if (e.set_capacity && e.get_capacity) {
-                if (e.get_capacity(w) != cap) {
+                if (e.get_capacity(w) != new_capacity) {
                     ESP_LOGW("registry",
                              "setting new dynamic widget capacity to cap=%d, "
                              "current=%d",
-                             cap, e.get_capacity(w));
-                    e.set_capacity(w, cap, true);
+                             new_capacity, e.get_capacity(w));
+                    e.set_capacity(w, new_capacity, true);
                 }
 
                 const int cur_x = w->anchor_value().x;
