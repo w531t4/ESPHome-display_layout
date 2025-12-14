@@ -214,8 +214,22 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
             for (std::size_t i = 0; i < max_items; ++i) {
                 // it's odd, but the logic is the same...
                 const int l = get_right_edge(items[i]);
+                // i don't see how this ever matches..
                 if (l < edge)
                     edge = l;
+            }
+        }
+        return edge;
+    }
+    const int get_rightmost_edge(Widget **items, const size_t max_items) {
+        int edge = std::numeric_limits<int>::min();
+        if (right_edge_base_ != std::numeric_limits<int>::min()) {
+            edge = right_edge_base_;
+        } else {
+            for (std::size_t i = 0; i < max_items; ++i) {
+                const int r = get_right_edge(items[i]);
+                if (r > edge)
+                    edge = r;
             }
         }
         return edge;
@@ -269,17 +283,7 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
             return a->get_priority() < b->get_priority();
         });
 
-        int right_edge = std::numeric_limits<int>::min();
-        if (right_edge_base_ != std::numeric_limits<int>::min()) {
-            right_edge = right_edge_base_;
-        } else {
-            for (std::size_t i = 0; i < n; ++i) {
-                const int r = get_right_edge(active[i]);
-                if (r > right_edge)
-                    right_edge = r;
-            }
-        }
-
+        int right_edge = get_rightmost_edge(active, n);
         int x = right_edge;
         for (std::size_t i = 0; i < n; ++i) {
             Widget *w = active[i];
