@@ -175,7 +175,7 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
             }
         }
     }
-    std::size_t get_enabled_and_oriented_widgets(Widget *w_array,
+    std::size_t get_enabled_and_oriented_widgets(Widget **w_array,
                                                  Magnet orientation) {
         // Create array of Widget pointers
         // meeting the following critera:
