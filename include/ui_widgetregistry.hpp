@@ -212,11 +212,7 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
             edge = left_edge_base_;
         } else {
             for (std::size_t i = 0; i < max_items; ++i) {
-                // it's odd, but the logic is the same...
-                const int l = get_right_edge(items[i]);
-                // i don't see how this ever matches..
-                if (l < edge)
-                    edge = l;
+                edge = std::min(edge, get_right_edge(items[i]));
             }
         }
         return edge;
@@ -227,9 +223,7 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
             edge = right_edge_base_;
         } else {
             for (std::size_t i = 0; i < max_items; ++i) {
-                const int r = get_right_edge(items[i]);
-                if (r > edge)
-                    edge = r;
+                edge = std::max(edge, get_right_edge(items[i]));
             }
         }
         return edge;
