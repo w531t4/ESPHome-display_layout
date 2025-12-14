@@ -130,11 +130,11 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
     void relayout(int size = -1) {
         int last_pos = -1, left = -1, right = -1;
         bool redraw_needed = false;
-        relayout_left(last_pos, redraw_needed);
+        relayout_left_right(last_pos, redraw_needed, Magnet::LEFT);
         if (last_pos != -1)
             left = last_pos + gap_x_;
         last_pos = -1;
-        relayout_right(last_pos, redraw_needed);
+        relayout_left_right(last_pos, redraw_needed, Magnet::RIGHT);
         if (last_pos != -1)
             right = last_pos;
         int delta = right - left;
@@ -254,17 +254,14 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         }
         last_pos = x;
     }
-    void relayout_left(int &last_pos, bool &redraw_needed) {
+    void relayout_left_right(int &last_pos, bool &redraw_needed,
+                             Magnet orientation) {
         // For now, this is for twitch streamer icons
-        // **************************
-        // i suspect we're not actually finding the leftmost edge... but more of
-        // the edge important to magnet::LEFT
-        // ******************************
         if (count_ == 0)
             return;
         // collect enabled items
         Widget *active[MaxWidgets];
-        std::size_t n = get_enabled_and_oriented_widgets(active, Magnet::LEFT);
+        std::size_t n = get_enabled_and_oriented_widgets(active, orientation);
         if (n == 0)
             return;
 
@@ -272,9 +269,14 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
             return a->get_priority() < b->get_priority();
         });
 
-        int left_edge = get_leftmost_edge(active, n);
-        perform_linearlayout_left(left_edge, active, last_pos, redraw_needed,
-                                  n);
+        if (orientation == Magnet::LEFT) {
+            int edge = get_leftmost_edge(active, n);
+            perform_linearlayout_left(edge, active, last_pos, redraw_needed, n);
+        } else if (orientation == Magnet::RIGHT) {
+            int edge = get_rightmost_edge(active, n);
+            perform_linearlayout_right(edge, active, last_pos, redraw_needed,
+                                       n);
+        }
     }
 
     void perform_linearlayout_right(const int edge, Widget **items,
@@ -297,23 +299,6 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
                 x -= gap_x_;
         }
         last_pos = x;
-    }
-
-    void relayout_right(int &last_pos, bool &redraw_needed) {
-        if (count_ == 0)
-            return;
-        Widget *active[MaxWidgets];
-        std::size_t n = get_enabled_and_oriented_widgets(active, Magnet::RIGHT);
-        if (n == 0)
-            return;
-
-        std::sort(active, active + n, [](const Widget *a, const Widget *b) {
-            return a->get_priority() < b->get_priority();
-        });
-
-        int right_edge = get_rightmost_edge(active, n);
-        perform_linearlayout_right(right_edge, active, last_pos, redraw_needed,
-                                   n);
     }
 
     void set_right_edge_x(int px) { right_edge_base_ = px; }
