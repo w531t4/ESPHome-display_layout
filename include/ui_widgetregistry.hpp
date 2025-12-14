@@ -153,27 +153,29 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
             if (!w || !w->is_enabled() || w->get_magnet() != Magnet::AUTO)
                 continue;
 
-            if (e.set_capacity && e.get_capacity) {
-                if (e.get_capacity(w) != new_capacity) {
-                    ESP_LOGW("registry",
-                             "setting new dynamic widget capacity to cap=%d, "
-                             "current=%d",
-                             new_capacity, e.get_capacity(w));
-                    e.set_capacity(w, new_capacity, true);
-                }
-
-                const int cur_x = w->anchor_value().x;
-                if (cur_x != edge_anchor) {
-                    ESP_LOGW("registry", "performing shift val=%d",
-                             edge_anchor - cur_x);
-                    w->blank();
-                    w->horizontal_shift(edge_anchor - cur_x);
-                    redraw_needed = true;
-                }
+            if (!(e.set_capacity && e.get_capacity))
                 return;
+
+            if (e.get_capacity(w) != new_capacity) {
+                ESP_LOGW("registry",
+                         "setting new dynamic widget capacity to cap=%d, "
+                         "current=%d",
+                         new_capacity, e.get_capacity(w));
+                e.set_capacity(w, new_capacity, true);
             }
+
+            const int cur_x = w->anchor_value().x;
+            if (cur_x != edge_anchor) {
+                ESP_LOGW("registry", "performing shift val=%d",
+                         edge_anchor - cur_x);
+                w->blank();
+                w->horizontal_shift(edge_anchor - cur_x);
+                redraw_needed = true;
+            }
+            return;
         }
     }
+
     std::size_t get_enabled_and_oriented_widgets(Widget **w_array,
                                                  Magnet orientation) {
         // Create array of Widget pointers
