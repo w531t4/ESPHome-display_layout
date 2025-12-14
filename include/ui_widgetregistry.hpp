@@ -246,11 +246,10 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
             return a->get_priority() < b->get_priority();
         });
 
-        int right_edge;
+        int right_edge = std::numeric_limits<int>::min();
         if (right_edge_base_ != std::numeric_limits<int>::min()) {
             right_edge = right_edge_base_;
         } else {
-            right_edge = std::numeric_limits<int>::min();
             for (std::size_t i = 0; i < n; ++i) {
                 const ui::Coord a = active[i]->anchor_value();
                 const int r = a.x + active[i]->width();
