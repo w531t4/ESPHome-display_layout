@@ -136,11 +136,7 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
             right = last_pos;
         int delta = right - left;
         if (delta > 0 && (right >= 0) && (left >= 0)) {
-            if (size > 0) {
-                relayout_auto(left, size, redraw_needed);
-            } else {
-                relayout_auto(left, delta, redraw_needed);
-            }
+            relayout_auto(left, size > 0 ? size : delta, redraw_needed);
         }
         if (redraw_needed) {
             this->blank_all();
