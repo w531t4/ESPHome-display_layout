@@ -101,26 +101,26 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
     // ----- Phase 2 fan-out (no timing) -----
     void update_all() {
         for (std::size_t i = 0; i < count_; ++i)
-            if (items_[i].ptr && items_[i].ptr->is_enabled())
-                items_[i].ptr->update();
+            if (at(i) && at(i)->is_enabled())
+                at(i)->update();
     }
 
     void post_all(const PostArgs &args) {
         for (std::size_t i = 0; i < count_; ++i)
-            if (items_[i].ptr && items_[i].ptr->is_enabled())
-                items_[i].ptr->post(args);
+            if (at(i) && at(i)->is_enabled())
+                at(i)->post(args);
     }
 
     void blank_all() {
         for (std::size_t i = 0; i < count_; ++i)
-            if (items_[i].ptr && items_[i].ptr->is_enabled())
-                items_[i].ptr->blank();
+            if (at(i) && at(i)->is_enabled())
+                at(i)->blank();
     }
 
     void write_all() {
         for (std::size_t i = 0; i < count_; ++i)
-            if (items_[i].ptr && items_[i].ptr->is_enabled())
-                items_[i].ptr->write();
+            if (at(i) && at(i)->is_enabled())
+                at(i)->write();
     }
 
     void relayout(int size = -1) {
@@ -182,10 +182,11 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         //    - widget matches desired orientation
         // return number of qualifying items
         std::size_t n = 0;
-        for (std::size_t i = 0; i < count_; ++i)
-            if (items_[i].ptr && items_[i].ptr->is_enabled() &&
-                items_[i].ptr->get_magnet() == orientation)
-                w_array[n++] = items_[i].ptr;
+        for (std::size_t i = 0; i < count_; ++i) {
+            if (at(i) && at(i)->is_enabled() &&
+                at(i)->get_magnet() == orientation)
+                w_array[n++] = at(i);
+        }
         return n;
     }
     void relayout_left(int &last_pos, bool &redraw_needed) {
