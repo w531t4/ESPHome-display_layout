@@ -235,6 +235,25 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         return edge;
     }
 
+    void perform_linearlayout_left(const int edge, Widget **items,
+                                   int &last_pos, bool &redraw_needed,
+                                   const int max_items) {
+        int x = edge;
+        for (std::size_t i = 0; i < max_items; ++i) {
+            Widget *w = items[i];
+            const int next_x = x + w->width();
+            const int cur_x = w->anchor_value().x;
+            if (cur_x < x) {
+                w->blank();
+                w->horizontal_shift(x - cur_x);
+                redraw_needed = true;
+            }
+            x = next_x;
+            if (i + 1 < max_items)
+                x += gap_x_;
+        }
+        last_pos = x;
+    }
     void relayout_left(int &last_pos, bool &redraw_needed) {
         // For now, this is for twitch streamer icons
         // **************************
@@ -254,19 +273,28 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         });
 
         int left_edge = get_leftmost_edge(active, n);
-        int x = left_edge;
-        for (std::size_t i = 0; i < n; ++i) {
-            Widget *w = active[i];
-            const int next_x = x + w->width();
+        perform_linearlayout_left(left_edge, active, last_pos, redraw_needed,
+                                  n);
+    }
+
+    void perform_linearlayout_right(const int edge, Widget **items,
+                                    int &last_pos, bool &redraw_needed,
+                                    const int max_items) {
+        int x = edge;
+        for (std::size_t i = 0; i < max_items; ++i) {
+            Widget *w = items[i];
+            const int wpx = w->width();
+            const int target_x = x - wpx;
             const int cur_x = w->anchor_value().x;
-            if (cur_x < x) {
+            const int dx = target_x - cur_x;
+            if (dx != 0) {
                 w->blank();
-                w->horizontal_shift(x - cur_x);
+                w->horizontal_shift(dx);
                 redraw_needed = true;
             }
-            x = next_x;
-            if (i + 1 < n)
-                x += gap_x_;
+            x = target_x;
+            if (i + 1 < max_items)
+                x -= gap_x_;
         }
         last_pos = x;
     }
@@ -284,23 +312,8 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         });
 
         int right_edge = get_rightmost_edge(active, n);
-        int x = right_edge;
-        for (std::size_t i = 0; i < n; ++i) {
-            Widget *w = active[i];
-            const int wpx = w->width();
-            const int target_x = x - wpx;
-            const int cur_x = w->anchor_value().x;
-            const int dx = target_x - cur_x;
-            if (dx != 0) {
-                w->blank();
-                w->horizontal_shift(dx);
-                redraw_needed = true;
-            }
-            x = target_x;
-            if (i + 1 < n)
-                x -= gap_x_;
-        }
-        last_pos = x;
+        perform_linearlayout_right(right_edge, active, last_pos, redraw_needed,
+                                   n);
     }
 
     void set_right_edge_x(int px) { right_edge_base_ = px; }
