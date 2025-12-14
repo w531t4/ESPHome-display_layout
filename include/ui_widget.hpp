@@ -1,13 +1,13 @@
 // MyBase.hpp
 #pragma once
 // #include <string>
-#include "argsbag.h"
+#include "argsbag.hpp"
 #include "esphome.h"
 #include "esphome/components/display/display.h"
 #include "esphome/components/font/font.h"
-#include "magnet.h"
-#include "ui_logging.h"
-#include "ui_shared.h"
+#include "magnet.hpp"
+#include "ui_logging.hpp"
+#include "ui_shared.hpp"
 #include <any>
 #include <optional>
 

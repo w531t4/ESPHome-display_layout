@@ -1,7 +1,7 @@
 #pragma once
-#include "ui_shared.h"
-#include "ui_widget.h"
-#include "ui_widget_dyntext_string.h"
+#include "ui_shared.hpp"
+#include "ui_widget.hpp"
+#include "ui_widget_dyntext_string.hpp"
 #include <iostream>
 
 namespace ui {

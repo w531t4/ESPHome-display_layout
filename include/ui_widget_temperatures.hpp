@@ -1,11 +1,11 @@
 // MyDerived.hpp
 #pragma once
-#include "argsbag.h"
-#include "ui_colors.h"
-#include "ui_shared.h"
-#include "ui_widget.h"
-#include "ui_widget_text_numeric.h"
-#include "ui_widgetcomposite.h"
+#include "argsbag.hpp"
+#include "ui_colors.hpp"
+#include "ui_shared.hpp"
+#include "ui_widget.hpp"
+#include "ui_widget_text_numeric.hpp"
+#include "ui_widgetcomposite.hpp"
 #include <array>
 #include <iostream>
 #include <span>

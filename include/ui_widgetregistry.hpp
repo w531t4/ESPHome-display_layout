@@ -1,8 +1,8 @@
 // ui_widgetregistry.h
 #pragma once
-#include "magnet.h"
-#include "ui_shared.h"
-#include "ui_widget.h"
+#include "magnet.hpp"
+#include "ui_shared.hpp"
+#include "ui_widget.hpp"
 #include <algorithm>
 #include <array>
 #include <cstddef>

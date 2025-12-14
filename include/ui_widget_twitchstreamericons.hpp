@@ -1,8 +1,8 @@
 #pragma once
 #include "esphome/components/display/display.h"
-#include "ui_shared.h"
-#include "ui_weather.h"
-#include "ui_widget.h"
+#include "ui_shared.hpp"
+#include "ui_weather.hpp"
+#include "ui_widget.hpp"
 #include <algorithm>
 #include <iostream>
 

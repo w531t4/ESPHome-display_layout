@@ -3,8 +3,8 @@
 #include "esphome.h"
 #include "esphome/components/display/display.h"
 #include "esphome/components/font/font.h"
-#include "ui_colors.h"
-#include "ui_shared.h"
+#include "ui_colors.hpp"
+#include "ui_shared.hpp"
 #include <algorithm>
 #include <initializer_list>
 #include <string>

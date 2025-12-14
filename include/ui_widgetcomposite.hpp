@@ -1,7 +1,7 @@
 #pragma once
 // #include <string>
-#include "ui_shared.h"
-#include "ui_widget.h"
+#include "ui_shared.hpp"
+#include "ui_widget.hpp"
 #include <array>
 
 template <std::size_t numWidgets> class CompositeWidget : public Widget {

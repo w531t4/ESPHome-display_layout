@@ -1,8 +1,8 @@
 #pragma once
-#include "ui_capabilities.h"
-#include "ui_shared.h"
-#include "ui_widget.h"
-#include "ui_widget_text.h"
+#include "ui_capabilities.hpp"
+#include "ui_shared.hpp"
+#include "ui_widget.hpp"
+#include "ui_widget_text.hpp"
 #include <algorithm>
 #include <iostream>
 #include <vector>

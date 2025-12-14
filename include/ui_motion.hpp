@@ -1,7 +1,7 @@
 #pragma once
 
 #include "esphome/components/display/display.h"
-#include "ui_colors.h"
+#include "ui_colors.hpp"
 
 namespace ui {
 

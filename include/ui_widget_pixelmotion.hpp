@@ -1,7 +1,7 @@
 #pragma once
-#include "ui_shared.h"
-#include "ui_weather.h"
-#include "ui_widget.h"
+#include "ui_shared.hpp"
+#include "ui_weather.hpp"
+#include "ui_widget.hpp"
 #include <algorithm>
 #include <iostream>
 
