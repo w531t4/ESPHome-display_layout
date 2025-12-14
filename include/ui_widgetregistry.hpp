@@ -42,8 +42,10 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         std::numeric_limits<int>::min(); // All right-aligned widgets will be
                                          // placed to the immediate left of this
                                          // position
-    int left_edge_base_ = 0; // All left-aligned widgets will be placed to the
-                             // immediate right of this position
+    int left_edge_base_ =
+        std::numeric_limits<int>::max(); // All left-aligned widgets will be
+                                         // placed to the immediate right of
+                                         // this position
   public:
     // Typed handle so callers can do handle->post(...)
     template <class W> struct Handle {
@@ -196,6 +198,16 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         return n;
     }
 
+    const int get_left_edge(Widget *item) {
+        // *--------------|
+        // |              |
+        // |--------------|
+        //
+        // #<---- returned value
+
+        return item->anchor_value().x;
+    }
+
     const int get_right_edge(Widget *item) {
         // *--------------|
         // |              |
@@ -207,12 +219,12 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
     }
 
     const int get_leftmost_edge(Widget **items, const size_t max_items) {
-        int edge = 0;
-        if (left_edge_base_ < 0) {
+        int edge = std::numeric_limits<int>::max();
+        if (left_edge_base_ != std::numeric_limits<int>::max()) {
             edge = left_edge_base_;
         } else {
             for (std::size_t i = 0; i < max_items; ++i) {
-                edge = std::min(edge, get_right_edge(items[i]));
+                edge = std::min(edge, get_left_edge(items[i]));
             }
         }
         return edge;
