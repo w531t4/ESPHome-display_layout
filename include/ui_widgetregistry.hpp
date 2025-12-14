@@ -37,9 +37,13 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
     };
     std::array<Entry, MaxWidgets> items_{}; // non-owning
     std::size_t count_ = 0;
-    int gap_x_ = 0;
-    int right_edge_base_ = std::numeric_limits<int>::min(); // unset sentinel
-    int left_edge_base_ = 0;                                // unset sentinel
+    int gap_x_ = 0; // Number of pixels in-between widgets
+    int right_edge_base_ =
+        std::numeric_limits<int>::min(); // All right-aligned widgets will be
+                                         // placed to the immediate left of this
+                                         // position
+    int left_edge_base_ = 0; // All left-aligned widgets will be placed to the
+                             // immediate right of this position
   public:
     // Typed handle so callers can do handle->post(...)
     template <class W> struct Handle {
