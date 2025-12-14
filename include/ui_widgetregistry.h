@@ -194,7 +194,7 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
             return;
         // collect enabled items
         Widget *active[MaxWidgets];
-        std::size_t n = get_enabled_and_oriented_widgets(active, Magent::LEFT);
+        std::size_t n = get_enabled_and_oriented_widgets(active, Magnet::LEFT);
         if (n == 0)
             return;
 
@@ -236,7 +236,7 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         if (count_ == 0)
             return;
         Widget *active[MaxWidgets];
-        std::size_t n = get_enabled_and_oriented_widgets(active, Magent::RIGHT);
+        std::size_t n = get_enabled_and_oriented_widgets(active, Magnet::RIGHT);
         if (n == 0)
             return;
 
