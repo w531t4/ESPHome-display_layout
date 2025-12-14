@@ -195,7 +195,38 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         }
         return n;
     }
+
+    const int get_right_edge(Widget *item) {
+        // *--------------|
+        // |              |
+        // |--------------|
+        //
+        // x<-----width-->#<---- returned value
+
+        return item->anchor_value().x + item->width();
+    }
+
+    const int get_leftmost_edge(Widget **items, const size_t max_items) {
+        int edge = 0;
+        if (left_edge_base_ < 0) {
+            edge = left_edge_base_;
+        } else {
+            for (std::size_t i = 0; i < max_items; ++i) {
+                // it's odd, but the logic is the same...
+                const int l = get_right_edge(items[i]);
+                if (l < edge)
+                    edge = l;
+            }
+        }
+        return edge;
+    }
+
     void relayout_left(int &last_pos, bool &redraw_needed) {
+        // For now, this is for twitch streamer icons
+        // **************************
+        // i suspect we're not actually finding the leftmost edge... but more of
+        // the edge important to magnet::LEFT
+        // ******************************
         if (count_ == 0)
             return;
         // collect enabled items
@@ -208,19 +239,7 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
             return a->get_priority() < b->get_priority();
         });
 
-        int left_edge;
-        if (left_edge_base_ < 0) {
-            left_edge = left_edge_base_;
-        } else {
-            left_edge = 0;
-            for (std::size_t i = 0; i < n; ++i) {
-                const ui::Coord a = active[i]->anchor_value();
-                const int l = a.x + active[i]->width();
-                if (l < left_edge)
-                    left_edge = l;
-            }
-        }
-
+        int left_edge = get_leftmost_edge(active, n);
         int x = left_edge;
         for (std::size_t i = 0; i < n; ++i) {
             Widget *w = active[i];
@@ -255,8 +274,7 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
             right_edge = right_edge_base_;
         } else {
             for (std::size_t i = 0; i < n; ++i) {
-                const ui::Coord a = active[i]->anchor_value();
-                const int r = a.x + active[i]->width();
+                const int r = get_right_edge(active[i]);
                 if (r > right_edge)
                     right_edge = r;
             }
