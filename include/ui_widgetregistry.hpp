@@ -182,20 +182,71 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         }
     }
 
-    std::size_t get_enabled_and_oriented_widgets(Widget **w_array,
-                                                 Magnet orientation) {
-        // Create array of Widget pointers
-        // meeting the following critera:
-        //    - widget is enabled
-        //    - widget matches desired orientation
-        // return number of qualifying items
-        std::size_t n = 0;
-        for (std::size_t i = 0; i < count_; ++i) {
-            if (at(i) && at(i)->is_enabled() &&
-                at(i)->get_magnet() == orientation)
-                w_array[n++] = at(i);
+    void relayout_left_right(int &last_pos, bool &redraw_needed,
+                             Magnet orientation) {
+        // For now, this is for twitch streamer icons
+        if (count_ == 0)
+            return;
+        // collect enabled items
+        Widget *active[MaxWidgets];
+        std::size_t n = get_enabled_and_oriented_widgets(active, orientation);
+        if (n == 0)
+            return;
+
+        std::sort(active, active + n, [](const Widget *a, const Widget *b) {
+            return a->get_priority() < b->get_priority();
+        });
+        int edge = get_boundry(active, n, orientation);
+        if (edge == -1)
+            return;
+        if (orientation == Magnet::LEFT) {
+            perform_linearlayout_left(edge, active, last_pos, redraw_needed, n);
+        } else if (orientation == Magnet::RIGHT) {
+            perform_linearlayout_right(edge, active, last_pos, redraw_needed,
+                                       n);
         }
-        return n;
+    }
+
+    void perform_linearlayout_left(const int edge, Widget **items,
+                                   int &last_pos, bool &redraw_needed,
+                                   const int max_items) {
+        int x = edge;
+        for (std::size_t i = 0; i < max_items; ++i) {
+            Widget *w = items[i];
+            const int next_x = x + w->width();
+            const int cur_x = w->anchor_value().x;
+            if (cur_x < x) {
+                w->blank();
+                w->horizontal_shift(x - cur_x);
+                redraw_needed = true;
+            }
+            x = next_x;
+            if (i + 1 < max_items)
+                x += gap_x_;
+        }
+        last_pos = x;
+    }
+
+    void perform_linearlayout_right(const int edge, Widget **items,
+                                    int &last_pos, bool &redraw_needed,
+                                    const int max_items) {
+        int x = edge;
+        for (std::size_t i = 0; i < max_items; ++i) {
+            Widget *w = items[i];
+            const int wpx = w->width();
+            const int target_x = x - wpx;
+            const int cur_x = w->anchor_value().x;
+            const int dx = target_x - cur_x;
+            if (dx != 0) {
+                w->blank();
+                w->horizontal_shift(dx);
+                redraw_needed = true;
+            }
+            x = target_x;
+            if (i + 1 < max_items)
+                x -= gap_x_;
+        }
+        last_pos = x;
     }
 
     const int get_boundry(Widget **items, const size_t max_items,
@@ -225,70 +276,20 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         return edge;
     }
 
-    void perform_linearlayout_left(const int edge, Widget **items,
-                                   int &last_pos, bool &redraw_needed,
-                                   const int max_items) {
-        int x = edge;
-        for (std::size_t i = 0; i < max_items; ++i) {
-            Widget *w = items[i];
-            const int next_x = x + w->width();
-            const int cur_x = w->anchor_value().x;
-            if (cur_x < x) {
-                w->blank();
-                w->horizontal_shift(x - cur_x);
-                redraw_needed = true;
-            }
-            x = next_x;
-            if (i + 1 < max_items)
-                x += gap_x_;
+    std::size_t get_enabled_and_oriented_widgets(Widget **w_array,
+                                                 Magnet orientation) {
+        // Create array of Widget pointers
+        // meeting the following critera:
+        //    - widget is enabled
+        //    - widget matches desired orientation
+        // return number of qualifying items
+        std::size_t n = 0;
+        for (std::size_t i = 0; i < count_; ++i) {
+            if (at(i) && at(i)->is_enabled() &&
+                at(i)->get_magnet() == orientation)
+                w_array[n++] = at(i);
         }
-        last_pos = x;
-    }
-    void relayout_left_right(int &last_pos, bool &redraw_needed,
-                             Magnet orientation) {
-        // For now, this is for twitch streamer icons
-        if (count_ == 0)
-            return;
-        // collect enabled items
-        Widget *active[MaxWidgets];
-        std::size_t n = get_enabled_and_oriented_widgets(active, orientation);
-        if (n == 0)
-            return;
-
-        std::sort(active, active + n, [](const Widget *a, const Widget *b) {
-            return a->get_priority() < b->get_priority();
-        });
-        int edge = get_boundry(active, n, orientation);
-        if (edge == -1)
-            return;
-        if (orientation == Magnet::LEFT) {
-            perform_linearlayout_left(edge, active, last_pos, redraw_needed, n);
-        } else if (orientation == Magnet::RIGHT) {
-            perform_linearlayout_right(edge, active, last_pos, redraw_needed,
-                                       n);
-        }
-    }
-
-    void perform_linearlayout_right(const int edge, Widget **items,
-                                    int &last_pos, bool &redraw_needed,
-                                    const int max_items) {
-        int x = edge;
-        for (std::size_t i = 0; i < max_items; ++i) {
-            Widget *w = items[i];
-            const int wpx = w->width();
-            const int target_x = x - wpx;
-            const int cur_x = w->anchor_value().x;
-            const int dx = target_x - cur_x;
-            if (dx != 0) {
-                w->blank();
-                w->horizontal_shift(dx);
-                redraw_needed = true;
-            }
-            x = target_x;
-            if (i + 1 < max_items)
-                x -= gap_x_;
-        }
-        last_pos = x;
+        return n;
     }
 
     void set_right_edge_x(int px) { right_edge_base_ = px; }
