@@ -1,4 +1,5 @@
 #pragma once
+#include "ui_colors.hpp"
 #include "ui_shared.hpp"
 #include "ui_widget.hpp"
 
