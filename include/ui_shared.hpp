@@ -1,5 +1,6 @@
 #pragma once
 #include "esphome/components/display/display.h"
+#include "esphome/components/homeassistant/text_sensor/homeassistant_text_sensor.h"
 #include "ui_colors.hpp"
 #include <algorithm>
 #include <limits>
