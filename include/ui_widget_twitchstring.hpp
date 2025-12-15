@@ -36,12 +36,10 @@ class TwitchStringWidget : public DynStringWidget<BufSize>,
   private:
     esphome::Color color_user;
     esphome::Color color_message;
-    TwitchStringComponents abc;
 
   public:
     void prep(std::string value, const char *fmt) override {
         DynStringWidget<BufSize>::prep(value, fmt);
-        this->abc = split_twitch_string(this->buf.data());
     }
     void update_colors(esphome::Color &user, esphome::Color &message) {
         this->color_user = user;
@@ -49,7 +47,8 @@ class TwitchStringWidget : public DynStringWidget<BufSize>,
     }
 
     void write() override {
-        if (this->abc.user == "" && this->abc.message == "")
+        TwitchStringComponents abc = split_twitch_string(this->buf.data());
+        if (abc.user == "" && abc.message == "")
             return;
         const int y = this->anchor.y - this->trim_pixels_top;
         if (this->right_align) {
@@ -59,12 +58,12 @@ class TwitchStringWidget : public DynStringWidget<BufSize>,
             const int x_draw =
                 this->anchor.x + (this->width() - curr_buf_width);
             ui::printf_dual(this->it, this->font, x_draw, y,
-                            (this->abc.user + ": ").c_str(), WHITE,
-                            this->abc.message.c_str(), YELLOW, this->prev_box);
+                            (abc.user + ": ").c_str(), WHITE,
+                            abc.message.c_str(), YELLOW, this->prev_box);
         } else {
             ui::printf_dual(this->it, this->font, this->anchor.x, y,
-                            (this->abc.user + ": ").c_str(), WHITE,
-                            this->abc.message.c_str(), YELLOW, this->prev_box);
+                            (abc.user + ": ").c_str(), WHITE,
+                            abc.message.c_str(), YELLOW, this->prev_box);
         }
     }
 };
