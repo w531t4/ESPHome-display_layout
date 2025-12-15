@@ -4,8 +4,8 @@
 
 namespace ui {
 static const char *const MYTAG = "ecs";
-void log_horizontal_shift(const std::string &name, const int prev_x,
-                          const int x) {
+inline void log_horizontal_shift(const std::string &name, const int prev_x,
+                                 const int x) {
     char buf[256];
 
     int len = snprintf(
