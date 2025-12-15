@@ -9,7 +9,6 @@
 namespace ui {
 // struct TextInitArgs {
 //     std::optional<bool> right_align;
-//     std::optional<bool> use_max_width_as_width;
 //     std::optional<char> max_width_padding_char;
 //     std::optional<int> trim_pixels_top;         // Use top/bottom to remove
 //     pixels from top/bottom of characters for certain fonts std::optional<int>
@@ -25,7 +24,6 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
     esphome::Color blank_color = esphome::Color::BLACK;
     std::string fmt;
     bool right_align = false;
-    bool use_max_width_as_width = true;
     char max_width_padding_char = '8';
     // Remember last value
     uint8_t trim_pixels_top = 0;
@@ -61,8 +59,6 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
         this->fmt = a.fmt.value_or(this->default_fmt());
 
         if (auto *t = a.extras.get<TextInitArgs>()) {
-            this->use_max_width_as_width = t->use_max_width_as_width.value_or(
-                this->use_max_width_as_width);
             if (t->max_width_padding_char.has_value())
                 this->max_width_padding_char = *t->max_width_padding_char;
             if (t->trim_pixels_top.has_value())
@@ -103,7 +99,7 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
 
     void write() override {
         const int y = anchor.y - trim_pixels_top;
-        if (use_max_width_as_width && right_align) {
+        if (right_align) {
             // printf will start drawing at the first pixel of a character,
             // ignoring leading whitespace in buffer.
             const int curr_buf_width = bounds(buf.data()).w;
@@ -160,9 +156,7 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
     const int width() override {
         if (!initialized)
             return 0;
-        if (use_max_width_as_width)
-            return get_max_width(max_width_padding_char);
-        return bounds(buf.data()).w;
+        return get_max_width(max_width_padding_char);
     }
 
     const int height() const override {

@@ -52,7 +52,7 @@ class TwitchStringWidget : public DynStringWidget<BufSize>,
         if (this->abc.user == "" && this->abc.message == "")
             return;
         const int y = this->anchor.y - this->trim_pixels_top;
-        if (this->use_max_width_as_width && this->right_align) {
+        if (this->right_align) {
             // printf will start drawing at the first pixel of a character,
             // ignoring leading whitespace in buffer.
             const int curr_buf_width = this->bounds(this->buf.data()).w;
