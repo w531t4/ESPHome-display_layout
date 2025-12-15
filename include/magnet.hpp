@@ -1,6 +1,5 @@
 #pragma once
-
-#include "esphome.h"
+#include <cstdint>
 
 enum class Magnet : uint8_t {
     LEFT,
