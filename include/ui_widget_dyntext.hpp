@@ -142,7 +142,7 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
         return ui::Box{x1, y1, w, h};
     }
 
-    const int get_max_width(const char padding_value) {
+    const int get_max_width(const char padding_value) const {
         std::vector<char> tmp(buf.size(), padding_value);
         if (!tmp.empty())
             tmp.back() = '\0';
@@ -150,7 +150,7 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
         ;
     }
 
-    const int width() override {
+    const int width() const override {
         if (!initialized)
             return 0;
         return get_max_width(max_width_padding_char);

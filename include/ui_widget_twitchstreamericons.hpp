@@ -92,7 +92,7 @@ class TwitchStreamerIconsWidget : public Widget {
         write();
     }
 
-    const int width() override {
+    const int width() const override {
         if (!initialized)
             return -1;
         return icon_width * (*new_value).num_icons;

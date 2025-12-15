@@ -90,7 +90,7 @@ class Widget {
     ui::Coord anchor_value() const noexcept {
         return anchor;
     } // non-virtual is fine if stored in base
-    virtual const int width() = 0;
+    virtual const int width() const = 0;
     virtual const int height() const = 0;
     // ----- Optional (can be overridden but not required) -----
 

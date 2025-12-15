@@ -64,7 +64,7 @@ class PixelMotionWidget : public Widget {
         last = *new_value;
     }
 
-    const int width() override { return 1; }
+    const int width() const override { return 1; }
 
     const int height() const override { return 32; }
 };
