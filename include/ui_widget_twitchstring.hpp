@@ -12,7 +12,7 @@ struct MultiColorString {
     virtual void update_colors(esphome::Color &user,
                                esphome::Color &message) = 0;
 };
-TwitchStringComponents split_twitch_string(const std::string &input) {
+inline TwitchStringComponents split_twitch_string(const std::string &input) {
     TwitchStringComponents result;
     std::size_t pos = input.find(':'); // Find the first ':' character
     if (pos != std::string::npos) {
