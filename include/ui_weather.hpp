@@ -2,6 +2,7 @@
 #include "esphome/components/display/display.h"
 #include "esphome/components/image/image.h"
 #include "ui_colors.hpp"
+#include "ui_shared.hpp"
 #include <string>
 #include <unordered_map>
 

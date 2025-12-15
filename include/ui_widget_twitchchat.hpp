@@ -1,13 +1,8 @@
 #pragma once
-#include "esphome/core/time.h"
 #include "ui_colors.hpp"
 #include "ui_shared.hpp"
-#include "ui_widget.hpp"
 #include "ui_widget_twitchstring.hpp"
 #include "ui_widgetcomposite.hpp"
-#include <array>
-#include <iostream>
-#include <span>
 
 namespace ui {
 struct TwitchChatPostArgs {

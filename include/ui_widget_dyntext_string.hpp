@@ -1,8 +1,6 @@
 #pragma once
-#include "ui_shared.hpp"
-#include "ui_widget.hpp"
 #include "ui_widget_dyntext.hpp"
-#include <iostream>
+#include "ui_widget_text_string.hpp"
 
 namespace ui {
 // struct StringPostArgs {

@@ -1,11 +1,8 @@
 #pragma once
-// #warning "USING ui_badges.h FROM <your path here>"
-#include "esphome.h"
 #include "esphome/components/display/display.h"
 #include "esphome/components/font/font.h"
 #include "ui_colors.hpp"
 #include "ui_shared.hpp"
-#include <algorithm>
 #include <initializer_list>
 #include <string>
 

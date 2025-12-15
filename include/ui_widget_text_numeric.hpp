@@ -1,9 +1,5 @@
 #pragma once
-#include "ui_shared.hpp"
-#include "ui_widget.hpp"
 #include "ui_widget_text.hpp"
-#include <algorithm>
-#include <iostream>
 
 namespace ui {
 template <typename T> struct NumericPostArgs {

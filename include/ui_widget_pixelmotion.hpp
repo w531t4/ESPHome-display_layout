@@ -1,9 +1,6 @@
 #pragma once
 #include "ui_shared.hpp"
-#include "ui_weather.hpp"
 #include "ui_widget.hpp"
-#include <algorithm>
-#include <iostream>
 
 namespace ui {
 class PixelMotionWidget : public Widget {

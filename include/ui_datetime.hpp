@@ -1,6 +1,5 @@
 #pragma once
 #include "esphome/components/display/display.h"
-#include "esphome/components/image/image.h"
 #include "esphome/core/time.h"
 #include "ui_colors.hpp"
 #include "ui_shared.hpp"

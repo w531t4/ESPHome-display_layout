@@ -1,16 +1,11 @@
-// MyDerived.hpp
 #pragma once
 #include "argsbag.hpp"
-#include "esphome/core/time.h"
 #include "ui_colors.hpp"
 #include "ui_shared.hpp"
-#include "ui_widget.hpp"
 #include "ui_widget_text_numeric.hpp"
 #include "ui_widget_text_string.hpp"
 #include "ui_widgetcomposite.hpp"
 #include <array>
-#include <iostream>
-#include <span>
 
 namespace ui {
 struct DatePostArgs {

@@ -1,4 +1,3 @@
-// ui_capabilities.h
 #pragma once
 #include <cstddef>
 

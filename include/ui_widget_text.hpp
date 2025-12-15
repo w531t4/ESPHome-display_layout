@@ -2,7 +2,6 @@
 #include "ui_shared.hpp"
 #include "ui_widget.hpp"
 #include <algorithm>
-#include <iostream>
 
 namespace ui {
 struct TextInitArgs {

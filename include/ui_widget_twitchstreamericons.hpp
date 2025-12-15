@@ -1,10 +1,7 @@
 #pragma once
 #include "esphome/components/display/display.h"
 #include "ui_shared.hpp"
-#include "ui_weather.hpp"
 #include "ui_widget.hpp"
-#include <algorithm>
-#include <iostream>
 
 namespace ui {
 struct TwitchStreamerIconsPostArgs {

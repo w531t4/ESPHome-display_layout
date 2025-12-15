@@ -1,8 +1,5 @@
-// MyBase.hpp
 #pragma once
-// #include <string>
 #include "argsbag.hpp"
-#include "esphome.h"
 #include "esphome/components/display/display.h"
 #include "esphome/components/font/font.h"
 #include "magnet.hpp"

@@ -4,7 +4,6 @@
 #include "ui_widget.hpp"
 #include "ui_widget_text.hpp"
 #include <algorithm>
-#include <iostream>
 #include <vector>
 
 namespace ui {

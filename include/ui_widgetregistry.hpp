@@ -1,4 +1,3 @@
-// ui_widgetregistry.h
 #pragma once
 #include "magnet.hpp"
 #include "ui_shared.hpp"
