@@ -50,7 +50,8 @@ template <typename T, typename P> class WeatherWidget : public Widget {
     void write() override {
         if (!img)
             return;
-        it->image(anchor.x, anchor.y, img, COLOR_ON, COLOR_OFF); // draw
+        it->image(anchor.x, anchor.y, img, esphome::display::COLOR_ON,
+                  esphome::display::COLOR_OFF); // draw
         prev_box = {anchor.x, anchor.y, width(), width()};
     }
 

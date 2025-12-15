@@ -49,7 +49,8 @@ inline void draw_weather_image(esphome::display::Display &it,
     if (!img)
         return;
 
-    it.image(anchor.x, anchor.y, img, COLOR_ON, COLOR_OFF); // draw
+    it.image(anchor.x, anchor.y, img, esphome::display::COLOR_ON,
+             esphome::display::COLOR_OFF); // draw
     last_state = state;
 }
 
