@@ -1,5 +1,5 @@
 #pragma once
-#include "esphome.h"
+#include "esphome/core/color.h"
 
 using esphome::Color;
 Color TEAL(0x00, 0xCE, 0xD1);                   //  0, 206, 209
