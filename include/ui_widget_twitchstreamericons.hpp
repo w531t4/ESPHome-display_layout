@@ -48,7 +48,7 @@ class TwitchStreamerIconsWidget : public Widget {
 
     void blank() override {
         if ((*last).num_icons > (*new_value).num_icons) {
-            it->filled_rectangle(anchor.x, anchor.y, this->prev_width(),
+            it->filled_rectangle(anchor.x, anchor.y, this->width(),
                                  this->height(), this->blank_color);
         }
     }
@@ -84,21 +84,16 @@ class TwitchStreamerIconsWidget : public Widget {
             return;
         if (new_value.has_value() && !is_different(*new_value))
             return;
+        // before we change our size, wipe out what we're currently using
+        blank();
         last = *new_value;
         img = new_value.value().image;
         if (!(img))
             return;
-        blank();
         write();
     }
 
     const int width() const override {
-        if (!initialized)
-            return -1;
-        return icon_width * (*new_value).num_icons;
-    }
-
-    const int prev_width() {
         if (!initialized)
             return -1;
         return icon_width * (*last).num_icons;
