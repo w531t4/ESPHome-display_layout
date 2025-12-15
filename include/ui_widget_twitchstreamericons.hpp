@@ -15,6 +15,9 @@ struct TwitchStreamerIconsInitArgs {
 };
 
 class TwitchStreamerIconsWidget : public Widget {
+  private:
+    static constexpr const char *TAG = "ui_widget_twitchstreamericons";
+
   protected:
     ui::Box prev_box{};
     esphome::Color blank_color = esphome::Color::BLACK;
@@ -56,6 +59,13 @@ class TwitchStreamerIconsWidget : public Widget {
     void write() override {
         if (!img)
             return;
+        ESP_LOGI(
+            TAG,
+            "[widget=%s] write(): start_clipping: anchor.x=%d, anchor.y=%d, "
+            "right=%d, "
+            "bottom=%d, width=%d, height=%d",
+            this->get_name().c_str(), anchor.x, anchor.y, this->width() - 1,
+            this->height() - 1, this->width(), this->height());
         // clip so only the populated portion of twitch_strip is written.
         it->start_clipping(anchor.x, anchor.y, this->width() - 1,
                            this->height() - 1);
@@ -76,6 +86,8 @@ class TwitchStreamerIconsWidget : public Widget {
             return;
 
         TwitchStreamerIconsPostArgs value = *post_args_ptr;
+        ESP_LOGI(TAG, "[widget=%s] post(): new_num_icons=%d",
+                 this->get_name().c_str(), value.num_icons);
         new_value = value;
     }
 

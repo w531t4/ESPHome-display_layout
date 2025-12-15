@@ -16,6 +16,9 @@ namespace ui {
 // };
 template <typename T, typename P, std::size_t BufSize>
 class DynTextWidget : public Widget, public ui::IBufferResizable {
+  private:
+    static constexpr const char *TAG = "ui_widget_dyntext";
+
   protected:
     ui::Box prev_box{};
     esphome::display::TextAlign align = esphome::display::TextAlign::LEFT;
@@ -166,6 +169,8 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
     // If preserve=true, keep existing contents (truncated if shrinking).
     // If preserve=false, clear/fill with NULs.
     void set_capacity(std::size_t cap, bool preserve = true) override {
+        ESP_LOGD(TAG, "[widget=%s] set_capacity: before buf=%s",
+                 this->get_name().c_str(), this->buf.data());
         cap = std::max<std::size_t>(cap, 2); // always leave room for '\0'
         if (preserve) {
             buf.resize(cap);
@@ -174,6 +179,8 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
         } else {
             buf.assign(cap, '\0'); // zero-fill
         }
+        ESP_LOGD(TAG, "[widget=%s] set_capacity: after buf=%s",
+                 this->get_name().c_str(), this->buf.data());
         this->prev_box = ui::Box{this->prev_box.x1, this->prev_box.y1,
                                  this->width(), this->prev_box.h};
     }

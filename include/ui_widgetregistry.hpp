@@ -29,6 +29,7 @@ struct has_get_capacity<
 
 template <std::size_t MaxWidgets> class WidgetRegistry {
   private:
+    static constexpr const char *TAG = "ui_widgetregistry";
     struct Entry {
         Widget *ptr = nullptr;
         void (*set_capacity)(Widget *, std::size_t,
@@ -110,9 +111,11 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
     }
 
     void write_all() {
+        ESP_LOGD(TAG, "performing write_all");
         for (std::size_t i = 0; i < count_; ++i)
             if (at(i) && at(i)->is_enabled())
                 at(i)->write();
+        ESP_LOGD(TAG, "done write_all");
     }
 
     void relayout(int size = -1) {
@@ -149,17 +152,21 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
                 return;
 
             if (e.get_capacity(w) != new_capacity) {
-                ESP_LOGW("registry",
-                         "setting new dynamic widget capacity to cap=%d, "
-                         "current=%d",
-                         new_capacity, e.get_capacity(w));
+                ESP_LOGI(
+                    TAG,
+                    "[widget=%s] relayout_auto(): setting new dynamic widget "
+                    "capacity to cap=%d, "
+                    "current=%d",
+                    w->get_name().c_str(), new_capacity, e.get_capacity(w));
                 e.set_capacity(w, new_capacity, true);
             }
 
             const int cur_x = w->anchor_value().x;
             if (cur_x != edge_anchor) {
-                ESP_LOGW("registry", "performing shift val=%d",
-                         edge_anchor - cur_x);
+                ESP_LOGI(TAG,
+                         "[widget=%s] relayout_auto(): performing shift"
+                         "val=%d",
+                         w->get_name().c_str(), edge_anchor - cur_x);
                 w->blank();
                 w->horizontal_shift(edge_anchor - cur_x);
                 redraw_needed = true;
