@@ -69,7 +69,7 @@ class Widget {
         this->it->rectangle(this->anchor.x, this->anchor.y, this->width(),
                             this->height(), color);
     }
-    const std::string get_name() { return this->id; }
+    const std::string get_name() const { return this->id; }
 
     // blank applicable space
     virtual void blank() = 0;
@@ -86,7 +86,7 @@ class Widget {
                                  this->anchor.x + pixels);
         this->anchor.x = this->anchor.x + pixels;
     }
-    const Magnet get_magnet() { return this->magnet; }
+    const Magnet get_magnet() const { return this->magnet; }
     ui::Coord anchor_value() const noexcept {
         return anchor;
     } // non-virtual is fine if stored in base
@@ -96,7 +96,7 @@ class Widget {
 
     // // Provide default behavior
     // virtual void cleanup() { /* default no-op */ };
-    const int get_left_edge_x() {
+    const int get_left_edge_x() const {
         // *--------------|
         // |              |
         // |--------------|
