@@ -14,21 +14,21 @@ template <std::size_t numWidgets> class CompositeWidget : public Widget {
     // // Must perform initialization
     void initialize(const InitArgs &a) override { Widget::initialize(a); }
 
-    void blank() {
+    void blank() override {
         for (auto &ptr : members) {       // ptr is a std::unique_ptr<Widget>&
             if (ptr && ptr->is_enabled()) // check it’s not empty and enabled
                 ptr->blank();             // call Widget’s member
         }
     }
 
-    void write() {
+    void write() override {
         for (auto &ptr : members) {       // ptr is a std::unique_ptr<Widget>&
             if (ptr && ptr->is_enabled()) // check it’s not empty and enabled
                 ptr->write();             // call Widget’s member
         }
     }
 
-    void update() {
+    void update() override {
         for (auto &ptr : members) {
             if (ptr && ptr->is_enabled()) {
                 ptr->update();
@@ -36,7 +36,7 @@ template <std::size_t numWidgets> class CompositeWidget : public Widget {
         }
     }
 
-    void horizontal_shift(const int pixels) {
+    void horizontal_shift(const int pixels) override {
         this->anchor.x = this->anchor.x + pixels;
         for (auto &ptr : members) {
             if (ptr) {

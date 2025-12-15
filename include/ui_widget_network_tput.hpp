@@ -39,7 +39,7 @@ class NetworkTputWidget : public CompositeWidget<2> {
         initialized = true;
     }
 
-    void post(const PostArgs &args) {
+    void post(const PostArgs &args) override {
         if (args.extras.has_value()) {
             const NetworkTputPostArgs *post_args_ptr =
                 std::any_cast<const NetworkTputPostArgs>(&args.extras);

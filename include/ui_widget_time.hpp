@@ -67,7 +67,7 @@ class TimeWidget : public CompositeWidget<4> {
         initialized = true;
     }
 
-    void post(const PostArgs &args) {
+    void post(const PostArgs &args) override {
         if (args.extras.has_value()) {
             const TimePostArgs *post_args_ptr =
                 std::any_cast<const TimePostArgs>(&args.extras);

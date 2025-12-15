@@ -61,7 +61,7 @@ class DateWidget : public CompositeWidget<2> {
             return std::string("UNK");
         return std::string(months[month - 1]);
     }
-    void post(const PostArgs &args) {
+    void post(const PostArgs &args) override {
         if (args.extras.has_value()) {
             const DatePostArgs *post_args_ptr =
                 std::any_cast<const DatePostArgs>(&args.extras);

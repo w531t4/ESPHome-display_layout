@@ -31,7 +31,7 @@ class PSNWidget : public CompositeWidget<2> {
                      .font_color = PINK});
         initialized = true;
     }
-    void post(const PostArgs &args) {
+    void post(const PostArgs &args) override {
         if (args.extras.has_value()) {
             const PSNPostArgs *post_args_ptr =
                 std::any_cast<const PSNPostArgs>(&args.extras);

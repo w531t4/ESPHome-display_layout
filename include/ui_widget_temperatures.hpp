@@ -53,7 +53,7 @@ class TemperaturesWidget : public CompositeWidget<3> {
     }
 
     // void run(std::span<const float> values) {
-    void post(const PostArgs &args) {
+    void post(const PostArgs &args) override {
         if (args.extras.has_value()) {
             const TemperaturePostArgs *post_args_ptr =
                 std::any_cast<const TemperaturePostArgs>(&args.extras);

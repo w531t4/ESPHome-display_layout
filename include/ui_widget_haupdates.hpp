@@ -27,7 +27,7 @@ class HAUpdatesWidget : public CompositeWidget<1> {
         initialized = true;
     }
 
-    void post(const PostArgs &args) {
+    void post(const PostArgs &args) override {
         if (args.extras.has_value()) {
             const HAUpdatesPostArgs *post_args_ptr =
                 std::any_cast<const HAUpdatesPostArgs>(&args.extras);

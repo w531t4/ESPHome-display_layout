@@ -52,7 +52,7 @@ class PixelMotionWidget : public Widget {
 
     void post() { post(PostArgs{}); }
 
-    void update() {
+    void update() override {
         if (!initialized)
             return;
         if (new_value.has_value() && !is_different(*new_value))
