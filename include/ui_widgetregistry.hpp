@@ -185,54 +185,29 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         int edge = get_boundry(active, n, orientation);
         if (edge == -1)
             return;
-        if (orientation == Magnet::LEFT) {
-            perform_linearlayout_left(edge, active, last_pos, redraw_needed, n);
-        } else if (orientation == Magnet::RIGHT) {
-            perform_linearlayout_right(edge, active, last_pos, redraw_needed,
-                                       n);
-        }
+        perform_linearlayout(edge, active, last_pos, redraw_needed, n,
+                             orientation);
     }
 
-    void perform_linearlayout_left(const int edge, Widget **items,
-                                   int &last_pos, bool &redraw_needed,
-                                   const int max_items) {
+    void perform_linearlayout(const int edge, Widget **items, int &last_pos,
+                              bool &redraw_needed, const int max_items,
+                              Magnet orientation) {
         int x = edge;
         for (std::size_t i = 0; i < max_items; ++i) {
             Widget *w = items[i];
             const int wpx = w->width();
-            const int target_x = x + wpx;
+            const int target_x =
+                orientation == Magnet::LEFT ? x + wpx : x - wpx;
             const int cur_x = w->anchor_value().x;
             const int dx = target_x - cur_x;
-            if (cur_x != x) {
+            if (orientation == Magnet::LEFT ? cur_x != x : dx != 0) {
                 w->blank();
                 w->horizontal_shift(dx);
                 redraw_needed = true;
             }
             x = target_x;
             if (i + 1 < max_items)
-                x += gap_x_;
-        }
-        last_pos = x;
-    }
-
-    void perform_linearlayout_right(const int edge, Widget **items,
-                                    int &last_pos, bool &redraw_needed,
-                                    const int max_items) {
-        int x = edge;
-        for (std::size_t i = 0; i < max_items; ++i) {
-            Widget *w = items[i];
-            const int wpx = w->width();
-            const int target_x = x - wpx;
-            const int cur_x = w->anchor_value().x;
-            const int dx = target_x - cur_x;
-            if (dx != 0) {
-                w->blank();
-                w->horizontal_shift(dx);
-                redraw_needed = true;
-            }
-            x = target_x;
-            if (i + 1 < max_items)
-                x -= gap_x_;
+                x = orientation == Magnet::LEFT ? x + gap_x_ : x - gap_x_;
         }
         last_pos = x;
     }
