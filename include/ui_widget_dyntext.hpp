@@ -51,7 +51,10 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
     void initialize(const InitArgs &a) override {
         Widget::initialize(a);
         if (!a.font.has_value()) {
-            ESP_LOGE("text_widget", "Required font parameter missing\n");
+            ESP_LOGE(
+                TAG,
+                "[widget=%s] initialize(): Required font parameter missing",
+                this->get_name().c_str());
             return;
         }
         this->font = *a.font;

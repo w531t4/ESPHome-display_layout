@@ -14,6 +14,9 @@ struct DatePostArgs {
 };
 
 class DateWidget : public CompositeWidget<2> {
+  private:
+    static constexpr const char *TAG = "ui_widget_date";
+
   public:
     inline static constexpr const char *months[12] = {
         "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
@@ -22,11 +25,17 @@ class DateWidget : public CompositeWidget<2> {
         // std::array<std::unique_ptr<Widget>, 3> members;
         CompositeWidget<2>::initialize(a);
         if (!a.font2.has_value()) {
-            ESP_LOGE("widget_date", "Required font2 parameter missing\n");
+            ESP_LOGE(
+                TAG,
+                "[widget=%s] initialize(): Required font2 parameter missing",
+                this->get_name().c_str());
             return;
         }
         if (!*a.font2) {
-            ESP_LOGE("widget_date", "Required font2 must not be nullptr\n");
+            ESP_LOGE(TAG,
+                     "[widget=%s] initialize(): Required font2 must not "
+                     "be nullptr",
+                     this->get_name().c_str());
             return;
         }
         members[0] = std::make_unique<NumericWidget<uint8_t, 3>>(); // DAY

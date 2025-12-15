@@ -229,8 +229,8 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
             edge = std::numeric_limits<int>::min();
             hint = right_edge_base_;
         } else {
-            ESP_LOGE("get_boundry",
-                     "NotImplemenetedError: found unexpected magnet value");
+            ESP_LOGE(TAG, "get_boundry(): NotImplemenetedError - found "
+                          "unexpected magnet value");
             return -1;
         }
         if (hint != edge) {

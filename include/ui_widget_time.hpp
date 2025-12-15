@@ -15,15 +15,24 @@ struct TimePostArgs {
 };
 
 class TimeWidget : public CompositeWidget<4> {
+  private:
+    static constexpr const char *TAG = "ui_widget_time";
+
   public:
     void initialize(const InitArgs &a) override {
         CompositeWidget<4>::initialize(a);
         if (!a.font2.has_value()) {
-            ESP_LOGE("widget_time", "Required font2 parameter missing\n");
+            ESP_LOGE(
+                TAG,
+                "[widget=%s] initialize(): Required font2 parameter missing",
+                this->get_name().c_str());
             return;
         }
         if (!*a.font2) {
-            ESP_LOGE("widget_time", "Required font2 must not be nullptr\n");
+            ESP_LOGE(TAG,
+                     "[widget=%s] initialize(): Required font2 must not "
+                     "be nullptr",
+                     this->get_name().c_str());
             return;
         }
         members[0] = std::make_unique<NumericWidget<int, 3>>(); // HOURS

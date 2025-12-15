@@ -14,6 +14,9 @@ struct TextInitArgs {
 };
 template <typename T, typename P, std::size_t BufSize>
 class TextWidget : public Widget {
+  private:
+    static constexpr const char *TAG = "ui_widget_text";
+
   protected:
     ui::Box prev_box{};
     esphome::display::TextAlign align = esphome::display::TextAlign::LEFT;
@@ -46,7 +49,10 @@ class TextWidget : public Widget {
     void initialize(const InitArgs &a) override {
         Widget::initialize(a);
         if (!a.font.has_value()) {
-            ESP_LOGE("text_widget", "Required font parameter missing\n");
+            ESP_LOGE(
+                TAG,
+                "[widget=%s] initialize(): Required font parameter missing",
+                this->get_name().c_str());
             return;
         }
         this->font = *a.font;

@@ -11,6 +11,9 @@ struct WeatherPostArgs {
 };
 
 template <typename T, typename P> class WeatherWidget : public Widget {
+  private:
+    static constexpr const char *TAG = "ui_widget_weather";
+
   protected:
     ui::Box prev_box{};
     esphome::Color blank_color = esphome::Color::BLACK;
@@ -34,7 +37,10 @@ template <typename T, typename P> class WeatherWidget : public Widget {
     void initialize(const InitArgs &a) override {
         Widget::initialize(a);
         if (!a.font.has_value()) {
-            ESP_LOGE("text_widget", "Required font parameter missing\n");
+            ESP_LOGE(
+                TAG,
+                "[widget=%s] initialize(): Required font parameter missing",
+                this->get_name().c_str());
             return;
         }
         this->blank_color = a.blank_color.value_or(esphome::Color::BLACK);
