@@ -218,23 +218,27 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         return item->anchor_value().x + item->width();
     }
 
-    const int get_leftmost_edge(Widget **items, const size_t max_items) {
-        int edge = std::numeric_limits<int>::max();
-        if (left_edge_base_ != std::numeric_limits<int>::max()) {
-            edge = left_edge_base_;
+    const int get_boundry(Widget **items, const size_t max_items,
+                          Magnet orientation) {
+        int hint, edge;
+        if (orientation == Magnet::LEFT) {
+            edge = std::numeric_limits<int>::max();
+            hint = left_edge_base_;
+        } else if (orientation == Magnet::RIGHT) {
+            edge = std::numeric_limits<int>::min();
+            hint = right_edge_base_;
         } else {
-            for (std::size_t i = 0; i < max_items; ++i) {
-                edge = std::min(edge, get_left_edge(items[i]));
-            }
+            ESP_LOGE("get_boundry",
+                     "NotImplemenetedError: found unexpected magnet value");
+            return -1;
         }
-        return edge;
-    }
-    const int get_rightmost_edge(Widget **items, const size_t max_items) {
-        int edge = std::numeric_limits<int>::min();
-        if (right_edge_base_ != std::numeric_limits<int>::min()) {
-            edge = right_edge_base_;
-        } else {
-            for (std::size_t i = 0; i < max_items; ++i) {
+        if (hint != edge) {
+            return hint;
+        }
+        for (std::size_t i = 0; i < max_items; ++i) {
+            if (orientation == Magnet::LEFT) {
+                edge = std::min(edge, get_left_edge(items[i]));
+            } else if (orientation == Magnet::RIGHT) {
                 edge = std::max(edge, get_right_edge(items[i]));
             }
         }
@@ -274,12 +278,12 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         std::sort(active, active + n, [](const Widget *a, const Widget *b) {
             return a->get_priority() < b->get_priority();
         });
-
+        int edge = get_boundry(active, n, orientation);
+        if (edge == -1)
+            return;
         if (orientation == Magnet::LEFT) {
-            int edge = get_leftmost_edge(active, n);
             perform_linearlayout_left(edge, active, last_pos, redraw_needed, n);
         } else if (orientation == Magnet::RIGHT) {
-            int edge = get_rightmost_edge(active, n);
             perform_linearlayout_right(edge, active, last_pos, redraw_needed,
                                        n);
         }
