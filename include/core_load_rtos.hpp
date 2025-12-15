@@ -2,7 +2,6 @@
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/core/component.h"
 extern "C" {
-#include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 }
 
@@ -28,7 +27,7 @@ class CoreLoadSensorsRTOS : public esphome::PollingComponent {
         uint64_t core_idle[portNUM_PROCESSORS] = {0};
 
         for (const auto &t : tasks) {
-            int c = t.xCoreID; // 0 or 1 on ESP32
+            int c = xPortGetCoreID(); // 0 or 1 on ESP32
             if (c < 0 || c >= (int)portNUM_PROCESSORS)
                 continue;
 
