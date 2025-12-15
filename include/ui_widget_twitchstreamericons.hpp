@@ -94,7 +94,7 @@ class TwitchStreamerIconsWidget : public Widget {
         write();
     }
 
-    const int width() {
+    const int width() override {
         if (!initialized)
             return -1;
         return icon_width * (*new_value).num_icons;
@@ -106,7 +106,7 @@ class TwitchStreamerIconsWidget : public Widget {
         return icon_width * (*last).num_icons;
     }
 
-    const int height() {
+    const int height() override {
         if (!initialized)
             return -1;
         return icon_height;

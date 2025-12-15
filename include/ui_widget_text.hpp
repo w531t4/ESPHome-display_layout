@@ -147,7 +147,7 @@ class TextWidget : public Widget {
         return max_width;
     }
 
-    const int width() {
+    const int width() override {
         if (!initialized)
             return 0;
         if (use_max_width_as_width)
@@ -155,7 +155,7 @@ class TextWidget : public Widget {
         return bounds(buf).w;
     }
 
-    const int height() {
+    const int height() override {
         if (!initialized)
             return 0;
         return bounds(buf).h - trim_pixels_top - trim_pixels_bottom;

@@ -159,7 +159,7 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
         return max_width;
     }
 
-    const int width() {
+    const int width() override {
         if (!initialized)
             return 0;
         if (use_max_width_as_width)
@@ -167,7 +167,7 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
         return bounds(buf.data()).w;
     }
 
-    const int height() {
+    const int height() override {
         if (!initialized)
             return 0;
         if (this->max_height < 0)

@@ -66,8 +66,8 @@ class PixelMotionWidget : public Widget {
         last = *new_value;
     }
 
-    const int width() { return 1; }
+    const int width() override { return 1; }
 
-    const int height() { return 32; }
+    const int height() override { return 32; }
 };
 } // namespace ui
