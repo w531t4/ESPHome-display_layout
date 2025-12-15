@@ -106,7 +106,7 @@ class Widget {
         return this->anchor_value().x;
     }
 
-    const int get_right_edge_x() {
+    const int get_right_edge_x() const {
         // *--------------|
         // |              |
         // |--------------|
