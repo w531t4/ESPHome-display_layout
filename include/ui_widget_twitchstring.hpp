@@ -57,7 +57,7 @@ class TwitchStringWidget : public DynStringWidget<BufSize>,
             // ignoring leading whitespace in buffer.
             const int curr_buf_width = this->bounds(this->buf.data()).w;
             const int x_draw =
-                this->anchor.x + (this->max_width - curr_buf_width);
+                this->anchor.x + (this->width() - curr_buf_width);
             ui::printf_dual(this->it, this->font, x_draw, y,
                             (this->abc.user + ": ").c_str(), WHITE,
                             this->abc.message.c_str(), YELLOW, this->prev_box);

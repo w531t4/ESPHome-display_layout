@@ -32,7 +32,6 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
     std::optional<T> last{};
 
     std::vector<char> buf;
-    int max_width = -1;
 
     // Pick a default printf format based on T
     virtual constexpr const std::string default_fmt() = 0;
@@ -83,7 +82,7 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
             //                                                         feels
             //                                                         like a
             //                                                         hack.
-            it->start_clipping(anchor.x, anchor.y, anchor.x + max_width + 1,
+            it->start_clipping(anchor.x, anchor.y, anchor.x + this->width() + 1,
                                anchor.y + height());
         }
         ui::mywipe(it, prev_box, blank_color);
@@ -103,7 +102,7 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
             // printf will start drawing at the first pixel of a character,
             // ignoring leading whitespace in buffer.
             const int curr_buf_width = bounds(buf.data()).w;
-            const int x_draw = anchor.x + (max_width - curr_buf_width);
+            const int x_draw = anchor.x + (this->width() - curr_buf_width);
             ui::myprint(it, font, x_draw, y, buf.data(), align, font_color,
                         prev_box);
         } else {
@@ -144,13 +143,11 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
     }
 
     const int get_max_width(const char padding_value) {
-        if (max_width >= 0)
-            return max_width;
         std::vector<char> tmp(buf.size(), padding_value);
         if (!tmp.empty())
             tmp.back() = '\0';
-        max_width = bounds(tmp.data()).w;
-        return max_width;
+        return bounds(tmp.data()).w;
+        ;
     }
 
     const int width() override {
@@ -177,7 +174,6 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
         } else {
             buf.assign(cap, '\0'); // zero-fill
         }
-        max_width = -1; // invalidate cached slot width
         this->prev_box = ui::Box{this->prev_box.x1, this->prev_box.y1,
                                  this->width(), this->prev_box.h};
     }

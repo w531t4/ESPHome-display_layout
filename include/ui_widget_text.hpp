@@ -30,7 +30,6 @@ class TextWidget : public Widget {
     std::optional<T> last{};
 
     char buf[BufSize];
-    int max_width = -1;
 
     // Pick a default printf format based on T
     virtual constexpr const std::string default_fmt() = 0;
@@ -80,7 +79,7 @@ class TextWidget : public Widget {
             //                                                         feels
             //                                                         like a
             //                                                         hack.
-            it->start_clipping(anchor.x, anchor.y, anchor.x + max_width + 1,
+            it->start_clipping(anchor.x, anchor.y, anchor.x + this->width() + 1,
                                anchor.y + height());
         }
         ui::mywipe(it, prev_box, blank_color);
@@ -95,7 +94,7 @@ class TextWidget : public Widget {
             // printf will start drawing at the first pixel of a character,
             // ignoring leading whitespace in buffer.
             const int curr_buf_width = bounds(buf).w;
-            const int x_draw = anchor.x + (max_width - curr_buf_width);
+            const int x_draw = anchor.x + (this->width() - curr_buf_width);
             ui::myprint(it, font, x_draw, y, buf, align, font_color, prev_box);
         } else {
             ui::myprint(it, font, anchor.x, y, buf, align, font_color,
@@ -133,13 +132,10 @@ class TextWidget : public Widget {
     }
 
     const int get_max_width(const char padding_value) {
-        if (max_width >= 0)
-            return max_width;
         char fullwidth_buf[BufSize];
         std::fill_n(fullwidth_buf, BufSize - 1, padding_value);
         fullwidth_buf[BufSize - 1] = '\0';
-        max_width = bounds(fullwidth_buf).w;
-        return max_width;
+        return bounds(fullwidth_buf).w;
     }
 
     const int width() override {
