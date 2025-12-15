@@ -216,9 +216,10 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
             const int wpx = w->width();
             const int target_x = x + wpx;
             const int cur_x = w->anchor_value().x;
-            if (cur_x < x) {
+            const int dx = target_x - cur_x;
+            if (cur_x != x) {
                 w->blank();
-                w->horizontal_shift(x - cur_x);
+                w->horizontal_shift(dx);
                 redraw_needed = true;
             }
             x = target_x;
