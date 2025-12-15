@@ -1,5 +1,6 @@
 #pragma once
-#include "esphome.h"
+#include "esphome/components/sensor/sensor.h"
+#include "esphome/core/component.h"
 extern "C" {
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -7,8 +8,8 @@ extern "C" {
 
 class CoreLoadSensorsRTOS : public esphome::PollingComponent {
   public:
-    esphome::Sensor *core0 = new esphome::Sensor();
-    esphome::Sensor *core1 = new esphome::Sensor();
+    esphome::sensor::Sensor *core0 = new esphome::sensor::Sensor();
+    esphome::sensor::Sensor *core1 = new esphome::sensor::Sensor();
 
     explicit CoreLoadSensorsRTOS(uint32_t update_interval_ms)
         : PollingComponent(update_interval_ms) {}
@@ -52,7 +53,7 @@ class CoreLoadSensorsRTOS : public esphome::PollingComponent {
     Sample prev_[portNUM_PROCESSORS] = {};
 
     void publish_from_delta(int core, uint64_t total_now, uint64_t idle_now,
-                            esphome::Sensor *out) {
+                            esphome::sensor::Sensor *out) {
         uint64_t d_total = (total_now >= prev_[core].total)
                                ? (total_now - prev_[core].total)
                                : 0;
