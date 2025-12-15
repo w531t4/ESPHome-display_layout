@@ -35,7 +35,6 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
 
     std::vector<char> buf;
     int max_width = -1;
-    int max_height = -1;
 
     // Pick a default printf format based on T
     virtual constexpr const std::string default_fmt() = 0;
@@ -141,7 +140,7 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
         write();
     }
 
-    const ui::Box bounds(const char *buffer) {
+    const ui::Box bounds(const char *buffer) const {
         int x1, y1, w, h;
         it->get_text_bounds(anchor.x, anchor.y, buffer, font, align, &x1, &y1,
                             &w, &h);
@@ -166,13 +165,10 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
         return bounds(buf.data()).w;
     }
 
-    const int height() override {
+    const int height() const override {
         if (!initialized)
             return 0;
-        if (this->max_height < 0)
-            this->max_height =
-                bounds(buf.data()).h - trim_pixels_top - trim_pixels_bottom;
-        return this->max_height;
+        return bounds(buf.data()).h - trim_pixels_top - trim_pixels_bottom;
     }
 
     // Set buffer capacity at runtime (chars incl. '\0').
@@ -188,7 +184,6 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
             buf.assign(cap, '\0'); // zero-fill
         }
         max_width = -1; // invalidate cached slot width
-        max_height = -1;
         this->prev_box = ui::Box{this->prev_box.x1, this->prev_box.y1,
                                  this->width(), this->prev_box.h};
     }

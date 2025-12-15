@@ -129,7 +129,7 @@ class TextWidget : public Widget {
         write();
     }
 
-    const ui::Box bounds(const char *buffer) {
+    const ui::Box bounds(const char *buffer) const {
         int x1, y1, w, h;
         it->get_text_bounds(anchor.x, anchor.y, buffer, font, align, &x1, &y1,
                             &w, &h);
@@ -154,7 +154,7 @@ class TextWidget : public Widget {
         return bounds(buf).w;
     }
 
-    const int height() override {
+    const int height() const override {
         if (!initialized)
             return 0;
         return bounds(buf).h - trim_pixels_top - trim_pixels_bottom;

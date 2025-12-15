@@ -87,6 +87,6 @@ template <typename T, typename P> class WeatherWidget : public Widget {
 
     const int width() { return 32; }
 
-    const int height() { return 32; }
+    const int height() const { return 32; }
 };
 } // namespace ui

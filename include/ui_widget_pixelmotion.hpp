@@ -66,6 +66,6 @@ class PixelMotionWidget : public Widget {
 
     const int width() override { return 1; }
 
-    const int height() override { return 32; }
+    const int height() const override { return 32; }
 };
 } // namespace ui
