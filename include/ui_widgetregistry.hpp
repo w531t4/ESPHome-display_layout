@@ -213,14 +213,15 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         int x = edge;
         for (std::size_t i = 0; i < max_items; ++i) {
             Widget *w = items[i];
-            const int next_x = x + w->width();
+            const int wpx = w->width();
+            const int target_x = x + wpx;
             const int cur_x = w->anchor_value().x;
             if (cur_x < x) {
                 w->blank();
                 w->horizontal_shift(x - cur_x);
                 redraw_needed = true;
             }
-            x = next_x;
+            x = target_x;
             if (i + 1 < max_items)
                 x += gap_x_;
         }
