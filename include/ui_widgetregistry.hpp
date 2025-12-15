@@ -1,5 +1,6 @@
 #pragma once
 #include "magnet.hpp"
+#include "ui_handle.hpp"
 #include "ui_shared.hpp"
 #include "ui_widget.hpp"
 #include <algorithm>
@@ -46,24 +47,10 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
                                          // placed to the immediate right of
                                          // this position
   public:
-    // Typed handle so callers can do handle->post(...)
-    template <class W> struct Handle {
-        static_assert(std::is_base_of<Widget, W>::value,
-                      "W must derive from Widget");
-        W *ptr = nullptr;
-        std::size_t index = npos;
-
-        W *operator->() const { return ptr; }
-        W &operator*() const { return *ptr; }
-        explicit operator bool() const { return ptr != nullptr; }
-
-        static constexpr std::size_t npos = static_cast<std::size_t>(-1);
-    };
-
     WidgetRegistry() = default;
 
     // ----- Phase 1: registration (startup only, no heap) -----
-    template <class W> Handle<W> add(W &w) {
+    template <class W> ui::Handle<W> add(W &w) {
         static_assert(std::is_base_of<Widget, W>::value,
                       "W must derive from Widget");
         if (count_ >= MaxWidgets)
@@ -88,7 +75,7 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         } else {
             e.get_capacity = nullptr;
         }
-        Handle<W> h;
+        ui::Handle<W> h;
         h.ptr = &w;
         h.index = count_;
         ++count_;
