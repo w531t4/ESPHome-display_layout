@@ -99,4 +99,23 @@ class Widget {
 
     // // Provide default behavior
     // virtual void cleanup() { /* default no-op */ };
+    const int get_left_edge_x() {
+        // *--------------|
+        // |              |
+        // |--------------|
+        //
+        // #<---- returned value
+
+        return this->anchor_value().x;
+    }
+
+    const int get_right_edge_x() {
+        // *--------------|
+        // |              |
+        // |--------------|
+        //
+        // x<-----width-->#<---- returned value
+
+        return this->anchor_value().x + this->width();
+    }
 };

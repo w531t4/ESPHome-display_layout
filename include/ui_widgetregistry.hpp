@@ -198,26 +198,6 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         return n;
     }
 
-    const int get_left_edge(Widget *item) {
-        // *--------------|
-        // |              |
-        // |--------------|
-        //
-        // #<---- returned value
-
-        return item->anchor_value().x;
-    }
-
-    const int get_right_edge(Widget *item) {
-        // *--------------|
-        // |              |
-        // |--------------|
-        //
-        // x<-----width-->#<---- returned value
-
-        return item->anchor_value().x + item->width();
-    }
-
     const int get_boundry(Widget **items, const size_t max_items,
                           Magnet orientation) {
         int hint, edge;
@@ -237,9 +217,9 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         }
         for (std::size_t i = 0; i < max_items; ++i) {
             if (orientation == Magnet::LEFT) {
-                edge = std::min(edge, get_left_edge(items[i]));
+                edge = std::min(edge, items[i]->get_left_edge_x());
             } else if (orientation == Magnet::RIGHT) {
-                edge = std::max(edge, get_right_edge(items[i]));
+                edge = std::max(edge, items[i]->get_right_edge_x());
             }
         }
         return edge;
