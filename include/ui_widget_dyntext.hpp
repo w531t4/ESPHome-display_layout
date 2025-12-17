@@ -63,7 +63,7 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
         this->blank_color = a.blank_color.value_or(esphome::Color::BLACK);
         this->fmt = a.fmt.value_or(this->default_fmt());
 
-        if (auto *t = a.extras.get<TextInitArgs>()) {
+        if (auto *t = a.extras.get<TextInitArgs<T>>()) {
             if (t->max_width_padding_char.has_value())
                 this->max_width_padding_char = *t->max_width_padding_char;
             if (t->trim_pixels_top.has_value())

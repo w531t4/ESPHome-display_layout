@@ -46,7 +46,7 @@ class DateWidget : public CompositeWidget<2> {
                      .font = a.font,
                      .font_color = PURPLE,
                      .fmt = std::string("%02d"),
-                     .extras = ArgsBag::of(TextInitArgs{
+                     .extras = ArgsBag::of(TextInitArgs<uint8_t>{
                          .trim_pixels_top = 9, .trim_pixels_bottom = 9})});
         members[1] = std::make_unique<StringWidget<4>>(); // MONTH
         members[1]->initialize(

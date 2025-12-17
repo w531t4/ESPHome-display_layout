@@ -4,13 +4,14 @@
 #include <algorithm>
 
 namespace ui {
-struct TextInitArgs {
+template <typename T> struct TextInitArgs {
     std::optional<bool> right_align;
     std::optional<char> max_width_padding_char;
     std::optional<int>
         trim_pixels_top; // Use top/bottom to remove pixels from top/bottom of
                          // characters for certain fonts
     std::optional<int> trim_pixels_bottom;
+    std::optional<T> hide_if_equal_val;
 };
 template <typename T, typename P, std::size_t BufSize>
 class TextWidget : public Widget {
@@ -29,6 +30,7 @@ class TextWidget : public Widget {
     // Remember last value
     uint8_t trim_pixels_top = 0;
     uint8_t trim_pixels_bottom = 0;
+    std::optional<T> hide_if_equal_val;
     std::optional<T> new_value{};
     std::optional<T> last{};
 
@@ -61,7 +63,7 @@ class TextWidget : public Widget {
         this->blank_color = a.blank_color.value_or(esphome::Color::BLACK);
         this->fmt = a.fmt.value_or(this->default_fmt());
 
-        if (auto *t = a.extras.get<TextInitArgs>()) {
+        if (auto *t = a.extras.get<TextInitArgs<T>>()) {
             if (t->max_width_padding_char.has_value())
                 this->max_width_padding_char = *t->max_width_padding_char;
             if (t->trim_pixels_top.has_value())
@@ -70,6 +72,8 @@ class TextWidget : public Widget {
                 this->trim_pixels_bottom = *t->trim_pixels_bottom;
             if (t->right_align.has_value())
                 this->right_align = *t->right_align;
+            if (t->hide_if_equal_val.has_value())
+                this->hide_if_equal_val = *t->hide_if_equal_val;
         }
         this->last.reset();
         this->new_value.reset();
@@ -125,7 +129,24 @@ class TextWidget : public Widget {
             return;
         if (new_value.has_value() && !is_different(*new_value))
             return;
+        if (this->hide_if_equal_val.has_value()) {
+            if (this->hide_if_equal_val.value() == *new_value) {
+                ESP_LOGD(TAG,
+                         "[widget=%s] update(): no action taken because "
+                         "*new_value "
+                         "== hide_if_equal_val",
+                         this->get_name().c_str());
+                if (this->is_enabled()) {
+                    this->blank();
+                    this->set_enabled(false);
+                }
+                return;
+            } else if (!(this->is_enabled())) {
+                this->set_enabled(true);
+            }
+        }
         prep(*new_value, fmt.c_str());
+
         blank();
         write();
     }
