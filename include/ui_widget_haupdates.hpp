@@ -16,14 +16,15 @@ class HAUpdatesWidget : public CompositeWidget<1> {
         CompositeWidget<1>::initialize(a);
         constexpr int bufsize = 3; // "1000 TX\0"
         members[0] = std::make_unique<NumericWidget<int, bufsize>>(); // HIGH
-        members[0]->initialize(InitArgs{
-            .it = a.it,
-            .id = a.id + "[0]",
-            .anchor = ui::Coord(a.anchor.x, a.anchor.y),
-            .font = a.font,
-            .font_color = RED,
-            .fmt = std::string("%d"),
-            .extras = ArgsBag::of(TextInitArgs<int>{.right_align = true})});
+        members[0]->initialize(
+            InitArgs{.it = a.it,
+                     .id = a.id + "[0]",
+                     .anchor = ui::Coord(a.anchor.x, a.anchor.y),
+                     .font = a.font,
+                     .font_color = RED,
+                     .fmt = std::string("%d"),
+                     .extras = ArgsBag::of(TextInitArgs<int>{
+                         .right_align = true, .hide_if_equal_val = 0})});
         initialized = true;
     }
 
@@ -34,15 +35,6 @@ class HAUpdatesWidget : public CompositeWidget<1> {
             if (post_args_ptr != nullptr) {
                 members[0]->post(PostArgs{.extras = ui::NumericPostArgs<int>{
                                               .value = post_args_ptr->value}});
-                if (post_args_ptr->value == 0) {
-                    if (this->is_visible()) {
-                        this->blank();
-                        this->set_visible(false);
-                    }
-                } else {
-                    if (!this->is_visible())
-                        this->set_visible(true);
-                }
             }
         }
     }

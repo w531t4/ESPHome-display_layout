@@ -1,6 +1,7 @@
 #pragma once
 #include "ui_shared.hpp"
 #include "ui_widget.hpp"
+#include <algorithm>
 #include <array>
 
 template <std::size_t numWidgets> class CompositeWidget : public Widget {
@@ -48,7 +49,8 @@ template <std::size_t numWidgets> class CompositeWidget : public Widget {
     }
 
     const int width() const override {
-        if (!(this->is_visible()))
+        if (std::none_of(members.begin(), members.end(),
+                         [](const auto &p) { return p->is_visible(); }))
             return 0;
         bool found = false;
         int min_x = std::numeric_limits<int>::max();

@@ -17,18 +17,26 @@ class PSNWidget : public CompositeWidget<2> {
     void initialize(const InitArgs &a) override {
         CompositeWidget<2>::initialize(a);
         members[0] = std::make_unique<StringWidget<2>>(); // Phil
-        members[0]->initialize(InitArgs{.it = a.it,
-                                        .id = a.id + "[phil]",
-                                        .anchor = ui::Coord(anchor.x, anchor.y),
-                                        .font = *a.font,
-                                        .font_color = GREEN});
+        members[0]->initialize(
+            InitArgs{.it = a.it,
+                     .id = a.id + "[phil]",
+                     .anchor = ui::Coord(anchor.x, anchor.y),
+                     .font = *a.font,
+                     .font_color = GREEN,
+                     .extras = ArgsBag::of(TextInitArgs<std::string>{
+                         .right_align = true,
+                         .hide_if_equal_val = std::string("unknown")})});
         members[1] = std::make_unique<StringWidget<2>>(); // Nick
         members[1]->initialize(
             InitArgs{.it = a.it,
                      .id = a.id + "[nick]",
                      .anchor = ui::Coord(anchor.x, anchor.y + 20),
                      .font = *a.font,
-                     .font_color = PINK});
+                     .font_color = PINK,
+                     .extras = ArgsBag::of(TextInitArgs<std::string>{
+                         .right_align = true,
+                         .hide_if_equal_val = std::string("unknown")})});
+
         initialized = true;
     }
     void post(const PostArgs &args) override {
@@ -36,44 +44,15 @@ class PSNWidget : public CompositeWidget<2> {
             const PSNPostArgs *post_args_ptr =
                 std::any_cast<const PSNPostArgs>(&args.extras);
             if (post_args_ptr != nullptr) {
-                bool should_psn_widget_show = false;
-                if (ui::txt_sensor_has_healthy_state(post_args_ptr->phil)) {
-                    if (!members[0]->is_visible())
-                        members[0]->set_visible(true);
-                    // members[0]->post(PostArgs{.extras =
-                    // ui::StringPostArgs{.value =
-                    // post_args_ptr->phil->state.substr(0, 1)}});
-                    members[0]->post(PostArgs{.extras = ui::StringPostArgs{
-                                                  .value = std::string("P")}});
-                    should_psn_widget_show = true;
-                } else {
-                    if (members[0]->is_visible()) {
-                        members[0]->blank();
-                        members[0]->set_visible(false);
-                    }
+                if (post_args_ptr->phil->has_state()) {
+                    members[0]->post(
+                        PostArgs{.extras = ui::StringPostArgs{
+                                     .value = post_args_ptr->phil->state}});
                 }
-                if (ui::txt_sensor_has_healthy_state(post_args_ptr->nick)) {
-                    if (!members[1]->is_visible())
-                        members[1]->set_visible(true);
-                    // members[1]->post(PostArgs{.extras =
-                    // ui::StringPostArgs{.value =
-                    // post_args_ptr->nick->state.substr(0, 1)}});
-                    members[1]->post(PostArgs{.extras = ui::StringPostArgs{
-                                                  .value = std::string("N")}});
-                    should_psn_widget_show = true;
-                } else {
-                    if (members[1]->is_visible()) {
-                        members[1]->blank();
-                        members[1]->set_visible(false);
-                    }
-                }
-                const bool current_state = this->is_visible();
-                if (should_psn_widget_show && !current_state) {
-                    this->blank();
-                    this->set_visible(true);
-                } else if (!should_psn_widget_show && current_state) {
-                    this->blank();
-                    this->set_visible(false);
+                if (post_args_ptr->nick->has_state()) {
+                    members[1]->post(
+                        PostArgs{.extras = ui::StringPostArgs{
+                                     .value = post_args_ptr->nick->state}});
                 }
             }
         }
