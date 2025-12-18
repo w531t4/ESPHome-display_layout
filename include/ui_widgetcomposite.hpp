@@ -48,6 +48,8 @@ template <std::size_t numWidgets> class CompositeWidget : public Widget {
     }
 
     const int width() const override {
+        if (!(this->is_visible()))
+            return 0;
         bool found = false;
         int min_x = std::numeric_limits<int>::max();
         int max_right = std::numeric_limits<int>::min();

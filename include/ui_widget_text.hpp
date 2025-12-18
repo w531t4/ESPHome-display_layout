@@ -168,6 +168,8 @@ class TextWidget : public Widget {
     const int width() const override {
         if (!initialized)
             return 0;
+        if (!(this->is_visible()))
+            return 0;
         return get_max_width(max_width_padding_char);
     }
 
