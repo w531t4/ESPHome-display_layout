@@ -131,11 +131,6 @@ class TextWidget : public Widget {
             return;
         if (this->hide_if_equal_val.has_value()) {
             if (this->hide_if_equal_val.value() == *new_value) {
-                ESP_LOGD(TAG,
-                         "[widget=%s] update(): no action taken because "
-                         "*new_value "
-                         "== hide_if_equal_val",
-                         this->get_name().c_str());
                 if (this->is_visible()) {
                     this->blank();
                     this->set_visible(false);
