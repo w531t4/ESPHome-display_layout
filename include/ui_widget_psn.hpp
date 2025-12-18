@@ -38,8 +38,8 @@ class PSNWidget : public CompositeWidget<2> {
             if (post_args_ptr != nullptr) {
                 bool should_psn_widget_show = false;
                 if (ui::txt_sensor_has_healthy_state(post_args_ptr->phil)) {
-                    if (!members[0]->is_enabled())
-                        members[0]->set_enabled(true);
+                    if (!members[0]->is_visible())
+                        members[0]->set_visible(true);
                     // members[0]->post(PostArgs{.extras =
                     // ui::StringPostArgs{.value =
                     // post_args_ptr->phil->state.substr(0, 1)}});
@@ -47,14 +47,14 @@ class PSNWidget : public CompositeWidget<2> {
                                                   .value = std::string("P")}});
                     should_psn_widget_show = true;
                 } else {
-                    if (members[0]->is_enabled()) {
+                    if (members[0]->is_visible()) {
                         members[0]->blank();
-                        members[0]->set_enabled(false);
+                        members[0]->set_visible(false);
                     }
                 }
                 if (ui::txt_sensor_has_healthy_state(post_args_ptr->nick)) {
-                    if (!members[1]->is_enabled())
-                        members[1]->set_enabled(true);
+                    if (!members[1]->is_visible())
+                        members[1]->set_visible(true);
                     // members[1]->post(PostArgs{.extras =
                     // ui::StringPostArgs{.value =
                     // post_args_ptr->nick->state.substr(0, 1)}});
@@ -62,18 +62,18 @@ class PSNWidget : public CompositeWidget<2> {
                                                   .value = std::string("N")}});
                     should_psn_widget_show = true;
                 } else {
-                    if (members[1]->is_enabled()) {
+                    if (members[1]->is_visible()) {
                         members[1]->blank();
-                        members[1]->set_enabled(false);
+                        members[1]->set_visible(false);
                     }
                 }
-                const bool current_state = this->is_enabled();
+                const bool current_state = this->is_visible();
                 if (should_psn_widget_show && !current_state) {
                     this->blank();
-                    this->set_enabled(true);
+                    this->set_visible(true);
                 } else if (!should_psn_widget_show && current_state) {
                     this->blank();
-                    this->set_enabled(false);
+                    this->set_visible(false);
                 }
             }
         }

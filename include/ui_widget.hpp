@@ -33,7 +33,13 @@ class Widget {
   protected:
     esphome::display::Display *it = nullptr;
     uint8_t priority = 0;
+
+    // Togglable to free up any/all cycles for working with/on a widget.
     bool enabled = true;
+
+    // Togglable to hide a component from the display. A hidden widget must
+    // occupy no space on the resultant display
+    bool visible = true;
     bool initialized = false;
     ui::Coord anchor{-1, -1};
     Magnet magnet;
@@ -44,6 +50,8 @@ class Widget {
     virtual ~Widget() = default;
     bool is_enabled() const noexcept { return enabled; }
     void set_enabled(const bool state) { this->enabled = state; }
+    bool is_visible() const noexcept { return visible; }
+    void set_visible(const bool state) { this->visible = state; }
     uint8_t get_priority() const noexcept { return priority; }
     // ----- Mandatory functions for derived classes -----
 
@@ -72,9 +80,11 @@ class Widget {
     const std::string get_name() const { return this->id; }
 
     // blank applicable space
+    //  - widget must be enabled, and visible.
     virtual void blank() = 0;
 
-    // write-out to display
+    // write content to the display.
+    //  - must never run if widget is _hidden_ or _disabled_
     virtual void write() = 0;
 
     // use to push value into the widget, but don't process until update()

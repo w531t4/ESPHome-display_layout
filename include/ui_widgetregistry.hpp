@@ -106,14 +106,14 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
 
     void blank_all() {
         for (std::size_t i = 0; i < count_; ++i)
-            if (at(i) && at(i)->is_enabled())
+            if (at(i) && at(i)->is_enabled() && at(i)->is_visible())
                 at(i)->blank();
     }
 
     void write_all() {
         ESP_LOGD(TAG, "performing write_all");
         for (std::size_t i = 0; i < count_; ++i)
-            if (at(i) && at(i)->is_enabled())
+            if (at(i) && at(i)->is_enabled() && at(i)->is_visible())
                 at(i)->write();
         ESP_LOGD(TAG, "done write_all");
     }
@@ -145,7 +145,8 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         for (std::size_t i = 0; i < count_; ++i) {
             Entry &e = items_[i];
             auto *w = e.ptr;
-            if (!w || !w->is_enabled() || w->get_magnet() != Magnet::AUTO)
+            if (!w || !w->is_enabled() || !w->is_visible() ||
+                w->get_magnet() != Magnet::AUTO)
                 continue;
 
             if (!(e.set_capacity && e.get_capacity))
@@ -255,7 +256,7 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         // return number of qualifying items
         std::size_t n = 0;
         for (std::size_t i = 0; i < count_; ++i) {
-            if (at(i) && at(i)->is_enabled() &&
+            if (at(i) && at(i)->is_enabled() && at(i)->is_visible() &&
                 at(i)->get_magnet() == orientation)
                 w_array[n++] = at(i);
         }

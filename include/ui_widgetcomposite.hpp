@@ -15,16 +15,18 @@ template <std::size_t numWidgets> class CompositeWidget : public Widget {
     void initialize(const InitArgs &a) override { Widget::initialize(a); }
 
     void blank() override {
-        for (auto &ptr : members) {       // ptr is a std::unique_ptr<Widget>&
-            if (ptr && ptr->is_enabled()) // check it’s not empty and enabled
-                ptr->blank();             // call Widget’s member
+        for (auto &ptr : members) { // ptr is a std::unique_ptr<Widget>&
+            if (ptr && ptr->is_enabled() &&
+                ptr->is_visible()) // check it’s not empty and enabled
+                ptr->blank();      // call Widget’s member
         }
     }
 
     void write() override {
-        for (auto &ptr : members) {       // ptr is a std::unique_ptr<Widget>&
-            if (ptr && ptr->is_enabled()) // check it’s not empty and enabled
-                ptr->write();             // call Widget’s member
+        for (auto &ptr : members) { // ptr is a std::unique_ptr<Widget>&
+            if (ptr && ptr->is_enabled() &&
+                ptr->is_visible()) // check it’s not empty and enabled
+                ptr->write();      // call Widget’s member
         }
     }
 

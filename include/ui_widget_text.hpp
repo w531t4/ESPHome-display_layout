@@ -136,13 +136,13 @@ class TextWidget : public Widget {
                          "*new_value "
                          "== hide_if_equal_val",
                          this->get_name().c_str());
-                if (this->is_enabled()) {
+                if (this->is_visible()) {
                     this->blank();
-                    this->set_enabled(false);
+                    this->set_visible(false);
                 }
                 return;
-            } else if (!(this->is_enabled())) {
-                this->set_enabled(true);
+            } else if (!(this->is_visible())) {
+                this->set_visible(true);
             }
         }
         prep(*new_value, fmt.c_str());

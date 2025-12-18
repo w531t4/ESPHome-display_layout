@@ -35,13 +35,13 @@ class HAUpdatesWidget : public CompositeWidget<1> {
                 members[0]->post(PostArgs{.extras = ui::NumericPostArgs<int>{
                                               .value = post_args_ptr->value}});
                 if (post_args_ptr->value == 0) {
-                    if (this->is_enabled()) {
+                    if (this->is_visible()) {
                         this->blank();
-                        this->enabled = false;
+                        this->set_visible(false);
                     }
                 } else {
-                    if (!this->is_enabled())
-                        this->enabled = true;
+                    if (!this->is_visible())
+                        this->set_visible(true);
                 }
             }
         }
