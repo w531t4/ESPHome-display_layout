@@ -1,4 +1,8 @@
 {
+    "clangd.arguments": [
+        "--compile-commands-dir=/home/vscode/.cache/.esphome/build/clangd/.pioenvs/clangd",
+        "--query-driver=/home/vscode/.platformio/packages/toolchain-xtensa-esp-elf/bin/xtensa-esp32-elf-*"
+    ],
     "files.exclude": {
         "**/__pycache__/**": true,
     }

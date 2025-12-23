@@ -1,0 +1,55 @@
+# SPDX-FileCopyrightText: 2025 Aaron White <w531t4@gmail.com>
+# SPDX-License-Identifier: MIT
+esphome:
+    name: clangd
+    # platformio_options:
+    #   build_flags:
+    #     - -I../../src
+    #     - -I../../src/esphome
+esp32:
+    board: esp32dev
+    framework:
+        type: esp-idf
+
+logger:
+
+api:
+
+ota:
+    platform: esphome
+
+wifi:
+    ssid: "x"
+    password: "12345678"
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    address: 0x3C
+
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+
+text_sensor:
+  - platform: homeassistant
+    id: dummy_ha_text
+    entity_id: sensor.dummy
+
+image:
+  - file: "mdi:weather-sunny"
+    id: dummy_img
+    type: BINARY
+
+font:
+  - file: "gfonts://Roboto"
+    id: font1
+    size: 12
+
+external_components:
+  - source:
+      type: local
+      path: /workspaces/ESPHome-display_layout/components
+
+display_layout:
+  id: my_layout
