@@ -10,13 +10,10 @@ ARG TARGETARCH
 RUN \
     apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        libyaml-dev \
         git \
         cmake \
         autoconf \
         libreadline-dev \
-        libffi-dev \
-        tcl8.6-dev \
         pre-commit \
         reuse \
     && apt-get clean \
