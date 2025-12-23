@@ -4,8 +4,10 @@ version = 1
 path = [
     ".clang-format",
     ".vscode/settings.json",
+    ".python-version",
+    ".python-requirements",
     ".devcontainer/devcontainer.json",
-    ".pre-commit-config.yaml"
+    ".vscode/settings.json"
 
 
 ]
