@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2025 Aaron White <w531t4@gmail.com>
+// SPDX-License-Identifier: MIT
 #pragma once
 #include "esphome/components/display/display.h"
 #include "esphome/components/font/font.h"

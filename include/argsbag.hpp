@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2025 Aaron White <w531t4@gmail.com>
+// SPDX-License-Identifier: MIT
 // argsbag.h -- from chatgpt
 // -----------------------------------------------------------------------------
 // ArgsBag: A lightweight, RTTI-free heterogeneous key–value store.
