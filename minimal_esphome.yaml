@@ -49,7 +49,7 @@ font:
 external_components:
   - source:
       type: local
-      path: /workspaces/ESPHome-display_layout/components
+      path: components
 
 display_layout:
   id: my_layout
