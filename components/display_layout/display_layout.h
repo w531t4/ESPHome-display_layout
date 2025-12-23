@@ -4,7 +4,6 @@
 #pragma once
 
 #include "esphome/core/component.h"
-#include "argsbag.hpp"
 namespace esphome {
 namespace display_layout {
 
