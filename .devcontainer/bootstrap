@@ -7,3 +7,10 @@ set -e
 cd "$(realpath "$(dirname "$0")/..")"
 
 echo "Installing development dependencies..."
+
+# Install esphome
+uv pip install \
+  -r .python-requirements \
+  colorlog \
+  --upgrade \
+  --config-settings editable_mode=compat
