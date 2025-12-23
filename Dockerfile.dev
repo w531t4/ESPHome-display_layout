@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2025 Aaron White <w531t4@gmail.com>
 # SPDX-License-Identifier: MIT
-FROM mcr.microsoft.com/vscode/devcontainers/base:debian
+FROM mcr.microsoft.com/vscode/devcontainers/base:bookworm
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 

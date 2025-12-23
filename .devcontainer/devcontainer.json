@@ -16,6 +16,7 @@
   "mounts": [
     ],
   "features": {
+    "ghcr.io/devcontainers-community/features/llvm": "latest"
   },
   // "appPort": [],
   "runArgs": [
@@ -28,6 +29,7 @@
     "vscode": {
       "extensions": [
         "charliermarsh.ruff",
+        "llvm-vs-code-extensions.vscode-clangd",
         "esbenp.prettier-vscode",
         "GitHub.vscode-pull-request-github"
       ],
