@@ -6,6 +6,7 @@ path = [
     ".vscode/settings.json",
     ".python-version",
     ".python-requirements",
+    ".pre-commit-config.yaml",
     ".devcontainer/devcontainer.json",
     ".vscode/settings.json"
 
