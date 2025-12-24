@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2025 Aaron White <w531t4@gmail.com>
 // SPDX-License-Identifier: MIT
-#include "esphome/core/log.h"
 #include "display_layout.h"
+#include "esphome/core/log.h"
 #include "ui_widget_date.hpp"
 #include "ui_widget_haupdates.hpp"
 #include "ui_widget_network_tput.hpp"
@@ -12,6 +12,18 @@
 #include "ui_widget_twitchchat.hpp"
 #include "ui_widget_twitchstreamericons.hpp"
 #include "ui_widget_weather.hpp"
+#ifdef USE_GLOBALS
+#include "esphome/components/globals/globals_component.h"
+#endif
+#ifdef USE_SENSOR
+#include "esphome/components/sensor/sensor.h"
+#endif
+#ifdef USE_TEXT_SENSOR
+#include "esphome/components/text_sensor/text_sensor.h"
+#endif
+#ifdef USE_TIME
+#include "esphome/components/time/real_time_clock.h"
+#endif
 
 namespace esphome {
 namespace display_layout {
@@ -185,17 +197,15 @@ void DisplayLayout::build_widgets(esphome::display::Display &it) {
         if (cfg.font2.has_value())
             args.font2 = *cfg.font2;
         if (cfg.pixels_per_character.has_value()) {
-            args.extras.set(
-                ui::TwitchChatInitArgs{
-                    .pixels_per_character = *cfg.pixels_per_character});
+            args.extras.set(ui::TwitchChatInitArgs{
+                .pixels_per_character = *cfg.pixels_per_character});
         }
         if (cfg.kind == WidgetKind::TWITCH_ICONS && cfg.icon_width &&
             cfg.icon_height && cfg.max_icons) {
             args.extras.set(
-                ui::TwitchStreamerIconsInitArgs{
-                    .icon_width = *cfg.icon_width,
-                    .icon_height = *cfg.icon_height,
-                    .max_icons = *cfg.max_icons});
+                ui::TwitchStreamerIconsInitArgs{.icon_width = *cfg.icon_width,
+                                                .icon_height = *cfg.icon_height,
+                                                .max_icons = *cfg.max_icons});
         }
 
         widget->initialize(args);
@@ -219,6 +229,8 @@ void DisplayLayout::render(esphome::display::Display &it) {
         pending_posts_.clear();
     }
 
+    post_from_sources();
+
     // Allow widgets that expect continuous movement to advance.
     for (auto *widget : motion_widgets_) {
         if (widget) {
@@ -228,6 +240,163 @@ void DisplayLayout::render(esphome::display::Display &it) {
 
     registry_.update_all();
     registry_.relayout();
+}
+
+void DisplayLayout::post_from_sources() {
+    const std::size_t count = std::min(widget_configs_.size(), widgets_.size());
+    for (std::size_t i = 0; i < count; ++i) {
+        auto &cfg = widget_configs_[i];
+        auto *widget = widgets_[i].get();
+        if (!widget)
+            continue;
+
+        switch (cfg.kind) {
+        case WidgetKind::TWITCH_ICONS: {
+#ifdef USE_TEXT_SENSOR
+            auto *image = cfg.source_image.value_or(nullptr);
+            auto *count_sensor = cfg.source_count.value_or(nullptr);
+            if (!image || !count_sensor)
+                break;
+            bool ready = true;
+            auto *ready_flag = cfg.source_ready_flag.value_or(nullptr);
+#ifdef USE_GLOBALS
+            if (ready_flag != nullptr) {
+                ready = globals::id(ready_flag);
+            }
+#else
+            if (ready_flag != nullptr) {
+                ready = false;
+            }
+#endif
+            if (!ready)
+                break;
+            const int num_icons =
+                ui::TwitchStreamerIconsWidget::normalize_input(
+                    count_sensor->state.c_str());
+            widget->post(PostArgs{.extras = ui::TwitchStreamerIconsPostArgs{
+                                      .image = image, .num_icons = num_icons}});
+#ifdef USE_GLOBALS
+            if (ready_flag != nullptr) {
+                globals::id(ready_flag) = false;
+            }
+#endif
+#endif
+            break;
+        }
+        case WidgetKind::TWITCH_CHAT: {
+#ifdef USE_TEXT_SENSOR
+            auto *row1 = cfg.source_chat_row1.value_or(nullptr);
+            auto *row2 = cfg.source_chat_row2.value_or(nullptr);
+            auto *row3 = cfg.source_chat_row3.value_or(nullptr);
+            if (!row1 || !row2 || !row3)
+                break;
+            auto *channel = cfg.source_chat_channel.value_or(nullptr);
+            if (channel != nullptr &&
+                !ui::txt_sensor_has_healthy_state(channel)) {
+                if (cfg.twitch_started) {
+                    widget->blank();
+                    cfg.twitch_started = false;
+                }
+                break;
+            }
+            widget->post(PostArgs{
+                .extras = ui::TwitchChatPostArgs{.row1 = row1->state,
+                                                 .row2 = row2->state,
+                                                 .row3 = row3->state}});
+            cfg.twitch_started = true;
+#endif
+            break;
+        }
+        case WidgetKind::NETWORK_TPUT: {
+#ifdef USE_SENSOR
+            auto *rx = cfg.source_rx.value_or(nullptr);
+            auto *tx = cfg.source_tx.value_or(nullptr);
+            if (!rx || !tx)
+                break;
+            widget->post(PostArgs{.extras = ui::NetworkTputPostArgs{
+                                      .rx = rx->state, .tx = tx->state}});
+#endif
+            break;
+        }
+        case WidgetKind::WEATHER: {
+#if defined(USE_TEXT_SENSOR) && defined(USE_TIME)
+            auto *weather = cfg.source_weather.value_or(nullptr);
+            auto *clock = cfg.source_time.value_or(nullptr);
+            if (!weather || !clock)
+                break;
+            auto now = clock->now();
+            widget->post(
+                PostArgs{.extras = ui::WeatherPostArgs{.value = weather->state,
+                                                       .this_hour = now.hour}});
+#endif
+            break;
+        }
+        case WidgetKind::TEMPERATURES: {
+#ifdef USE_SENSOR
+            auto *high = cfg.source_temp_high.value_or(nullptr);
+            auto *current = cfg.source_temp_now.value_or(nullptr);
+            auto *low = cfg.source_temp_low.value_or(nullptr);
+            if (!high || !current || !low)
+                break;
+            const float values[3] = {high->state, current->state, low->state};
+            widget->post(
+                PostArgs{.extras = ui::TemperaturePostArgs{
+                             .values = std::span<const float>(values, 3)}});
+#endif
+            break;
+        }
+        case WidgetKind::DATE: {
+#ifdef USE_TIME
+            auto *clock = cfg.source_time.value_or(nullptr);
+            if (!clock)
+                break;
+            auto now = clock->now();
+            widget->post(
+                PostArgs{.extras = ui::DatePostArgs{.day = now.day_of_month,
+                                                    .month = now.month}});
+#endif
+            break;
+        }
+        case WidgetKind::TIME: {
+#ifdef USE_TIME
+            auto *clock = cfg.source_time.value_or(nullptr);
+            if (!clock)
+                break;
+            auto now = clock->now();
+            widget->post(
+                PostArgs{.extras = ui::TimePostArgs{.hour = now.hour,
+                                                    .minute = now.minute,
+                                                    .second = now.second}});
+#endif
+            break;
+        }
+        case WidgetKind::HA_UPDATES: {
+#ifdef USE_SENSOR
+            auto *value = cfg.source_updates.value_or(nullptr);
+            if (!value)
+                break;
+            widget->post(
+                PostArgs{.extras = ui::HAUpdatesPostArgs{
+                             .value = static_cast<int>(value->state)}});
+#endif
+            break;
+        }
+        case WidgetKind::PSN: {
+#ifdef USE_TEXT_SENSOR
+            auto *phil = cfg.source_psn_phil.value_or(nullptr);
+            auto *nick = cfg.source_psn_nick.value_or(nullptr);
+            if (!phil || !nick)
+                break;
+            widget->post(PostArgs{
+                .extras = ui::PSNPostArgs{.phil = phil, .nick = nick}});
+#endif
+            break;
+        }
+        case WidgetKind::PIXEL_MOTION:
+        default:
+            break;
+        }
+    }
 }
 
 bool DisplayLayout::post_to_resource(const std::string &resource,
