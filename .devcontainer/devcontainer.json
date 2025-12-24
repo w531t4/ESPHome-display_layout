@@ -10,7 +10,8 @@
   "postCreateCommand": "git config --global --add safe.directory ${containerWorkspaceFolder} && .devcontainer/setup",
   "postStartCommand": ".devcontainer/bootstrap",
   "containerEnv": {
-    "PYTHONASYNCIODEBUG": "1"
+    "PYTHONASYNCIODEBUG": "1",
+    "ESPHOME_HOME_GIT_URL": "${localEnv:ESPHOME_HOME_GIT_URL}"
   },
   "initializeCommand": "",
   "mounts": [
@@ -23,7 +24,8 @@
     "-e",
     "GIT_EDITOR=code --wait",
     "--security-opt",
-    "label=disable"
+    "label=disable",
+    "--network=host"
   ],
   "customizations": {
     "vscode": {
@@ -31,6 +33,8 @@
         "charliermarsh.ruff",
         "llvm-vs-code-extensions.vscode-clangd",
         "esbenp.prettier-vscode",
+        "redhat.vscode-yaml",
+        "esphome.esphome-vscode",
         "GitHub.vscode-pull-request-github"
       ],
       "settings": {
