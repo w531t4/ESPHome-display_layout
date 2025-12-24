@@ -17,6 +17,22 @@
 #include <vector>
 
 namespace esphome {
+namespace homeassistant {
+class HomeassistantTextSensor;
+}  // namespace homeassistant
+namespace sensor {
+class Sensor;
+}  // namespace sensor
+namespace text_sensor {
+class TextSensor;
+}  // namespace text_sensor
+namespace time {
+class RealTimeClock;
+}  // namespace time
+namespace globals {
+template <typename T> class GlobalsComponent;
+template <typename T> T &id(GlobalsComponent<T> *value);
+}  // namespace globals
 namespace display_layout {
 
 enum class WidgetKind {
@@ -45,6 +61,30 @@ struct WidgetConfig {
     std::optional<int> icon_width;
     std::optional<int> icon_height;
     std::optional<int> max_icons;
+    std::optional<esphome::display::BaseImage *> source_image;
+    std::optional<esphome::text_sensor::TextSensor *> source_count;
+    std::optional<esphome::globals::GlobalsComponent<bool> *> source_ready_flag;
+    std::optional<esphome::homeassistant::HomeassistantTextSensor *>
+        source_chat_row1;
+    std::optional<esphome::homeassistant::HomeassistantTextSensor *>
+        source_chat_row2;
+    std::optional<esphome::homeassistant::HomeassistantTextSensor *>
+        source_chat_row3;
+    std::optional<esphome::homeassistant::HomeassistantTextSensor *>
+        source_chat_channel;
+    std::optional<esphome::sensor::Sensor *> source_rx;
+    std::optional<esphome::sensor::Sensor *> source_tx;
+    std::optional<esphome::text_sensor::TextSensor *> source_weather;
+    std::optional<esphome::time::RealTimeClock *> source_time;
+    std::optional<esphome::sensor::Sensor *> source_temp_high;
+    std::optional<esphome::sensor::Sensor *> source_temp_now;
+    std::optional<esphome::sensor::Sensor *> source_temp_low;
+    std::optional<esphome::sensor::Sensor *> source_updates;
+    std::optional<esphome::homeassistant::HomeassistantTextSensor *>
+        source_psn_phil;
+    std::optional<esphome::homeassistant::HomeassistantTextSensor *>
+        source_psn_nick;
+    bool twitch_started{false};
 };
 
 class DisplayLayout : public Component {
@@ -76,6 +116,7 @@ class DisplayLayout : public Component {
    void register_widget(const WidgetConfig &cfg,
                         std::unique_ptr<Widget> widget);
    Widget *widget_for_resource(const std::string &resource);
+   void post_from_sources();
    bool post_to_resource_internal(const std::string &resource,
                                   const PostArgs &args);
    bool blank_resource_internal(const std::string &resource);
