@@ -1,5 +1,7 @@
 # SPDX-FileCopyrightText: 2025 Aaron White <w531t4@gmail.com>
 # SPDX-License-Identifier: MIT
+from typing import Any, Dict, Optional
+
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import font
@@ -92,13 +94,13 @@ BASE_WIDGET_SCHEMA = cv.Schema(
 )
 
 
-def _require_font(value):
+def _require_font(value: Dict[str, Any]) -> Dict[str, Any]:
     if CONF_FONT not in value:
         raise cv.Invalid("font is required for this widget type")
     return value
 
 
-def _require_font_pair(value):
+def _require_font_pair(value: Dict[str, Any]) -> Dict[str, Any]:
     value = _require_font(value)
     if CONF_FONT2 not in value:
         raise cv.Invalid("font2 is required for this widget type")
@@ -234,7 +236,7 @@ WIDGET_SCHEMAS = {
 }
 
 
-def _validate_widget(value):
+def _validate_widget(value: Dict[str, Any]) -> Dict[str, Any]:
     value = BASE_WIDGET_SCHEMA(value)
     schema = WIDGET_SCHEMAS[value[CONF_TYPE]]
     return schema(value)
@@ -252,11 +254,11 @@ CONFIG_SCHEMA = cv.Schema(
 ).extend(cv.COMPONENT_SCHEMA)
 
 
-def _opt(value):
+def _opt(value: Optional[Any]) -> Any:
     return value if value is not None else cg.RawExpression("std::nullopt")
 
 
-async def to_code(config):
+async def to_code(config: Dict[str, Any]) -> None:
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
 
