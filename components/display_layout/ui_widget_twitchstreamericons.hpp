@@ -52,6 +52,8 @@ class TwitchStreamerIconsWidget : public Widget {
     }
 
     void blank() override {
+        if (!last.has_value())
+            return;
         if ((*last).num_icons > (*new_value).num_icons) {
             it->filled_rectangle(anchor.x, anchor.y, this->width(),
                                  this->height(), this->blank_color);
