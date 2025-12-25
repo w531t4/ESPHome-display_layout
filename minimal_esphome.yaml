@@ -144,3 +144,122 @@ time:
 
 display_layout:
   id: my_layout
+  # Mirrors the widget initialization that used to live in the display lambda.
+  # Each entry maps to a widget's InitArgs and registry priority/magnet settings.
+  gap_x: 1
+  right_edge_x: 768
+  widgets:
+    - type: twitch_icons
+      name: twitchicons
+      resource: twitch_icons
+      anchor:
+        x: 0
+        y: 0
+      priority: 250
+      magnet: left
+      icon_width: 32
+      icon_height: 32
+      max_icons: 6
+      sources:
+        image: twitch_strip
+        count: online_list_member_count
+        ready_flag: twitch_onlineimages_ready_indicator
+    - type: twitch_chat
+      name: twitch
+      resource: twitch_chat
+      anchor:
+        x: 193
+        y: 0
+      priority: 120
+      magnet: auto
+      font: font1
+      pixels_per_character: 6
+      sources:
+        row1: chat_line1
+        row2: chat_line2
+        row3: chat_line3
+        channel: chat_channel
+    - type: pixel_motion
+      name: motion
+      resource: pixel_motion
+      anchor:
+        x: 544
+        y: 0
+      priority: 110
+    - type: network_tput
+      name: network
+      resource: network
+      anchor:
+        x: 574
+        y: 7
+      priority: 100
+      font: font1
+      sources:
+        rx: wan_rx
+        tx: wan_tx
+    - type: weather
+      name: weather
+      resource: weather
+      anchor:
+        x: 576
+        y: 0
+      priority: 90
+      font: font1
+      sources:
+        value: weather
+        time: homeassistant_time
+    - type: psn
+      name: psn
+      resource: psn
+      anchor:
+        x: 0
+        y: 3
+      priority: 95
+      font: font1
+      sources:
+        phil: person1_now_playing
+        nick: person2_now_playing
+    - type: temperatures
+      name: temperatures
+      resource: temperatures
+      anchor:
+        x: 611
+        y: 1
+      priority: 60
+      font: font1
+      sources:
+        high: temp_high
+        now: temp_now
+        low: temp_low
+    - type: date
+      name: date
+      resource: date
+      anchor:
+        x: 621
+        y: 0
+      priority: 55
+      font: font1
+      font2: font1
+      sources:
+        time: homeassistant_time
+    - type: time
+      name: time
+      resource: time
+      anchor:
+        x: 655
+        y: 0
+      priority: 50
+      font: font1
+      font2: font1
+      sources:
+        time: homeassistant_time
+    - type: ha_updates
+      name: haupdates
+      resource: haupdates
+      anchor:
+        x: 0
+        y: 16
+      priority: 20
+      font: font1
+      sources:
+        value: ha_update_count
