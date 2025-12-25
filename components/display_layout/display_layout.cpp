@@ -31,13 +31,9 @@ namespace display_layout {
 static const char *TAG = "display_layout.component";
 static constexpr std::size_t kChatBufferSize = 96;
 
-void DisplayLayout::setup() {
+void DisplayLayout::setup() {}
 
-}
-
-void DisplayLayout::loop() {
-
-}
+void DisplayLayout::loop() {}
 
 void DisplayLayout::set_right_edge_x(int px) { right_edge_x_ = px; }
 
