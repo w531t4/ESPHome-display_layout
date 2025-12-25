@@ -53,7 +53,9 @@ CONF_NICK = "nick"
 
 MAX_WIDGETS = 16
 
-GLOBALS_BOOL = globals_component.GlobalsComponent.template(cg.bool_)
+# The globals component doesn't expose typed IDs, so accept any globals component
+# here and rely on the configured C++ type to be bool.
+GLOBALS_BOOL = globals_component.GlobalsComponent
 
 MAGNET_MAP = {
     "left": "Magnet::LEFT",
@@ -237,8 +239,9 @@ WIDGET_SCHEMAS = {
 
 
 def _validate_widget(value: Dict[str, Any]) -> Dict[str, Any]:
-    value = BASE_WIDGET_SCHEMA(value)
-    schema = WIDGET_SCHEMAS[value[CONF_TYPE]]
+    # Validate only the discriminator first, so we can select the right schema
+    widget_type = cv.one_of(*WIDGET_TYPE_MAP, lower=True)(value.get(CONF_TYPE))
+    schema = WIDGET_SCHEMAS[widget_type]
     return schema(value)
 
 
