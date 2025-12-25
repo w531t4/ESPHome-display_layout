@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2025 Aaron White <w531t4@gmail.com>
 // SPDX-License-Identifier: MIT
 #include "display_layout.h"
+#include "esphome/components/globals/globals_component.h"
 #include "esphome/core/log.h"
 #include "ui_widget_date.hpp"
 #include "ui_widget_haupdates.hpp"
@@ -12,7 +13,6 @@
 #include "ui_widget_twitchchat.hpp"
 #include "ui_widget_twitchstreamericons.hpp"
 #include "ui_widget_weather.hpp"
-#include "esphome/components/globals/globals_component.h"
 #ifdef USE_SENSOR
 #include "esphome/components/sensor/sensor.h"
 #endif
