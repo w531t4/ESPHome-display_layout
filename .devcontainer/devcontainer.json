@@ -25,7 +25,9 @@
     "GIT_EDITOR=code --wait",
     "--security-opt",
     "label=disable",
-    "--network=host"
+    "--network=host",
+    // To allow programming the esp32
+    "--privileged",
   ],
   "customizations": {
     "vscode": {
