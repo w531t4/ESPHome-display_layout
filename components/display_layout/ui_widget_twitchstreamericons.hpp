@@ -96,6 +96,8 @@ class TwitchStreamerIconsWidget : public Widget {
     void update() override {
         if (!initialized)
             return;
+        if (!new_value.has_value())
+            return;
         if (new_value.has_value() && !is_different(*new_value))
             return;
         // before we change our size, wipe out what we're currently using
