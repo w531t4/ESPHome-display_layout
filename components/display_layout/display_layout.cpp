@@ -209,13 +209,9 @@ void DisplayLayout::build_widgets(esphome::display::Display &it) {
 void DisplayLayout::render(esphome::display::Display &it) {
     if (!built_) {
         // Mirror the old per-lambda init: build widgets once, then replay any
-        // queued posts/blanks that arrived before the first render.
+        // queued posts that arrived before the first render.
         build_widgets(it);
         built_ = true;
-        for (const auto &resource : pending_blanks_) {
-            blank_resource_internal(resource);
-        }
-        pending_blanks_.clear();
         for (const auto &pending : pending_posts_) {
             post_to_resource_internal(pending.resource, pending.args);
         }
@@ -393,14 +389,6 @@ bool DisplayLayout::post_to_resource(const std::string &resource,
     return post_to_resource_internal(resource, args);
 }
 
-bool DisplayLayout::blank_resource(const std::string &resource) {
-    if (!built_) {
-        pending_blanks_.push_back(resource);
-        return true;
-    }
-    return blank_resource_internal(resource);
-}
-
 bool DisplayLayout::post_to_resource_internal(const std::string &resource,
                                               const PostArgs &args) {
     auto *widget = widget_for_resource(resource);
@@ -410,19 +398,6 @@ bool DisplayLayout::post_to_resource_internal(const std::string &resource,
         return false;
     }
     widget->post(args);
-    return true;
-}
-
-bool DisplayLayout::blank_resource_internal(const std::string &resource) {
-    auto *widget = widget_for_resource(resource);
-    if (!widget) {
-        ESP_LOGW(TAG, "blank_resource(): no widget bound to resource '%s'",
-                 resource.c_str());
-        return false;
-    }
-    if (widget->is_enabled() && widget->is_visible()) {
-        widget->blank();
-    }
     return true;
 }
 

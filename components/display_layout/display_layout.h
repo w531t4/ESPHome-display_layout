@@ -116,7 +116,6 @@ class DisplayLayout : public Component {
     void post_from_sources();
     bool post_to_resource_internal(const std::string &resource,
                                    const PostArgs &args);
-    bool blank_resource_internal(const std::string &resource);
 
     std::vector<WidgetConfig> widget_configs_;
     std::vector<std::unique_ptr<Widget>> widgets_;
@@ -125,7 +124,6 @@ class DisplayLayout : public Component {
     // Widgets that need a tick each frame (e.g. PixelMotion).
     std::vector<Widget *> motion_widgets_;
     std::vector<PendingPost> pending_posts_;
-    std::vector<std::string> pending_blanks_;
     bool built_ = false;
     int gap_x_ = 0;
     std::optional<int> right_edge_x_;
