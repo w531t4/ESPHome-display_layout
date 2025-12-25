@@ -81,8 +81,7 @@ void DisplayLayout::add_widget_config(const WidgetConfig &cfg) {
     widget_configs_.push_back(cfg);
 }
 
-std::unique_ptr<Widget> DisplayLayout::make_widget(
-    const WidgetConfig &cfg) {
+std::unique_ptr<Widget> DisplayLayout::make_widget(const WidgetConfig &cfg) {
     switch (cfg.kind) {
     case WidgetKind::TWITCH_ICONS:
         return std::make_unique<ui::TwitchStreamerIconsWidget>();
