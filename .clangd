@@ -7,3 +7,4 @@ CompileFlags:
     - -mlongcalls
   Add:
     - -I/home/vscode/.cache/.esphome/build/clangd/src
+    - -isystem/home/vscode/.cache/.esphome/build/clangd/.piolibdeps/clangd/ArduinoJson/src
