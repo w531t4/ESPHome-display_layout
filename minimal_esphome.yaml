@@ -31,10 +31,68 @@ i2c:
   sda: GPIO21
   scl: GPIO22
 
+http_request:
+
+sensor:
+  - platform: homeassistant
+    entity_id: sensor.home_temperature_low_today
+    id: temp_low
+  - platform: homeassistant
+    entity_id: sensor.home_temperature_max_today
+    id: temp_high
+  - platform: homeassistant
+    entity_id: weather.forecast_home
+    attribute: temperature
+    id: temp_now
+  - platform: homeassistant
+    entity_id: sensor.available_updates_count
+    id: ha_update_count
+
 text_sensor:
   - platform: homeassistant
     id: dummy_ha_text
     entity_id: sensor.dummy
+  - platform: homeassistant
+    id: online_list_member_count
+    internal: true
+    entity_id: sensor.twitch_online_streamers_published_streamers
+    attribute: count
+    on_value:
+     then:
+       - lambda: |-
+           ESP_LOGW("streamers_count", "enter count=%s", x.c_str());
+  - platform: homeassistant
+    id: chat_line1
+    entity_id: sensor.twitch_chat_bridge
+    attribute: line1
+    internal: true
+  - platform: homeassistant
+    id: chat_line2
+    entity_id: sensor.twitch_chat_bridge
+    attribute: line2
+    internal: true
+  - platform: homeassistant
+    id: chat_line3
+    entity_id: sensor.twitch_chat_bridge
+    attribute: line3
+    internal: true
+  - platform: homeassistant
+    id: chat_channel
+    entity_id: sensor.firetv_twitch_playback_channel
+    internal: true
+  - platform: homeassistant
+    name: "Weather Forecast From Home Assistant"
+    entity_id: weather.forecast_home
+    id: weather
+    internal: true
+  - platform: homeassistant
+    id: person1_now_playing
+    entity_id: sensor.ps5_person1_playing_game
+    internal: true
+  - platform: homeassistant
+    id: person2_now_playing
+    entity_id: sensor.ps5_person2_playing_game
+    internal: true
 
 image:
   - file: "mdi:weather-sunny"
@@ -50,6 +108,39 @@ external_components:
   - source:
       type: local
       path: components
+
+globals:
+  - id: twitch_onlineimages_ready_indicator
+    type: bool
+    restore_value: no
+    initial_value: "true"
+
+online_image:
+  - id: twitch_strip
+    url: "http://localhost:5050/local/twitch/online_strip.bmp"
+    format: bmp
+    type: rgb
+    buffer_size: 22000
+    update_interval: never    # disable auto refresh
+    on_download_finished:
+      - lambda: |-
+          id(twitch_onlineimages_ready_indicator) = true;
+
+number:
+  - platform: homeassistant
+    id: wan_tx
+    internal: true
+    name: "Wan TX"
+    entity_id: sensor.mysensor_tx
+  - platform: homeassistant
+    id: wan_rx
+    internal: true
+    name: "Wan RX"
+    entity_id: sensor.mysensor_rx
+
+time:
+  - platform: homeassistant
+    id: homeassistant_time
 
 display_layout:
   id: my_layout
