@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2025 Aaron White <w531t4@gmail.com>
 # SPDX-License-Identifier: MIT
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import esphome.codegen as cg
 import esphome.config_validation as cv
@@ -20,6 +20,7 @@ Coord = ui_ns.struct("Coord")
 
 from .config import vars as v
 from .config.maps import MAGNET_MAP, WIDGET_TYPE_MAP
+from .config.helpers import _opt, _require_font, _require_font_pair
 
 MAX_WIDGETS = 16
 
@@ -46,20 +47,6 @@ BASE_WIDGET_SCHEMA = cv.Schema(
         cv.Optional(v.CONF_MAX_ICONS): cv.positive_int,
     }
 )
-
-
-def _require_font(value: Dict[str, Any]) -> Dict[str, Any]:
-    if v.CONF_FONT not in value:
-        raise cv.Invalid("font is required for this widget type")
-    return value
-
-
-def _require_font_pair(value: Dict[str, Any]) -> Dict[str, Any]:
-    value = _require_font(value)
-    if v.CONF_FONT2 not in value:
-        raise cv.Invalid("font2 is required for this widget type")
-    return value
-
 
 WIDGET_SCHEMAS = {
     "twitch_icons": BASE_WIDGET_SCHEMA.extend(
@@ -207,10 +194,6 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(v.CONF_RIGHT_EDGE_X): cv.int_,
     }
 ).extend(cv.COMPONENT_SCHEMA)
-
-
-def _opt(value: Optional[Any]) -> Any:
-    return value if value is not None else cg.RawExpression("std::nullopt")
 
 
 async def to_code(config: Dict[str, Any]) -> None:
