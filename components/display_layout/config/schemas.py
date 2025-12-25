@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2025 Aaron White <w531t4@gmail.com>
 # SPDX-License-Identifier: MIT
 from typing import Dict, Any
-from . import vars as v
+from . import const
 from .helpers import _require_font, _require_font_pair
 from .maps import WIDGET_TYPE_MAP, MAGNET_MAP
 
@@ -23,32 +23,32 @@ BASE_WIDGET_SCHEMA = cv.Schema(
     {
         cv.Required(CONF_TYPE): cv.one_of(*WIDGET_TYPE_MAP, lower=True),
         cv.Required(CONF_NAME): cv.string,
-        cv.Required(v.CONF_ANCHOR): cv.Schema(
-            {cv.Required(v.CONF_X): cv.int_, cv.Required(v.CONF_Y): cv.int_}
+        cv.Required(const.CONF_ANCHOR): cv.Schema(
+            {cv.Required(const.CONF_X): cv.int_, cv.Required(const.CONF_Y): cv.int_}
         ),
-        cv.Optional(v.CONF_PRIORITY, default=0): cv.int_range(min=0, max=255),
-        cv.Optional(v.CONF_MAGNET, default="right"): cv.one_of(*MAGNET_MAP, lower=True),
-        cv.Optional(v.CONF_RESOURCE, default=""): cv.string_strict,
-        cv.Optional(v.CONF_FONT): cv.use_id(font.Font),
-        cv.Optional(v.CONF_FONT2): cv.use_id(font.Font),
-        cv.Optional(v.CONF_PIXELS_PER_CHARACTER): cv.int_range(min=1),
-        cv.Optional(v.CONF_ICON_WIDTH): cv.positive_int,
-        cv.Optional(v.CONF_ICON_HEIGHT): cv.positive_int,
-        cv.Optional(v.CONF_MAX_ICONS): cv.positive_int,
+        cv.Optional(const.CONF_PRIORITY, default=0): cv.int_range(min=0, max=255),
+        cv.Optional(const.CONF_MAGNET, default="right"): cv.one_of(*MAGNET_MAP, lower=True),
+        cv.Optional(const.CONF_RESOURCE, default=""): cv.string_strict,
+        cv.Optional(const.CONF_FONT): cv.use_id(font.Font),
+        cv.Optional(const.CONF_FONT2): cv.use_id(font.Font),
+        cv.Optional(const.CONF_PIXELS_PER_CHARACTER): cv.int_range(min=1),
+        cv.Optional(const.CONF_ICON_WIDTH): cv.positive_int,
+        cv.Optional(const.CONF_ICON_HEIGHT): cv.positive_int,
+        cv.Optional(const.CONF_MAX_ICONS): cv.positive_int,
     }
 )
 
 WIDGET_SCHEMAS = {
     "twitch_icons": BASE_WIDGET_SCHEMA.extend(
         {
-            cv.Required(v.CONF_ICON_WIDTH): cv.positive_int,
-            cv.Required(v.CONF_ICON_HEIGHT): cv.positive_int,
-            cv.Required(v.CONF_MAX_ICONS): cv.positive_int,
-            cv.Optional(v.CONF_SOURCES): cv.Schema(
+            cv.Required(const.CONF_ICON_WIDTH): cv.positive_int,
+            cv.Required(const.CONF_ICON_HEIGHT): cv.positive_int,
+            cv.Required(const.CONF_MAX_ICONS): cv.positive_int,
+            cv.Optional(const.CONF_SOURCES): cv.Schema(
                 {
-                    cv.Required(v.CONF_IMAGE): cv.use_id(image_component.Image_),
-                    cv.Required(v.CONF_COUNT): cv.use_id(text_sensor.TextSensor),
-                    cv.Optional(v.CONF_READY_FLAG): cv.use_id(GLOBALS_BOOL),
+                    cv.Required(const.CONF_IMAGE): cv.use_id(image_component.Image_),
+                    cv.Required(const.CONF_COUNT): cv.use_id(text_sensor.TextSensor),
+                    cv.Optional(const.CONF_READY_FLAG): cv.use_id(GLOBALS_BOOL),
                 }
             ),
         }
@@ -56,18 +56,18 @@ WIDGET_SCHEMAS = {
     "twitch_chat": cv.All(
         BASE_WIDGET_SCHEMA.extend(
             {
-                cv.Optional(v.CONF_SOURCES): cv.Schema(
+                cv.Optional(const.CONF_SOURCES): cv.Schema(
                     {
-                        cv.Required(v.CONF_ROW1): cv.use_id(
+                        cv.Required(const.CONF_ROW1): cv.use_id(
                             ha_text_sensor.HomeassistantTextSensor
                         ),
-                        cv.Required(v.CONF_ROW2): cv.use_id(
+                        cv.Required(const.CONF_ROW2): cv.use_id(
                             ha_text_sensor.HomeassistantTextSensor
                         ),
-                        cv.Required(v.CONF_ROW3): cv.use_id(
+                        cv.Required(const.CONF_ROW3): cv.use_id(
                             ha_text_sensor.HomeassistantTextSensor
                         ),
-                        cv.Optional(v.CONF_CHANNEL): cv.use_id(
+                        cv.Optional(const.CONF_CHANNEL): cv.use_id(
                             ha_text_sensor.HomeassistantTextSensor
                         ),
                     }
@@ -80,10 +80,10 @@ WIDGET_SCHEMAS = {
     "network_tput": cv.All(
         BASE_WIDGET_SCHEMA.extend(
             {
-                cv.Optional(v.CONF_SOURCES): cv.Schema(
+                cv.Optional(const.CONF_SOURCES): cv.Schema(
                     {
-                        cv.Required(v.CONF_RX): cv.use_id(sensor.Sensor),
-                        cv.Required(v.CONF_TX): cv.use_id(sensor.Sensor),
+                        cv.Required(const.CONF_RX): cv.use_id(sensor.Sensor),
+                        cv.Required(const.CONF_TX): cv.use_id(sensor.Sensor),
                     }
                 )
             }
@@ -93,10 +93,10 @@ WIDGET_SCHEMAS = {
     "weather": cv.All(
         BASE_WIDGET_SCHEMA.extend(
             {
-                cv.Optional(v.CONF_SOURCES): cv.Schema(
+                cv.Optional(const.CONF_SOURCES): cv.Schema(
                     {
-                        cv.Required(v.CONF_VALUE): cv.use_id(text_sensor.TextSensor),
-                        cv.Required(v.CONF_TIME): cv.use_id(time.RealTimeClock),
+                        cv.Required(const.CONF_VALUE): cv.use_id(text_sensor.TextSensor),
+                        cv.Required(const.CONF_TIME): cv.use_id(time.RealTimeClock),
                     }
                 )
             }
@@ -106,11 +106,11 @@ WIDGET_SCHEMAS = {
     "temperatures": cv.All(
         BASE_WIDGET_SCHEMA.extend(
             {
-                cv.Optional(v.CONF_SOURCES): cv.Schema(
+                cv.Optional(const.CONF_SOURCES): cv.Schema(
                     {
-                        cv.Required(v.CONF_HIGH): cv.use_id(sensor.Sensor),
-                        cv.Required(v.CONF_NOW): cv.use_id(sensor.Sensor),
-                        cv.Required(v.CONF_LOW): cv.use_id(sensor.Sensor),
+                        cv.Required(const.CONF_HIGH): cv.use_id(sensor.Sensor),
+                        cv.Required(const.CONF_NOW): cv.use_id(sensor.Sensor),
+                        cv.Required(const.CONF_LOW): cv.use_id(sensor.Sensor),
                     }
                 )
             }
@@ -120,8 +120,8 @@ WIDGET_SCHEMAS = {
     "date": cv.All(
         BASE_WIDGET_SCHEMA.extend(
             {
-                cv.Optional(v.CONF_SOURCES): cv.Schema(
-                    {cv.Required(v.CONF_TIME): cv.use_id(time.RealTimeClock)}
+                cv.Optional(const.CONF_SOURCES): cv.Schema(
+                    {cv.Required(const.CONF_TIME): cv.use_id(time.RealTimeClock)}
                 )
             }
         ),
@@ -130,8 +130,8 @@ WIDGET_SCHEMAS = {
     "time": cv.All(
         BASE_WIDGET_SCHEMA.extend(
             {
-                cv.Optional(v.CONF_SOURCES): cv.Schema(
-                    {cv.Required(v.CONF_TIME): cv.use_id(time.RealTimeClock)}
+                cv.Optional(const.CONF_SOURCES): cv.Schema(
+                    {cv.Required(const.CONF_TIME): cv.use_id(time.RealTimeClock)}
                 )
             }
         ),
@@ -140,8 +140,8 @@ WIDGET_SCHEMAS = {
     "ha_updates": cv.All(
         BASE_WIDGET_SCHEMA.extend(
             {
-                cv.Optional(v.CONF_SOURCES): cv.Schema(
-                    {cv.Required(v.CONF_VALUE): cv.use_id(sensor.Sensor)}
+                cv.Optional(const.CONF_SOURCES): cv.Schema(
+                    {cv.Required(const.CONF_VALUE): cv.use_id(sensor.Sensor)}
                 )
             }
         ),
@@ -150,12 +150,12 @@ WIDGET_SCHEMAS = {
     "psn": cv.All(
         BASE_WIDGET_SCHEMA.extend(
             {
-                cv.Optional(v.CONF_SOURCES): cv.Schema(
+                cv.Optional(const.CONF_SOURCES): cv.Schema(
                     {
-                        cv.Required(v.CONF_PHIL): cv.use_id(
+                        cv.Required(const.CONF_PHIL): cv.use_id(
                             ha_text_sensor.HomeassistantTextSensor
                         ),
-                        cv.Required(v.CONF_NICK): cv.use_id(
+                        cv.Required(const.CONF_NICK): cv.use_id(
                             ha_text_sensor.HomeassistantTextSensor
                         ),
                     }
