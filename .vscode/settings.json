@@ -6,6 +6,7 @@
     "files.exclude": {
         "**/__pycache__/**": true,
         "config/components": true,
+        "config/.esphome": true,
     },
     "clangd.path": "/usr/bin/clangd",
 }
