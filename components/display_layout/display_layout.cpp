@@ -261,11 +261,11 @@ void DisplayLayout::post_from_sources() {
             auto *row1 = cfg.source_chat_row1.value_or(nullptr);
             auto *row2 = cfg.source_chat_row2.value_or(nullptr);
             auto *row3 = cfg.source_chat_row3.value_or(nullptr);
-            if (!row1 || !row2 || !row3)
-                break;
             auto *channel = cfg.source_chat_channel.value_or(nullptr);
-            if (channel != nullptr &&
-                !ui::txt_sensor_has_healthy_state(channel)) {
+            if (!row1 || !row2 || !row3 || !channel)
+                break;
+
+            if (!ui::txt_sensor_has_healthy_state(channel)) {
                 if (cfg.twitch_started) {
                     widget->blank();
                     cfg.twitch_started = false;
