@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 
-#include "esphome/core/component.h"
 #include "esphome/components/display/display.h"
 #include "esphome/components/font/font.h"
+#include "esphome/core/component.h"
 #include "magnet.hpp"
 #include "ui_shared.hpp"
 #include "ui_widget.hpp"
