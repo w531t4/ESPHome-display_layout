@@ -47,6 +47,16 @@ sensor:
   - platform: homeassistant
     entity_id: sensor.available_updates_count
     id: ha_update_count
+  - platform: homeassistant
+    id: wan_tx
+    internal: true
+    name: "Wan TX"
+    entity_id: sensor.mysensor_tx
+  - platform: homeassistant
+    id: wan_rx
+    internal: true
+    name: "Wan RX"
+    entity_id: sensor.mysensor_rx
 
 text_sensor:
   - platform: homeassistant
@@ -125,18 +135,6 @@ online_image:
     on_download_finished:
       - lambda: |-
           id(twitch_onlineimages_ready_indicator) = true;
-
-number:
-  - platform: homeassistant
-    id: wan_tx
-    internal: true
-    name: "Wan TX"
-    entity_id: sensor.mysensor_tx
-  - platform: homeassistant
-    id: wan_rx
-    internal: true
-    name: "Wan RX"
-    entity_id: sensor.mysensor_rx
 
 time:
   - platform: homeassistant
