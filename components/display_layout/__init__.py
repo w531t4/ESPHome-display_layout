@@ -2,6 +2,11 @@
 # SPDX-License-Identifier: MIT
 from typing import Any, Dict
 
+from .config import vars as v
+from .config.maps import MAGNET_MAP, WIDGET_TYPE_MAP
+from .config.helpers import _opt
+from .config.schemas import _validate_widget
+
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.const import CONF_ID, CONF_NAME, CONF_TYPE
@@ -12,11 +17,6 @@ WidgetConfig = display_layout_ns.struct("WidgetConfig")
 
 ui_ns = cg.global_ns.namespace("ui")
 Coord = ui_ns.struct("Coord")
-
-from .config import vars as v
-from .config.maps import MAGNET_MAP, WIDGET_TYPE_MAP
-from .config.helpers import _opt
-from .config.schemas import _validate_widget
 
 MAX_WIDGETS = 16
 
