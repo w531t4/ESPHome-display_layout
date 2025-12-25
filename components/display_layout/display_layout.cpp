@@ -242,6 +242,8 @@ void DisplayLayout::post_from_sources() {
             auto *ready_flag = cfg.source_ready_flag.value_or(nullptr);
             if (!image || !count_sensor || !ready_flag)
                 break;
+            if (!count_sensor->has_state() || count_sensor->state.empty())
+                break;
 
             if (!globals::id(ready_flag))
                 break;
