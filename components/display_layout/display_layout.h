@@ -98,6 +98,8 @@ class DisplayLayout : public Component {
     void set_gap_x(int px) { gap_x_ = px; }
     void set_right_edge_x(int px);
     void render(esphome::display::Display &it);
+    // Post by resource name so callers don't keep widget handles.
+    bool post_to_resource(const std::string &resource, const PostArgs &args);
 
   private:
     static constexpr std::size_t kMaxWidgets = 16;
