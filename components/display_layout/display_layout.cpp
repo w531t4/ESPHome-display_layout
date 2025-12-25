@@ -208,14 +208,9 @@ void DisplayLayout::build_widgets(esphome::display::Display &it) {
 
 void DisplayLayout::render(esphome::display::Display &it) {
     if (!built_) {
-        // Mirror the old per-lambda init: build widgets once, then replay any
-        // queued posts that arrived before the first render.
+        // Build widgets once
         build_widgets(it);
         built_ = true;
-        for (const auto &pending : pending_posts_) {
-            post_to_resource_internal(pending.resource, pending.args);
-        }
-        pending_posts_.clear();
     }
 
     post_from_sources();
@@ -382,10 +377,8 @@ void DisplayLayout::post_from_sources() {
 
 bool DisplayLayout::post_to_resource(const std::string &resource,
                                      const PostArgs &args) {
-    if (!built_) {
-        pending_posts_.push_back(PendingPost{resource, args});
+    if (!built_)
         return true;
-    }
     return post_to_resource_internal(resource, args);
 }
 
