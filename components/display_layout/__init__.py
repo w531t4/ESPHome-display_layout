@@ -19,6 +19,7 @@ ui_ns = cg.global_ns.namespace("ui")
 Coord = ui_ns.struct("Coord")
 
 from .config import vars as v
+from .config.maps import MAGNET_MAP, WIDGET_TYPE_MAP
 
 MAX_WIDGETS = 16
 
@@ -26,24 +27,6 @@ MAX_WIDGETS = 16
 # here and rely on the configured C++ type to be bool.
 GLOBALS_BOOL = globals_component.GlobalsComponent
 
-MAGNET_MAP = {
-    "left": "Magnet::LEFT",
-    "right": "Magnet::RIGHT",
-    "auto": "Magnet::AUTO",
-}
-
-WIDGET_TYPE_MAP = {
-    "twitch_icons": "display_layout::WidgetKind::TWITCH_ICONS",
-    "twitch_chat": "display_layout::WidgetKind::TWITCH_CHAT",
-    "pixel_motion": "display_layout::WidgetKind::PIXEL_MOTION",
-    "network_tput": "display_layout::WidgetKind::NETWORK_TPUT",
-    "weather": "display_layout::WidgetKind::WEATHER",
-    "temperatures": "display_layout::WidgetKind::TEMPERATURES",
-    "date": "display_layout::WidgetKind::DATE",
-    "time": "display_layout::WidgetKind::TIME",
-    "ha_updates": "display_layout::WidgetKind::HA_UPDATES",
-    "psn": "display_layout::WidgetKind::PSN",
-}
 
 BASE_WIDGET_SCHEMA = cv.Schema(
     {
