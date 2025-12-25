@@ -32,3 +32,5 @@ CONF_NOW = "now"
 CONF_LOW = "low"
 CONF_PHIL = "phil"
 CONF_NICK = "nick"
+
+MAX_WIDGETS = 16
