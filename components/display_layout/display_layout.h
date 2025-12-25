@@ -19,20 +19,20 @@
 namespace esphome {
 namespace homeassistant {
 class HomeassistantTextSensor;
-}  // namespace homeassistant
+} // namespace homeassistant
 namespace sensor {
 class Sensor;
-}  // namespace sensor
+} // namespace sensor
 namespace text_sensor {
 class TextSensor;
-}  // namespace text_sensor
+} // namespace text_sensor
 namespace time {
 class RealTimeClock;
-}  // namespace time
+} // namespace time
 namespace globals {
 template <typename T> class GlobalsComponent;
 template <typename T> T &id(GlobalsComponent<T> *value);
-}  // namespace globals
+} // namespace globals
 namespace display_layout {
 
 enum class WidgetKind {
@@ -88,52 +88,48 @@ struct WidgetConfig {
 };
 
 class DisplayLayout : public Component {
- public:
-  void setup() override;
-  void loop() override;
-  void dump_config() override;
+  public:
+    void setup() override;
+    void loop() override;
+    void dump_config() override;
 
-   // Build widgets on first render, then update/layout every frame.
-   void add_widget_config(const WidgetConfig &cfg);
-   void set_gap_x(int px) { gap_x_ = px; }
-   void set_right_edge_x(int px);
-   void render(esphome::display::Display &it);
-   // Post/blank by resource name so callers don't keep widget handles.
-   bool post_to_resource(const std::string &resource, const PostArgs &args);
-   bool blank_resource(const std::string &resource);
+    // Build widgets on first render, then update/layout every frame.
+    void add_widget_config(const WidgetConfig &cfg);
+    void set_gap_x(int px) { gap_x_ = px; }
+    void set_right_edge_x(int px);
+    void render(esphome::display::Display &it);
 
   private:
-   struct PendingPost {
-     std::string resource;
-     PostArgs args;
-   };
+    struct PendingPost {
+        std::string resource;
+        PostArgs args;
+    };
 
-   static constexpr std::size_t kMaxWidgets = 16;
-   std::string kind_to_string(WidgetKind kind) const;
-   void build_widgets(esphome::display::Display &it);
-   void configure_registry();
-   std::unique_ptr<Widget> make_widget(const WidgetConfig &cfg);
-   void register_widget(const WidgetConfig &cfg,
-                        std::unique_ptr<Widget> widget);
-   Widget *widget_for_resource(const std::string &resource);
-   void post_from_sources();
-   bool post_to_resource_internal(const std::string &resource,
-                                  const PostArgs &args);
-   bool blank_resource_internal(const std::string &resource);
+    static constexpr std::size_t kMaxWidgets = 16;
+    std::string kind_to_string(WidgetKind kind) const;
+    void build_widgets(esphome::display::Display &it);
+    void configure_registry();
+    std::unique_ptr<Widget> make_widget(const WidgetConfig &cfg);
+    void register_widget(const WidgetConfig &cfg,
+                         std::unique_ptr<Widget> widget);
+    Widget *widget_for_resource(const std::string &resource);
+    void post_from_sources();
+    bool post_to_resource_internal(const std::string &resource,
+                                   const PostArgs &args);
+    bool blank_resource_internal(const std::string &resource);
 
-   std::vector<WidgetConfig> widget_configs_;
-   std::vector<std::unique_ptr<Widget>> widgets_;
-   ui::WidgetRegistry<kMaxWidgets> registry_;
-   std::unordered_map<std::string, Widget *> resource_map_;
-   // Widgets that need a tick each frame (e.g. PixelMotion).
-   std::vector<Widget *> motion_widgets_;
-   std::vector<PendingPost> pending_posts_;
-   std::vector<std::string> pending_blanks_;
-   bool built_ = false;
-   int gap_x_ = 0;
-   std::optional<int> right_edge_x_;
+    std::vector<WidgetConfig> widget_configs_;
+    std::vector<std::unique_ptr<Widget>> widgets_;
+    ui::WidgetRegistry<kMaxWidgets> registry_;
+    std::unordered_map<std::string, Widget *> resource_map_;
+    // Widgets that need a tick each frame (e.g. PixelMotion).
+    std::vector<Widget *> motion_widgets_;
+    std::vector<PendingPost> pending_posts_;
+    std::vector<std::string> pending_blanks_;
+    bool built_ = false;
+    int gap_x_ = 0;
+    std::optional<int> right_edge_x_;
 };
 
-
-}  // namespace display_layout
-}  // namespace esphome
+} // namespace display_layout
+} // namespace esphome
