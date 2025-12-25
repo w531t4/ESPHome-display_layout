@@ -9,4 +9,9 @@
         "config/.esphome": true,
     },
     "clangd.path": "/usr/bin/clangd",
+    "files.associations": {
+        "minimal_esphome.yaml": "esphome",
+        "**/config/*.yaml": "esphome",
+        "**/config/*.yml": "esphome"
+    }
 }
