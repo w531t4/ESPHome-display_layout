@@ -100,11 +100,6 @@ class DisplayLayout : public Component {
     void render(esphome::display::Display &it);
 
   private:
-    struct PendingPost {
-        std::string resource;
-        PostArgs args;
-    };
-
     static constexpr std::size_t kMaxWidgets = 16;
     std::string kind_to_string(WidgetKind kind) const;
     void build_widgets(esphome::display::Display &it);
@@ -123,7 +118,6 @@ class DisplayLayout : public Component {
     std::unordered_map<std::string, Widget *> resource_map_;
     // Widgets that need a tick each frame (e.g. PixelMotion).
     std::vector<Widget *> motion_widgets_;
-    std::vector<PendingPost> pending_posts_;
     bool built_ = false;
     int gap_x_ = 0;
     std::optional<int> right_edge_x_;
