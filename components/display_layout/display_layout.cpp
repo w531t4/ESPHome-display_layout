@@ -118,12 +118,11 @@ void DisplayLayout::register_widget(const WidgetConfig &cfg,
     Widget *raw = widget.get();
     switch (cfg.kind) {
     case WidgetKind::TWITCH_ICONS:
-        registry_.add(
-            *static_cast<ui::TwitchStreamerIconsWidget *>(raw));
+        registry_.add(*static_cast<ui::TwitchStreamerIconsWidget *>(raw));
         break;
     case WidgetKind::TWITCH_CHAT:
-        registry_.add(*static_cast<ui::TwitchChatWidget<kChatBufferSize> *>(
-            raw));
+        registry_.add(
+            *static_cast<ui::TwitchChatWidget<kChatBufferSize> *>(raw));
         break;
     case WidgetKind::PIXEL_MOTION:
         registry_.add(*static_cast<ui::PixelMotionWidget *>(raw));
@@ -132,9 +131,10 @@ void DisplayLayout::register_widget(const WidgetConfig &cfg,
         registry_.add(*static_cast<ui::NetworkTputWidget *>(raw));
         break;
     case WidgetKind::WEATHER:
-        registry_.add(*static_cast<
-                      ui::WeatherWidget<ui::WeatherPostArgs,
-                                        ui::WeatherPostArgs> *>(raw));
+        registry_.add(
+            *static_cast<
+                ui::WeatherWidget<ui::WeatherPostArgs, ui::WeatherPostArgs> *>(
+                raw));
         break;
     case WidgetKind::TEMPERATURES:
         registry_.add(*static_cast<ui::TemperaturesWidget *>(raw));
