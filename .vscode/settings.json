@@ -5,6 +5,7 @@
     ],
     "files.exclude": {
         "**/__pycache__/**": true,
+        "config/components": true,
     },
     "clangd.path": "/usr/bin/clangd",
 }
