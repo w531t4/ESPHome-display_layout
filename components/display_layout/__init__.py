@@ -18,14 +18,11 @@ WidgetConfig = display_layout_ns.struct("WidgetConfig")
 ui_ns = cg.global_ns.namespace("ui")
 Coord = ui_ns.struct("Coord")
 
-MAX_WIDGETS = 16
-
-
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(DisplayLayout),
         cv.Optional(const.CONF_WIDGETS, default=[]): cv.All(
-            cv.ensure_list(_validate_widget), cv.Length(max=MAX_WIDGETS)
+            cv.ensure_list(_validate_widget), cv.Length(max=const.MAX_WIDGETS)
         ),
         cv.Optional(const.CONF_GAP_X, default=0): cv.int_,
         cv.Optional(const.CONF_RIGHT_EDGE_X): cv.int_,
