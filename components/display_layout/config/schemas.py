@@ -27,7 +27,9 @@ BASE_WIDGET_SCHEMA = cv.Schema(
             {cv.Required(const.CONF_X): cv.int_, cv.Required(const.CONF_Y): cv.int_}
         ),
         cv.Optional(const.CONF_PRIORITY, default=0): cv.int_range(min=0, max=255),
-        cv.Optional(const.CONF_MAGNET, default="right"): cv.one_of(*MAGNET_MAP, lower=True),
+        cv.Optional(const.CONF_MAGNET, default="right"): cv.one_of(
+            *MAGNET_MAP, lower=True
+        ),
         cv.Optional(const.CONF_RESOURCE, default=""): cv.string_strict,
         cv.Optional(const.CONF_FONT): cv.use_id(font.Font),
         cv.Optional(const.CONF_FONT2): cv.use_id(font.Font),
@@ -95,7 +97,9 @@ WIDGET_SCHEMAS = {
             {
                 cv.Optional(const.CONF_SOURCES): cv.Schema(
                     {
-                        cv.Required(const.CONF_VALUE): cv.use_id(text_sensor.TextSensor),
+                        cv.Required(const.CONF_VALUE): cv.use_id(
+                            text_sensor.TextSensor
+                        ),
                         cv.Required(const.CONF_TIME): cv.use_id(time.RealTimeClock),
                     }
                 )
