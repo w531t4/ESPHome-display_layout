@@ -239,23 +239,18 @@ void DisplayLayout::post_from_sources() {
 #ifdef USE_TEXT_SENSOR
             auto *image = cfg.source_image.value_or(nullptr);
             auto *count_sensor = cfg.source_count.value_or(nullptr);
-            if (!image || !count_sensor)
-                break;
-            bool ready = true;
             auto *ready_flag = cfg.source_ready_flag.value_or(nullptr);
-            if (ready_flag != nullptr) {
-                ready = globals::id(ready_flag);
-            }
-            if (!ready)
+            if (!image || !count_sensor || !ready_flag)
+                break;
+
+            if (!globals::id(ready_flag))
                 break;
             const int num_icons =
                 ui::TwitchStreamerIconsWidget::normalize_input(
                     count_sensor->state.c_str());
             widget->post(PostArgs{.extras = ui::TwitchStreamerIconsPostArgs{
                                       .image = image, .num_icons = num_icons}});
-            if (ready_flag != nullptr) {
-                globals::id(ready_flag) = false;
-            }
+            globals::id(ready_flag) = false;
 #endif
             break;
         }
