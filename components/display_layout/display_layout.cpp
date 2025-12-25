@@ -437,7 +437,7 @@ bool DisplayLayout::blank_resource_internal(const std::string &resource) {
     return true;
 }
 
-void DisplayLayout::dump_config(){
+void DisplayLayout::dump_config() {
     ESP_LOGCONFIG(TAG, "Display Layout");
     ESP_LOGCONFIG(TAG, "  gap_x: %d", gap_x_);
     if (right_edge_x_.has_value()) {
@@ -453,6 +453,5 @@ void DisplayLayout::dump_config(){
     }
 }
 
-
-}  // namespace display_layout
-}  // namespace esphome
+} // namespace display_layout
+} // namespace esphome
