@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MIT
 from typing import Any, Dict
 
-from .config import vars as v
+from .config import const
 from .config.maps import MAGNET_MAP, WIDGET_TYPE_MAP
 from .config.helpers import _opt
 from .config.schemas import _validate_widget
@@ -24,11 +24,11 @@ MAX_WIDGETS = 16
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(DisplayLayout),
-        cv.Optional(v.CONF_WIDGETS, default=[]): cv.All(
+        cv.Optional(const.CONF_WIDGETS, default=[]): cv.All(
             cv.ensure_list(_validate_widget), cv.Length(max=MAX_WIDGETS)
         ),
-        cv.Optional(v.CONF_GAP_X, default=0): cv.int_,
-        cv.Optional(v.CONF_RIGHT_EDGE_X): cv.int_,
+        cv.Optional(const.CONF_GAP_X, default=0): cv.int_,
+        cv.Optional(const.CONF_RIGHT_EDGE_X): cv.int_,
     }
 ).extend(cv.COMPONENT_SCHEMA)
 
@@ -37,18 +37,18 @@ async def to_code(config: Dict[str, Any]) -> None:
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
 
-    cg.add(var.set_gap_x(config[v.CONF_GAP_X]))
-    if v.CONF_RIGHT_EDGE_X in config:
-        cg.add(var.set_right_edge_x(config[v.CONF_RIGHT_EDGE_X]))
+    cg.add(var.set_gap_x(config[const.CONF_GAP_X]))
+    if const.CONF_RIGHT_EDGE_X in config:
+        cg.add(var.set_right_edge_x(config[const.CONF_RIGHT_EDGE_X]))
 
-    for widget in config.get(v.CONF_WIDGETS, []):
+    for widget in config.get(const.CONF_WIDGETS, []):
         font_expr = None
         font2_expr = None
-        if v.CONF_FONT in widget:
-            font_expr = await cg.get_variable(widget[v.CONF_FONT])
-        if v.CONF_FONT2 in widget:
-            font2_expr = await cg.get_variable(widget[v.CONF_FONT2])
-        sources = widget.get(v.CONF_SOURCES, {})
+        if const.CONF_FONT in widget:
+            font_expr = await cg.get_variable(widget[const.CONF_FONT])
+        if const.CONF_FONT2 in widget:
+            font2_expr = await cg.get_variable(widget[const.CONF_FONT2])
+        sources = widget.get(const.CONF_SOURCES, {})
         image_expr = None
         count_expr = None
         ready_flag_expr = None
@@ -67,60 +67,60 @@ async def to_code(config: Dict[str, Any]) -> None:
         phil_expr = None
         nick_expr = None
         if sources:
-            if v.CONF_IMAGE in sources:
-                image_expr = await cg.get_variable(sources[v.CONF_IMAGE])
-            if v.CONF_COUNT in sources:
-                count_expr = await cg.get_variable(sources[v.CONF_COUNT])
-            if v.CONF_READY_FLAG in sources:
-                ready_flag_expr = await cg.get_variable(sources[v.CONF_READY_FLAG])
-            if v.CONF_ROW1 in sources:
-                row1_expr = await cg.get_variable(sources[v.CONF_ROW1])
-            if v.CONF_ROW2 in sources:
-                row2_expr = await cg.get_variable(sources[v.CONF_ROW2])
-            if v.CONF_ROW3 in sources:
-                row3_expr = await cg.get_variable(sources[v.CONF_ROW3])
-            if v.CONF_CHANNEL in sources:
-                channel_expr = await cg.get_variable(sources[v.CONF_CHANNEL])
-            if v.CONF_RX in sources:
-                rx_expr = await cg.get_variable(sources[v.CONF_RX])
-            if v.CONF_TX in sources:
-                tx_expr = await cg.get_variable(sources[v.CONF_TX])
-            if v.CONF_VALUE in sources and widget[CONF_TYPE] == "weather":
-                weather_expr = await cg.get_variable(sources[v.CONF_VALUE])
-            if v.CONF_TIME in sources:
-                time_expr = await cg.get_variable(sources[v.CONF_TIME])
-            if v.CONF_HIGH in sources:
-                high_expr = await cg.get_variable(sources[v.CONF_HIGH])
-            if v.CONF_NOW in sources:
-                now_expr = await cg.get_variable(sources[v.CONF_NOW])
-            if v.CONF_LOW in sources:
-                low_expr = await cg.get_variable(sources[v.CONF_LOW])
-            if v.CONF_VALUE in sources and widget[CONF_TYPE] == "ha_updates":
-                updates_expr = await cg.get_variable(sources[v.CONF_VALUE])
-            if v.CONF_PHIL in sources:
-                phil_expr = await cg.get_variable(sources[v.CONF_PHIL])
-            if v.CONF_NICK in sources:
-                nick_expr = await cg.get_variable(sources[v.CONF_NICK])
+            if const.CONF_IMAGE in sources:
+                image_expr = await cg.get_variable(sources[const.CONF_IMAGE])
+            if const.CONF_COUNT in sources:
+                count_expr = await cg.get_variable(sources[const.CONF_COUNT])
+            if const.CONF_READY_FLAG in sources:
+                ready_flag_expr = await cg.get_variable(sources[const.CONF_READY_FLAG])
+            if const.CONF_ROW1 in sources:
+                row1_expr = await cg.get_variable(sources[const.CONF_ROW1])
+            if const.CONF_ROW2 in sources:
+                row2_expr = await cg.get_variable(sources[const.CONF_ROW2])
+            if const.CONF_ROW3 in sources:
+                row3_expr = await cg.get_variable(sources[const.CONF_ROW3])
+            if const.CONF_CHANNEL in sources:
+                channel_expr = await cg.get_variable(sources[const.CONF_CHANNEL])
+            if const.CONF_RX in sources:
+                rx_expr = await cg.get_variable(sources[const.CONF_RX])
+            if const.CONF_TX in sources:
+                tx_expr = await cg.get_variable(sources[const.CONF_TX])
+            if const.CONF_VALUE in sources and widget[CONF_TYPE] == "weather":
+                weather_expr = await cg.get_variable(sources[const.CONF_VALUE])
+            if const.CONF_TIME in sources:
+                time_expr = await cg.get_variable(sources[const.CONF_TIME])
+            if const.CONF_HIGH in sources:
+                high_expr = await cg.get_variable(sources[const.CONF_HIGH])
+            if const.CONF_NOW in sources:
+                now_expr = await cg.get_variable(sources[const.CONF_NOW])
+            if const.CONF_LOW in sources:
+                low_expr = await cg.get_variable(sources[const.CONF_LOW])
+            if const.CONF_VALUE in sources and widget[CONF_TYPE] == "ha_updates":
+                updates_expr = await cg.get_variable(sources[const.CONF_VALUE])
+            if const.CONF_PHIL in sources:
+                phil_expr = await cg.get_variable(sources[const.CONF_PHIL])
+            if const.CONF_NICK in sources:
+                nick_expr = await cg.get_variable(sources[const.CONF_NICK])
         cfg = cg.StructInitializer(
             WidgetConfig,
             ("kind", cg.RawExpression(WIDGET_TYPE_MAP[widget[CONF_TYPE]])),
             ("id", widget[CONF_NAME]),
-            ("resource", widget.get(v.CONF_RESOURCE, "")),
+            ("resource", widget.get(const.CONF_RESOURCE, "")),
             (
                 "anchor",
                 cg.RawExpression(
-                    f"ui::Coord({widget[v.CONF_ANCHOR][v.CONF_X]}, "
-                    f"{widget[v.CONF_ANCHOR][v.CONF_Y]})"
+                    f"ui::Coord({widget[const.CONF_ANCHOR][const.CONF_X]}, "
+                    f"{widget[const.CONF_ANCHOR][const.CONF_Y]})"
                 ),
             ),
-            ("priority", widget[v.CONF_PRIORITY]),
-            ("magnet", cg.RawExpression(MAGNET_MAP[widget[v.CONF_MAGNET]])),
+            ("priority", widget[const.CONF_PRIORITY]),
+            ("magnet", cg.RawExpression(MAGNET_MAP[widget[const.CONF_MAGNET]])),
             ("font", _opt(font_expr)),
             ("font2", _opt(font2_expr)),
-            ("pixels_per_character", _opt(widget.get(v.CONF_PIXELS_PER_CHARACTER))),
-            ("icon_width", _opt(widget.get(v.CONF_ICON_WIDTH))),
-            ("icon_height", _opt(widget.get(v.CONF_ICON_HEIGHT))),
-            ("max_icons", _opt(widget.get(v.CONF_MAX_ICONS))),
+            ("pixels_per_character", _opt(widget.get(const.CONF_PIXELS_PER_CHARACTER))),
+            ("icon_width", _opt(widget.get(const.CONF_ICON_WIDTH))),
+            ("icon_height", _opt(widget.get(const.CONF_ICON_HEIGHT))),
+            ("max_icons", _opt(widget.get(const.CONF_MAX_ICONS))),
             ("source_image", _opt(image_expr)),
             ("source_count", _opt(count_expr)),
             ("source_ready_flag", _opt(ready_flag_expr)),

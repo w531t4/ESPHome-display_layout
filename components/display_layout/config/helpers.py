@@ -3,18 +3,18 @@
 from typing import Dict, Any, Optional
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from . import vars as v
+from . import const
 
 
 def _require_font(value: Dict[str, Any]) -> Dict[str, Any]:
-    if v.CONF_FONT not in value:
+    if const.CONF_FONT not in value:
         raise cv.Invalid("font is required for this widget type")
     return value
 
 
 def _require_font_pair(value: Dict[str, Any]) -> Dict[str, Any]:
     value = _require_font(value)
-    if v.CONF_FONT2 not in value:
+    if const.CONF_FONT2 not in value:
         raise cv.Invalid("font2 is required for this widget type")
     return value
 
