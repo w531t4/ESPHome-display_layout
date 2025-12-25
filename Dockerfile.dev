@@ -31,10 +31,10 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN --mount=type=bind,source=.python-requirements,target=.python-requirements \
     uv pip install -r .python-requirements
 
-ENV ESPHOME_DATA_DIR=/home/vscode/.cache/.esphome
 RUN --mount=type=bind,source=minimal_esphome.yaml,target=minimal_esphome.yaml \
     --mount=type=bind,source=components,target=components \
     --mount=type=bind,source=.gitignore,target=.gitignore \
+    ESPHOME_DATA_DIR=/home/vscode/.cache/.esphome \
     python3 -m esphome compile minimal_esphome.yaml
 
 WORKDIR /workspaces
