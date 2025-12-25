@@ -12,9 +12,7 @@
 #include "ui_widget_twitchchat.hpp"
 #include "ui_widget_twitchstreamericons.hpp"
 #include "ui_widget_weather.hpp"
-#ifdef USE_GLOBALS
 #include "esphome/components/globals/globals_component.h"
-#endif
 #ifdef USE_SENSOR
 #include "esphome/components/sensor/sensor.h"
 #endif
@@ -254,15 +252,9 @@ void DisplayLayout::post_from_sources() {
                 break;
             bool ready = true;
             auto *ready_flag = cfg.source_ready_flag.value_or(nullptr);
-#ifdef USE_GLOBALS
             if (ready_flag != nullptr) {
                 ready = globals::id(ready_flag);
             }
-#else
-            if (ready_flag != nullptr) {
-                ready = false;
-            }
-#endif
             if (!ready)
                 break;
             const int num_icons =
@@ -270,11 +262,9 @@ void DisplayLayout::post_from_sources() {
                     count_sensor->state.c_str());
             widget->post(PostArgs{.extras = ui::TwitchStreamerIconsPostArgs{
                                       .image = image, .num_icons = num_icons}});
-#ifdef USE_GLOBALS
             if (ready_flag != nullptr) {
                 globals::id(ready_flag) = false;
             }
-#endif
 #endif
             break;
         }
