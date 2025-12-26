@@ -35,31 +35,60 @@ void DisplayLayout::loop() {}
 
 void DisplayLayout::set_right_edge_x(int px) { right_edge_x_ = px; }
 
-std::string DisplayLayout::kind_to_string(WidgetKind kind) const {
+struct WidgetMeta {
+    WidgetKind kind;
+    const char *name;
+    std::unique_ptr<Widget> (*factory)();
+    void (*registrar)(ui::WidgetRegistry<16> &, Widget *);
+    bool is_motion{false};
+};
+
+template <typename W, bool is_motion = false>
+WidgetMeta make_meta(WidgetKind kind, const char *name) {
+    return WidgetMeta{
+        kind, name,
+        []() -> std::unique_ptr<Widget> { return std::make_unique<W>(); },
+        [](auto &reg, Widget *w) { reg.add(*static_cast<W *>(w)); }, is_motion};
+}
+
+namespace {
+std::optional<WidgetMeta> meta_for_kind(WidgetKind kind) {
+    using TwitchChatWidgetType = ui::TwitchChatWidget<kChatBufferSize>;
+    using WeatherWidgetType =
+        ui::WeatherWidget<ui::WeatherPostArgs, ui::WeatherPostArgs>;
+
     switch (kind) {
     case WidgetKind::TWITCH_ICONS:
-        return "twitch_icons";
+        return make_meta<ui::TwitchStreamerIconsWidget>(kind, "twitch_icons");
     case WidgetKind::TWITCH_CHAT:
-        return "twitch_chat";
+        return make_meta<TwitchChatWidgetType>(kind, "twitch_chat");
     case WidgetKind::PIXEL_MOTION:
-        return "pixel_motion";
+        return make_meta<ui::PixelMotionWidget, true>(kind, "pixel_motion");
     case WidgetKind::NETWORK_TPUT:
-        return "network_tput";
+        return make_meta<ui::NetworkTputWidget>(kind, "network_tput");
     case WidgetKind::WEATHER:
-        return "weather";
+        return make_meta<WeatherWidgetType>(kind, "weather");
     case WidgetKind::TEMPERATURES:
-        return "temperatures";
+        return make_meta<ui::TemperaturesWidget>(kind, "temperatures");
     case WidgetKind::DATE:
-        return "date";
+        return make_meta<ui::DateWidget>(kind, "date");
     case WidgetKind::TIME:
-        return "time";
+        return make_meta<ui::TimeWidget>(kind, "time");
     case WidgetKind::HA_UPDATES:
-        return "ha_updates";
+        return make_meta<ui::HAUpdatesWidget>(kind, "ha_updates");
     case WidgetKind::PSN:
-        return "psn";
+        return make_meta<ui::PSNWidget>(kind, "psn");
     default:
-        return "unknown";
+        return std::nullopt;
     }
+}
+} // namespace
+
+std::string DisplayLayout::kind_to_string(WidgetKind kind) const {
+    auto meta = meta_for_kind(kind);
+    if (meta.has_value())
+        return meta->name;
+    return "unknown";
 }
 
 void DisplayLayout::configure_registry() {
@@ -80,31 +109,10 @@ void DisplayLayout::add_widget_config(const WidgetConfig &cfg) {
 }
 
 std::unique_ptr<Widget> DisplayLayout::make_widget(const WidgetConfig &cfg) {
-    switch (cfg.kind) {
-    case WidgetKind::TWITCH_ICONS:
-        return std::make_unique<ui::TwitchStreamerIconsWidget>();
-    case WidgetKind::TWITCH_CHAT:
-        return std::make_unique<ui::TwitchChatWidget<kChatBufferSize>>();
-    case WidgetKind::PIXEL_MOTION:
-        return std::make_unique<ui::PixelMotionWidget>();
-    case WidgetKind::NETWORK_TPUT:
-        return std::make_unique<ui::NetworkTputWidget>();
-    case WidgetKind::WEATHER:
-        return std::make_unique<
-            ui::WeatherWidget<ui::WeatherPostArgs, ui::WeatherPostArgs>>();
-    case WidgetKind::TEMPERATURES:
-        return std::make_unique<ui::TemperaturesWidget>();
-    case WidgetKind::DATE:
-        return std::make_unique<ui::DateWidget>();
-    case WidgetKind::TIME:
-        return std::make_unique<ui::TimeWidget>();
-    case WidgetKind::HA_UPDATES:
-        return std::make_unique<ui::HAUpdatesWidget>();
-    case WidgetKind::PSN:
-        return std::make_unique<ui::PSNWidget>();
-    default:
+    auto meta = meta_for_kind(cfg.kind);
+    if (!meta.has_value())
         return nullptr;
-    }
+    return meta->factory();
 }
 
 void DisplayLayout::register_widget(const WidgetConfig &cfg,
@@ -112,51 +120,21 @@ void DisplayLayout::register_widget(const WidgetConfig &cfg,
     if (!widget)
         return;
 
-    Widget *raw = widget.get();
-    switch (cfg.kind) {
-    case WidgetKind::TWITCH_ICONS:
-        registry_.add(*static_cast<ui::TwitchStreamerIconsWidget *>(raw));
-        break;
-    case WidgetKind::TWITCH_CHAT:
-        registry_.add(
-            *static_cast<ui::TwitchChatWidget<kChatBufferSize> *>(raw));
-        break;
-    case WidgetKind::PIXEL_MOTION:
-        registry_.add(*static_cast<ui::PixelMotionWidget *>(raw));
-        break;
-    case WidgetKind::NETWORK_TPUT:
-        registry_.add(*static_cast<ui::NetworkTputWidget *>(raw));
-        break;
-    case WidgetKind::WEATHER:
-        registry_.add(
-            *static_cast<
-                ui::WeatherWidget<ui::WeatherPostArgs, ui::WeatherPostArgs> *>(
-                raw));
-        break;
-    case WidgetKind::TEMPERATURES:
-        registry_.add(*static_cast<ui::TemperaturesWidget *>(raw));
-        break;
-    case WidgetKind::DATE:
-        registry_.add(*static_cast<ui::DateWidget *>(raw));
-        break;
-    case WidgetKind::TIME:
-        registry_.add(*static_cast<ui::TimeWidget *>(raw));
-        break;
-    case WidgetKind::HA_UPDATES:
-        registry_.add(*static_cast<ui::HAUpdatesWidget *>(raw));
-        break;
-    case WidgetKind::PSN:
-        registry_.add(*static_cast<ui::PSNWidget *>(raw));
-        break;
-    default:
+    auto meta = meta_for_kind(cfg.kind);
+    if (!meta.has_value()) {
         ESP_LOGW(TAG, "register_widget(): unexpected widget kind");
-        break;
+        return;
+    }
+
+    Widget *raw = widget.get();
+    if (meta->registrar) {
+        meta->registrar(registry_, raw);
     }
 
     if (!cfg.resource.empty()) {
         resource_map_[cfg.resource] = raw;
     }
-    if (cfg.kind == WidgetKind::PIXEL_MOTION) {
+    if (meta->is_motion) {
         motion_widgets_.push_back(raw);
     }
 
