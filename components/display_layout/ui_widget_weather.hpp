@@ -75,7 +75,7 @@ template <typename T, typename P> class WeatherWidget : public Widget {
         new_value = value;
     }
 
-    void update() {
+    void update() override {
         if (!initialized)
             return;
         if (new_value.has_value() && !is_different(*new_value))
@@ -93,12 +93,12 @@ template <typename T, typename P> class WeatherWidget : public Widget {
         write();
     }
 
-    const int width() const {
+    const int width() const override {
         if (!(this->is_visible()))
             return 0;
         return 32;
     }
 
-    const int height() const { return 32; }
+    const int height() const override { return 32; }
 };
 } // namespace ui

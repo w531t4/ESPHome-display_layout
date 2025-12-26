@@ -77,7 +77,7 @@ class TwitchChatWidget : public CompositeWidget<3> {
 
     const size_t get_capacity() const { return this->pixel_capacity; }
 
-    void post(const PostArgs &args) {
+    void post(const PostArgs &args) override {
         if (args.extras.has_value()) {
             const TwitchChatPostArgs *post_args_ptr =
                 std::any_cast<const TwitchChatPostArgs>(&args.extras);
