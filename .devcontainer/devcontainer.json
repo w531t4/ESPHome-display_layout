@@ -60,6 +60,9 @@
           }
         },
         "terminal.integrated.defaultProfile.linux": "bash",
+        "[c][cpp][h][hpp]": {
+            "editor.defaultFormatter": "llvm-vs-code-extensions.vscode-clangd"
+        },
         "[python]": {
           "editor.defaultFormatter": "charliermarsh.ruff"
         },
