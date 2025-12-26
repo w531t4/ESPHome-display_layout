@@ -10,6 +10,9 @@
 #include "ui_shared.hpp"
 #include "ui_widget.hpp"
 #include "ui_widgetregistry.hpp"
+#ifndef DISPLAY_LAYOUT_MAX_WIDGETS
+#define DISPLAY_LAYOUT_MAX_WIDGETS 16
+#endif
 #include <memory>
 #include <optional>
 #include <string>
@@ -89,6 +92,7 @@ struct WidgetConfig {
 
 class DisplayLayout : public Component {
   public:
+    static constexpr std::size_t kMaxWidgets = DISPLAY_LAYOUT_MAX_WIDGETS;
     void setup() override;
     void loop() override;
     void dump_config() override;
@@ -102,7 +106,6 @@ class DisplayLayout : public Component {
     bool post_to_resource(const std::string &resource, const PostArgs &args);
 
   private:
-    static constexpr std::size_t kMaxWidgets = 16;
     std::string kind_to_string(WidgetKind kind) const;
     void build_widgets(esphome::display::Display &it);
     void configure_registry();
