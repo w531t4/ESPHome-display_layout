@@ -15,4 +15,9 @@ uv pip install \
   --upgrade \
   --config-settings editable_mode=compat
 
+# Fix issue where clang-format looks in
+# /home/vscode/.cache/.esphome/build/clangd/src/esphome/components/display_layout/
+ln -sf /workspaces/ESPHome-display_layout/.clang-format /home/vscode/.clang-format
+ln -sf /workspaces/ESPHome-display_layout/.clangd /home/vscode/.clangd
+
 .devcontainer/bootstrap-private-configs
