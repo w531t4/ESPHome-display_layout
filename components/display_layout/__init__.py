@@ -22,7 +22,7 @@ CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(DisplayLayout),
         cv.Optional(const.CONF_WIDGETS, default=[]): cv.All(
-            cv.ensure_list(_validate_widget), cv.Length(max=const.MAX_WIDGETS)
+            cv.ensure_list(_validate_widget)
         ),
         cv.Optional(const.CONF_GAP_X, default=0): cv.int_,
         cv.Optional(const.CONF_RIGHT_EDGE_X): cv.int_,
@@ -33,6 +33,10 @@ CONFIG_SCHEMA = cv.Schema(
 async def to_code(config: Dict[str, Any]) -> None:
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
+
+    # Let C++ know the exact widget count for the registry size.
+    max_widgets = max(1, len(config.get(const.CONF_WIDGETS, [])))
+    cg.add_define("DISPLAY_LAYOUT_MAX_WIDGETS", max_widgets)
 
     cg.add(var.set_gap_x(config[const.CONF_GAP_X]))
     if const.CONF_RIGHT_EDGE_X in config:
