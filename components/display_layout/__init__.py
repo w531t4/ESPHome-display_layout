@@ -21,10 +21,8 @@ Coord = ui_ns.struct("Coord")
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(DisplayLayout),
-        cv.Optional(const.CONF_WIDGETS, default=[]): cv.All(
-            cv.ensure_list(_validate_widget)
-        ),
-        cv.Optional(const.CONF_GAP_X, default=0): cv.int_,
+        cv.Optional(const.CONF_WIDGETS): cv.All(cv.ensure_list(_validate_widget)),
+        cv.Optional(const.CONF_GAP_X): cv.int_,
         cv.Optional(const.CONF_RIGHT_EDGE_X): cv.int_,
     }
 ).extend(cv.COMPONENT_SCHEMA)
@@ -35,14 +33,15 @@ async def to_code(config: Dict[str, Any]) -> None:
     await cg.register_component(var, config)
 
     # Let C++ know the exact widget count for the registry size.
-    max_widgets = max(1, len(config.get(const.CONF_WIDGETS, [])))
+    widget_list = config.get(const.CONF_WIDGETS, [])
+    max_widgets = max(1, len(widget_list))
     cg.add_define("DISPLAY_LAYOUT_MAX_WIDGETS", max_widgets)
 
-    cg.add(var.set_gap_x(config[const.CONF_GAP_X]))
+    cg.add(var.set_gap_x(config.get(const.CONF_GAP_X, 0)))
     if const.CONF_RIGHT_EDGE_X in config:
         cg.add(var.set_right_edge_x(config[const.CONF_RIGHT_EDGE_X]))
 
-    for widget in config.get(const.CONF_WIDGETS, []):
+    for widget in widget_list:
         font_expr = None
         font2_expr = None
         if const.CONF_FONT in widget:
