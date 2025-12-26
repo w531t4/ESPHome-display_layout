@@ -32,6 +32,11 @@ async def to_code(config: Dict[str, Any]) -> None:
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
 
+    async def _maybe_get(mapping: Dict[str, Any], key: str):
+        if key in mapping:
+            return await cg.get_variable(mapping[key])
+        return None
+
     # Let C++ know the exact widget count for the registry size.
     widget_list = config.get(const.CONF_WIDGETS, [])
     max_widgets = max(1, len(widget_list))
@@ -49,58 +54,31 @@ async def to_code(config: Dict[str, Any]) -> None:
         if const.CONF_FONT2 in widget:
             font2_expr = await cg.get_variable(widget[const.CONF_FONT2])
         sources = widget.get(const.CONF_SOURCES, {})
-        image_expr = None
-        count_expr = None
-        ready_flag_expr = None
-        row1_expr = None
-        row2_expr = None
-        row3_expr = None
-        channel_expr = None
-        rx_expr = None
-        tx_expr = None
-        weather_expr = None
-        time_expr = None
-        high_expr = None
-        now_expr = None
-        low_expr = None
-        updates_expr = None
-        phil_expr = None
-        nick_expr = None
-        if sources:
-            if const.CONF_IMAGE in sources:
-                image_expr = await cg.get_variable(sources[const.CONF_IMAGE])
-            if const.CONF_COUNT in sources:
-                count_expr = await cg.get_variable(sources[const.CONF_COUNT])
-            if const.CONF_READY_FLAG in sources:
-                ready_flag_expr = await cg.get_variable(sources[const.CONF_READY_FLAG])
-            if const.CONF_ROW1 in sources:
-                row1_expr = await cg.get_variable(sources[const.CONF_ROW1])
-            if const.CONF_ROW2 in sources:
-                row2_expr = await cg.get_variable(sources[const.CONF_ROW2])
-            if const.CONF_ROW3 in sources:
-                row3_expr = await cg.get_variable(sources[const.CONF_ROW3])
-            if const.CONF_CHANNEL in sources:
-                channel_expr = await cg.get_variable(sources[const.CONF_CHANNEL])
-            if const.CONF_RX in sources:
-                rx_expr = await cg.get_variable(sources[const.CONF_RX])
-            if const.CONF_TX in sources:
-                tx_expr = await cg.get_variable(sources[const.CONF_TX])
-            if const.CONF_VALUE in sources and widget[CONF_TYPE] == "weather":
-                weather_expr = await cg.get_variable(sources[const.CONF_VALUE])
-            if const.CONF_TIME in sources:
-                time_expr = await cg.get_variable(sources[const.CONF_TIME])
-            if const.CONF_HIGH in sources:
-                high_expr = await cg.get_variable(sources[const.CONF_HIGH])
-            if const.CONF_NOW in sources:
-                now_expr = await cg.get_variable(sources[const.CONF_NOW])
-            if const.CONF_LOW in sources:
-                low_expr = await cg.get_variable(sources[const.CONF_LOW])
-            if const.CONF_VALUE in sources and widget[CONF_TYPE] == "ha_updates":
-                updates_expr = await cg.get_variable(sources[const.CONF_VALUE])
-            if const.CONF_PHIL in sources:
-                phil_expr = await cg.get_variable(sources[const.CONF_PHIL])
-            if const.CONF_NICK in sources:
-                nick_expr = await cg.get_variable(sources[const.CONF_NICK])
+        image_expr = await _maybe_get(sources, const.CONF_IMAGE)
+        count_expr = await _maybe_get(sources, const.CONF_COUNT)
+        ready_flag_expr = await _maybe_get(sources, const.CONF_READY_FLAG)
+        row1_expr = await _maybe_get(sources, const.CONF_ROW1)
+        row2_expr = await _maybe_get(sources, const.CONF_ROW2)
+        row3_expr = await _maybe_get(sources, const.CONF_ROW3)
+        channel_expr = await _maybe_get(sources, const.CONF_CHANNEL)
+        rx_expr = await _maybe_get(sources, const.CONF_RX)
+        tx_expr = await _maybe_get(sources, const.CONF_TX)
+        time_expr = await _maybe_get(sources, const.CONF_TIME)
+        high_expr = await _maybe_get(sources, const.CONF_HIGH)
+        now_expr = await _maybe_get(sources, const.CONF_NOW)
+        low_expr = await _maybe_get(sources, const.CONF_LOW)
+        weather_expr = (
+            await _maybe_get(sources, const.CONF_VALUE)
+            if widget[CONF_TYPE] == "weather"
+            else None
+        )
+        updates_expr = (
+            await _maybe_get(sources, const.CONF_VALUE)
+            if widget[CONF_TYPE] == "ha_updates"
+            else None
+        )
+        phil_expr = await _maybe_get(sources, const.CONF_PHIL)
+        nick_expr = await _maybe_get(sources, const.CONF_NICK)
         cfg = cg.StructInitializer(
             WidgetConfig,
             ("kind", cg.RawExpression(WIDGET_TYPE_MAP[widget[CONF_TYPE]])),
