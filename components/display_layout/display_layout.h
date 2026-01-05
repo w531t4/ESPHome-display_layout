@@ -104,6 +104,8 @@ class DisplayLayout : public Component {
     void render(esphome::display::Display &it);
     // Post by resource name so callers don't keep widget handles.
     bool post_to_resource(const std::string &resource, const PostArgs &args);
+    // Clear built widgets/registry so they rebuild on the next render call.
+    void reset();
 
   private:
     std::string kind_to_string(WidgetKind kind) const;
