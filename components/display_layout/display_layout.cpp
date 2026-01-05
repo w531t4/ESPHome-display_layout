@@ -35,6 +35,14 @@ void DisplayLayout::loop() {}
 
 void DisplayLayout::set_right_edge_x(int px) { right_edge_x_ = px; }
 
+void DisplayLayout::reset() {
+    ESP_LOGI(TAG, "Resetting display layout state");
+    registry_ = ui::WidgetRegistry<kMaxWidgets>{};
+    widgets_.clear();
+    motion_widgets_.clear();
+    resource_map_.clear();
+    built_ = false;
+}
 struct WidgetMeta {
     WidgetKind kind;
     const char *name;
