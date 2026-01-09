@@ -68,11 +68,7 @@ struct WidgetConfig {
     std::optional<esphome::text_sensor::TextSensor *> source_count;
     std::optional<esphome::globals::GlobalsComponent<bool> *> source_ready_flag;
     std::optional<esphome::homeassistant::HomeassistantTextSensor *>
-        source_chat_row1;
-    std::optional<esphome::homeassistant::HomeassistantTextSensor *>
-        source_chat_row2;
-    std::optional<esphome::homeassistant::HomeassistantTextSensor *>
-        source_chat_row3;
+        source_chat_row;
     std::optional<esphome::homeassistant::HomeassistantTextSensor *>
         source_chat_channel;
     std::optional<esphome::sensor::Sensor *> source_rx;

@@ -242,24 +242,42 @@ void DisplayLayout::post_from_sources() {
         }
         case WidgetKind::TWITCH_CHAT: {
 #ifdef USE_TEXT_SENSOR
-            auto *row1 = cfg.source_chat_row1.value_or(nullptr);
-            auto *row2 = cfg.source_chat_row2.value_or(nullptr);
-            auto *row3 = cfg.source_chat_row3.value_or(nullptr);
+            auto *row = cfg.source_chat_row.value_or(nullptr);
             auto *channel = cfg.source_chat_channel.value_or(nullptr);
-            if (!row1 || !row2 || !row3 || !channel)
+            if (!row)
                 break;
 
-            if (!ui::txt_sensor_has_healthy_state(channel)) {
+            if (channel && !ui::txt_sensor_has_healthy_state(channel)) {
                 if (cfg.twitch_started) {
                     widget->blank();
                     cfg.twitch_started = false;
                 }
                 break;
             }
+            if (!ui::txt_sensor_has_healthy_state(row)) {
+                if (cfg.twitch_started) {
+                    widget->blank();
+                    cfg.twitch_started = false;
+                }
+                break;
+            }
+            static std::array<std::string, 3> chat_history = {"", "", ""};
+            static bool seeded = false;
+            if (!seeded) {
+                chat_history[2] = row->state;
+                seeded = true;
+            }
+
+            const std::string incoming = row->state;
+            if (!incoming.empty() && incoming != chat_history[2]) {
+                chat_history[0] = chat_history[1];
+                chat_history[1] = chat_history[2];
+                chat_history[2] = incoming;
+            }
             widget->post(PostArgs{
-                .extras = ui::TwitchChatPostArgs{.row1 = row1->state,
-                                                 .row2 = row2->state,
-                                                 .row3 = row3->state}});
+                .extras = ui::TwitchChatPostArgs{.row1 = chat_history[0],
+                                                 .row2 = chat_history[1],
+                                                 .row3 = chat_history[2]}});
             cfg.twitch_started = true;
 #endif
             break;

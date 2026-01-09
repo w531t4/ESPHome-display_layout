@@ -57,9 +57,7 @@ async def to_code(config: Dict[str, Any]) -> None:
         image_expr = await _maybe_get(sources, const.CONF_IMAGE)
         count_expr = await _maybe_get(sources, const.CONF_COUNT)
         ready_flag_expr = await _maybe_get(sources, const.CONF_READY_FLAG)
-        row1_expr = await _maybe_get(sources, const.CONF_ROW1)
-        row2_expr = await _maybe_get(sources, const.CONF_ROW2)
-        row3_expr = await _maybe_get(sources, const.CONF_ROW3)
+        row_expr = await _maybe_get(sources, const.CONF_ROW)
         channel_expr = await _maybe_get(sources, const.CONF_CHANNEL)
         rx_expr = await _maybe_get(sources, const.CONF_RX)
         tx_expr = await _maybe_get(sources, const.CONF_TX)
@@ -102,9 +100,7 @@ async def to_code(config: Dict[str, Any]) -> None:
             ("source_image", _opt(image_expr)),
             ("source_count", _opt(count_expr)),
             ("source_ready_flag", _opt(ready_flag_expr)),
-            ("source_chat_row1", _opt(row1_expr)),
-            ("source_chat_row2", _opt(row2_expr)),
-            ("source_chat_row3", _opt(row3_expr)),
+            ("source_chat_row", _opt(row_expr)),
             ("source_chat_channel", _opt(channel_expr)),
             ("source_rx", _opt(rx_expr)),
             ("source_tx", _opt(tx_expr)),
