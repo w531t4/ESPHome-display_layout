@@ -72,16 +72,6 @@ text_sensor:
        - lambda: |-
            ESP_LOGW("streamers_count", "enter count=%s", x.c_str());
   - platform: homeassistant
-    id: chat_line1
-    entity_id: sensor.twitch_chat_bridge
-    attribute: line1
-    internal: true
-  - platform: homeassistant
-    id: chat_line2
-    entity_id: sensor.twitch_chat_bridge
-    attribute: line2
-    internal: true
-  - platform: homeassistant
     id: chat_line3
     entity_id: sensor.twitch_chat_bridge
     attribute: line3
@@ -173,9 +163,7 @@ display_layout:
       font: font1
       pixels_per_character: 6
       sources:
-        row1: chat_line1
-        row2: chat_line2
-        row3: chat_line3
+        row: chat_line3
         channel: chat_channel
     - type: pixel_motion
       name: motion

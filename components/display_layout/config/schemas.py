@@ -59,21 +59,15 @@ WIDGET_SCHEMAS = {
         BASE_WIDGET_SCHEMA.extend(
             {
                 cv.Optional(const.CONF_SOURCES): cv.Schema(
-                    {
-                        cv.Required(const.CONF_ROW1): cv.use_id(
-                            ha_text_sensor.HomeassistantTextSensor
-                        ),
-                        cv.Required(const.CONF_ROW2): cv.use_id(
-                            ha_text_sensor.HomeassistantTextSensor
-                        ),
-                        cv.Required(const.CONF_ROW3): cv.use_id(
-                            ha_text_sensor.HomeassistantTextSensor
-                        ),
-                        cv.Optional(const.CONF_CHANNEL): cv.use_id(
-                            ha_text_sensor.HomeassistantTextSensor
-                        ),
-                    }
-                )
+                {
+                    cv.Required(const.CONF_ROW): cv.use_id(
+                        ha_text_sensor.HomeassistantTextSensor
+                    ),
+                    cv.Optional(const.CONF_CHANNEL): cv.use_id(
+                        ha_text_sensor.HomeassistantTextSensor
+                    ),
+                }
+            )
             }
         ),
         _require_font,
