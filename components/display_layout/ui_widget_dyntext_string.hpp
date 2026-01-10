@@ -28,6 +28,8 @@ class DynStringWidget
         return *value.ptr != this->last.value();
     }
     void copy_value(StringPtrPostArgs value) override {
+        if (value.ptr == nullptr)
+            return;
         this->last = *value.ptr;
     };
 
