@@ -43,11 +43,7 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
 
     virtual void prep(T value, const char *fmt) = 0;
 
-    virtual bool is_different(P value) const {
-        if (!last.has_value())
-            return true;
-        return value.value != last.value();
-    }
+    virtual bool is_different(P value) const = 0;
 
   public:
     void initialize(const InitArgs &a) override {
@@ -120,9 +116,7 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
     }
 
     // must store value in this->last
-    virtual void copy_value(P value) {
-        this->last = std::move(value.value);
-    }
+    virtual void copy_value(P value) = 0;
 
     void post(const PostArgs &args) override {
         if (!initialized)

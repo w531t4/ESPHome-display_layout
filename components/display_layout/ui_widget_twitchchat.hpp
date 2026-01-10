@@ -82,12 +82,12 @@ class TwitchChatWidget : public CompositeWidget<3> {
             const TwitchChatPostArgs *post_args_ptr =
                 std::any_cast<const TwitchChatPostArgs>(&args.extras);
             if (post_args_ptr != nullptr) {
-                members[0]->post(PostArgs{.extras = ui::StringPostArgs{
-                                              .value = post_args_ptr->row1}});
-                members[1]->post(PostArgs{.extras = ui::StringPostArgs{
-                                              .value = post_args_ptr->row2}});
-                members[2]->post(PostArgs{.extras = ui::StringPostArgs{
-                                              .value = post_args_ptr->row3}});
+                members[0]->post(PostArgs{.extras = ui::StringPtrPostArgs{
+                                              .ptr = &post_args_ptr->row1}});
+                members[1]->post(PostArgs{.extras = ui::StringPtrPostArgs{
+                                              .ptr = &post_args_ptr->row2}});
+                members[2]->post(PostArgs{.extras = ui::StringPtrPostArgs{
+                                              .ptr = &post_args_ptr->row3}});
             }
         }
     }
