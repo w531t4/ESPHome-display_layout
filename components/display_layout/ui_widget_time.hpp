@@ -19,6 +19,7 @@ struct TimePostArgs {
 class TimeWidget : public CompositeWidget<4> {
   private:
     static constexpr const char *TAG = "ui_widget_time";
+    static constexpr const std::string COLON = ":";
 
   public:
     void initialize(const InitArgs &a) override {
@@ -86,8 +87,8 @@ class TimeWidget : public CompositeWidget<4> {
             if (post_args_ptr != nullptr) {
                 members[0]->post(PostArgs{.extras = ui::NumericPostArgs<int>{
                                               .value = post_args_ptr->hour}});
-                members[1]->post(PostArgs{
-                    .extras = ui::StringPostArgs{.value = std::string(":")}});
+                members[1]->post(
+                    PostArgs{.extras = ui::StringPtrPostArgs{.ptr = &COLON}});
                 members[2]->post(PostArgs{.extras = ui::NumericPostArgs<int>{
                                               .value = post_args_ptr->minute}});
                 members[3]->post(PostArgs{.extras = ui::NumericPostArgs<int>{
