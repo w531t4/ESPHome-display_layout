@@ -72,7 +72,7 @@ const WidgetMeta kWidgetMeta[] = {
     make_meta<ui::PixelMotionWidget, true>(WidgetKind::PIXEL_MOTION,
                                            "pixel_motion"),
     make_meta<ui::NetworkTputWidget>(WidgetKind::NETWORK_TPUT, "network_tput"),
-    make_meta<ui::WeatherWidget<ui::WeatherPostArgs, ui::WeatherPostArgs>>(
+    make_meta<ui::WeatherWidget<ui::WeatherCachedPostArgs, ui::WeatherPostArgs>>(
         WidgetKind::WEATHER, "weather"),
     make_meta<ui::TemperaturesWidget>(WidgetKind::TEMPERATURES, "temperatures"),
     make_meta<ui::DateWidget>(WidgetKind::DATE, "date"),
@@ -301,7 +301,7 @@ void DisplayLayout::post_from_sources() {
                 break;
             auto now = clock->now();
             widget->post(
-                PostArgs{.extras = ui::WeatherPostArgs{.value = weather->state,
+                PostArgs{.extras = ui::WeatherPostArgs{.ptr = &weather->state,
                                                        .this_hour = now.hour}});
 #endif
             break;

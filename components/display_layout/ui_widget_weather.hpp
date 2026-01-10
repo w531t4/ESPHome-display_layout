@@ -7,8 +7,12 @@
 #include "ui_widget.hpp"
 
 namespace ui {
-struct WeatherPostArgs {
+struct WeatherCachedPostArgs {
     std::string value;
+    int this_hour;
+};
+struct WeatherPostArgs {
+    const std::string *ptr;
     int this_hour;
 };
 
@@ -20,7 +24,7 @@ template <typename T, typename P> class WeatherWidget : public Widget {
     ui::Box prev_box{};
     esphome::Color blank_color = esphome::Color::BLACK;
     // Remember last value
-    std::optional<T> new_value{};
+    std::optional<P> new_value{};
     std::optional<T> last{};
 
     esphome::image::Image *img = nullptr;
@@ -28,10 +32,10 @@ template <typename T, typename P> class WeatherWidget : public Widget {
     int night_end = 6;
     // Pick a default printf format based on T
 
-    bool is_different(T value) const {
+    bool is_different(P value) const {
         if (!last.has_value())
             return true;
-        return (value.value != last->value) ||
+        return (*value.ptr != last->value) ||
                (value.this_hour != last->this_hour);
     }
 
@@ -71,26 +75,32 @@ template <typename T, typename P> class WeatherWidget : public Widget {
         if (post_args_ptr == nullptr)
             return;
 
-        T value = *post_args_ptr;
-        new_value = value;
+        if (post_args_ptr->ptr == nullptr)
+            return;
+
+        if (!is_different(*post_args_ptr))
+            return;
+        last = WeatherCachedPostArgs{.value = *(*post_args_ptr).ptr,
+                                     .this_hour = (*post_args_ptr).this_hour};
+
+        this->set_dirty(true);
     }
 
     void update() override {
         if (!initialized)
             return;
-        if (new_value.has_value() && !is_different(*new_value))
-            return;
-        last = *new_value;
-        auto itf = icon_registry().find(new_value->value);
+        if (!this->is_dirty()) return;
+        auto itf = icon_registry().find(last->value);
         if (itf == icon_registry().end())
             return;
-        img = ui::is_night_hour(new_value->this_hour, night_start, night_end)
+        img = ui::is_night_hour(last->this_hour, night_start, night_end)
                   ? itf->second.night
                   : itf->second.day;
         if (!img)
             return;
         blank();
         write();
+        this->set_dirty(false);
     }
 
     const int width() const override {
