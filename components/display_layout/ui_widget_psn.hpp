@@ -48,13 +48,13 @@ class PSNWidget : public CompositeWidget<2> {
             if (post_args_ptr != nullptr) {
                 if (post_args_ptr->phil->has_state()) {
                     members[0]->post(
-                        PostArgs{.extras = ui::StringPostArgs{
-                                     .value = post_args_ptr->phil->state}});
+                        PostArgs{.extras = ui::StringPtrPostArgs{
+                                     .ptr = &post_args_ptr->phil->state}});
                 }
                 if (post_args_ptr->nick->has_state()) {
                     members[1]->post(
-                        PostArgs{.extras = ui::StringPostArgs{
-                                     .value = post_args_ptr->nick->state}});
+                        PostArgs{.extras = ui::StringPtrPostArgs{
+                                     .ptr = &post_args_ptr->nick->state}});
                 }
             }
         }

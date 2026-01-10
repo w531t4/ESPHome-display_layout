@@ -20,9 +20,12 @@ class DateWidget : public CompositeWidget<2> {
     static constexpr const char *TAG = "ui_widget_date";
 
   public:
-    inline static constexpr const char *months[12] = {
-        "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
-        "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"};
+    inline static constexpr const std::string months[13] = {
+        std::string("JAN"), std::string("FEB"), std::string("MAR"),
+        std::string("APR"), std::string("MAY"), std::string("JUN"),
+        std::string("JUL"), std::string("AUG"), std::string("SEP"),
+        std::string("OCT"), std::string("NOV"), std::string("DEC"),
+        std::string("UNK")};
     void initialize(const InitArgs &a) override {
         // std::array<std::unique_ptr<Widget>, 3> members;
         CompositeWidget<2>::initialize(a);
@@ -67,10 +70,10 @@ class DateWidget : public CompositeWidget<2> {
         // .font_color = BLUE});
         initialized = true;
     }
-    const std::string get_month(const uint8_t month) {
+    const std::string *get_month(const uint8_t month) {
         if (month < 1 || month > 12)
-            return std::string("UNK");
-        return std::string(months[month - 1]);
+            return &months[12]; // UNK
+        return &months[month - 1];
     }
     void post(const PostArgs &args) override {
         if (args.extras.has_value()) {
@@ -81,8 +84,8 @@ class DateWidget : public CompositeWidget<2> {
                     PostArgs{.extras = ui::NumericPostArgs<uint8_t>{
                                  .value = post_args_ptr->day}});
                 members[1]->post(
-                    PostArgs{.extras = ui::StringPostArgs{
-                                 .value = get_month(post_args_ptr->month)}});
+                    PostArgs{.extras = ui::StringPtrPostArgs{
+                                 .ptr = get_month(post_args_ptr->month)}});
                 // const std::size_t n = std::min(members.size(),
                 // post_args_ptr->values.size()); for (std::size_t i = 0; i < n;
                 // i++) {

@@ -13,7 +13,8 @@ struct StringPtrPostArgs {
 };
 
 template <std::size_t BufSize>
-class StringWidget : public TextWidget<std::string, StringPostArgs, BufSize> {
+class StringWidget
+    : public TextWidget<std::string, StringPtrPostArgs, BufSize> {
   private:
     constexpr const std::string default_fmt() const override {
         return std::string("%s");
@@ -23,12 +24,14 @@ class StringWidget : public TextWidget<std::string, StringPostArgs, BufSize> {
     void prep(std::string value, const char *fmt) override {
         std::snprintf(this->buf, sizeof(this->buf), fmt, value.c_str());
     }
-    bool is_different(StringPostArgs value) const override {
+    bool is_different(StringPtrPostArgs value) const override {
         if (!this->last.has_value())
             return true;
-        return value.value != this->last.value();
+        return *value.ptr != this->last.value();
     }
-    void copy_value(StringPostArgs value) override { this->last = value.value; }
+    void copy_value(StringPtrPostArgs value) override {
+        this->last = *value.ptr;
+    }
 
   public:
 };
