@@ -27,9 +27,13 @@ class StringWidget
     bool is_different(StringPtrPostArgs value) const override {
         if (!this->last.has_value())
             return true;
+        if (value.ptr == nullptr)
+            return false;
         return *value.ptr != this->last.value();
     }
     void copy_value(StringPtrPostArgs value) override {
+        if (value.ptr == nullptr)
+            return;
         this->last = *value.ptr;
     }
 
