@@ -8,6 +8,10 @@ struct StringPostArgs {
     std::string value;
 };
 
+struct StringPtrPostArgs {
+    const std::string *ptr;
+};
+
 template <std::size_t BufSize>
 class StringWidget : public TextWidget<std::string, StringPostArgs, BufSize> {
   private:

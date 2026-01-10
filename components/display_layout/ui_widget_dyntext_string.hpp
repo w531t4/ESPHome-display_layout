@@ -11,7 +11,7 @@ namespace ui {
 
 template <std::size_t BufSize>
 class DynStringWidget
-    : public DynTextWidget<std::string, StringPostArgs, BufSize> {
+    : public DynTextWidget<std::string, StringPtrPostArgs, BufSize> {
   protected:
     constexpr const std::string default_fmt() { return std::string("%s"); }
 
@@ -20,13 +20,15 @@ class DynStringWidget
         std::snprintf(this->buf.data(), this->buf.size(), fmt, value.c_str());
     }
 
-    bool is_different(StringPostArgs value) const override {
+    bool is_different(StringPtrPostArgs value) const override {
         if (!this->last.has_value())
             return true;
-        return value.value != this->last.value();
+        if (value.ptr == nullptr)
+            return false;
+        return *value.ptr != this->last.value();
     }
-    void copy_value(StringPostArgs value) override {
-        this->last = value.value;
+    void copy_value(StringPtrPostArgs value) override {
+        this->last = *value.ptr;
     };
 
   public:
