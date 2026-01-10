@@ -60,19 +60,19 @@ class TwitchStringWidget : public DynStringWidget<BufSize>,
             const int curr_buf_width = this->bounds(this->buf.data()).w;
             const int x_draw =
                 this->anchor.x + (this->width() - curr_buf_width);
-            ESP_LOGI(TAG,
-                     "[widget=%s] write(): x_draw=%d, y=%d, anchor.x=%d, "
-                     "this->width=%d, "
-                     "curr_buff_width=%d",
-                     this->get_name().c_str(), x_draw, y, this->anchor.x,
-                     this->width(), this->bounds(this->buf.data()).w);
+            // ESP_LOGI(TAG,
+            //          "[widget=%s] write(): x_draw=%d, y=%d, anchor.x=%d, "
+            //          "this->width=%d, "
+            //          "curr_buff_width=%d",
+            //          this->get_name().c_str(), x_draw, y, this->anchor.x,
+            //          this->width(), this->bounds(this->buf.data()).w);
             ui::printf_dual(this->it, this->font, x_draw, y,
                             (abc.user + ": ").c_str(), WHITE,
                             abc.message.c_str(), YELLOW, this->prev_box);
         } else {
-            ESP_LOGI(
-                TAG, "[widget=%s] write(): y=%d, anchor.x=%d, this->width=%d",
-                this->get_name().c_str(), y, this->anchor.x, this->width());
+            // ESP_LOGI(
+            //     TAG, "[widget=%s] write(): y=%d, anchor.x=%d, this->width=%d",
+            //     this->get_name().c_str(), y, this->anchor.x, this->width());
             ui::printf_dual(this->it, this->font, this->anchor.x, y,
                             (abc.user + ": ").c_str(), WHITE,
                             abc.message.c_str(), YELLOW, this->prev_box);
