@@ -19,8 +19,8 @@ class StringWidget : public TextWidget<std::string, StringPostArgs, BufSize> {
         return std::string("%s");
     }
 
-    // Format into buf and update last
-    void prep(std::string value, const char *fmt) {
+    // Format into buf
+    void prep(std::string value, const char *fmt) override {
         std::snprintf(this->buf, sizeof(this->buf), fmt, value.c_str());
         this->last = value;
     }

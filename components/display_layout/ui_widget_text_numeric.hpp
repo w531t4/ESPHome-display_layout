@@ -20,8 +20,8 @@ class NumericWidget : public TextWidget<T, NumericPostArgs<T>, BufSize> {
         }
     }
 
-    // Format into buf and update last
-    void prep(T value, const char *fmt) {
+    // Format into buf
+    void prep(T value, const char *fmt) override {
         if constexpr (std::is_integral<T>::value) {
             // std::snprintf(buf, sizeof(buf), fmt, static_cast<long
             // long>(value));
