@@ -15,7 +15,9 @@ struct StringPtrPostArgs {
 template <std::size_t BufSize>
 class StringWidget : public TextWidget<std::string, StringPostArgs, BufSize> {
   private:
-    constexpr const std::string default_fmt() { return std::string("%s"); }
+    constexpr const std::string default_fmt() const override {
+        return std::string("%s");
+    }
 
     // Format into buf and update last
     void prep(std::string value, const char *fmt) {
