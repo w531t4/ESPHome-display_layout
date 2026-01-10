@@ -43,6 +43,16 @@ class Widget {
     // occupy no space on the resultant display
     bool visible = true;
     bool initialized = false;
+
+    // Originally, post() acted as a facilitator of data storage, and update()
+    // incorporated logic for testing whether there was a change to gate writing pixels
+    // unnecessarily
+
+    // 'dirty' intends to short-circuit that a bit... post() will be responsible for
+    // determining if a change has occurred (using in-flight pointers, etc). If a change,
+    // it stores the value and sets dirty. update() will be responsible for measuring
+    // dirty and clearing it.
+    bool dirty = false;
     ui::Coord anchor{-1, -1};
     Magnet magnet;
     std::string id;
@@ -50,6 +60,8 @@ class Widget {
   public:
     // Virtual destructor: mandatory in base classes with virtual functions
     virtual ~Widget() = default;
+    virtual const bool is_dirty() const noexcept { return dirty; }
+    void set_dirty(const bool state) { this->dirty = state; }
     bool is_enabled() const noexcept { return enabled; }
     void set_enabled(const bool state) { this->enabled = state; }
     bool is_visible() const noexcept { return visible; }
