@@ -25,6 +25,13 @@ template <std::size_t numWidgets> class CompositeWidget : public Widget {
         }
     }
 
+    const bool is_dirty() const noexcept override  {
+        for (auto &ptr : members) { // ptr is a std::unique_ptr<Widget>&
+            if (ptr && ptr->is_dirty()) return true;
+        }
+        return false;
+    }
+
     void write() override {
         for (auto &ptr : members) { // ptr is a std::unique_ptr<Widget>&
             if (ptr && ptr->is_enabled() &&
