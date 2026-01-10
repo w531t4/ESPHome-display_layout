@@ -39,7 +39,7 @@ class TextWidget : public Widget {
     char buf[BufSize];
 
     // Pick a default printf format based on T
-    virtual constexpr const std::string default_fmt() = 0;
+    virtual constexpr const std::string default_fmt() const = 0;
 
     virtual void prep(T value, const char *fmt) = 0;
 

@@ -12,7 +12,7 @@ template <typename T, std::size_t BufSize>
 class NumericWidget : public TextWidget<T, NumericPostArgs<T>, BufSize> {
   private:
     // Pick a default printf format based on T
-    constexpr const std::string default_fmt() {
+    constexpr const std::string default_fmt() const override {
         if constexpr (std::is_integral<T>::value) {
             return std::string("%d");
         } else {
