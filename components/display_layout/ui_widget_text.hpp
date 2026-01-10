@@ -43,11 +43,10 @@ class TextWidget : public Widget {
 
     virtual void prep(T value, const char *fmt) = 0;
 
-    bool is_different(T value) const {
-        if (!last.has_value())
-            return true;
-        return value != last.value();
-    }
+    virtual bool is_different(P value) const = 0;
+
+    // must store value in this->last
+    virtual void copy_value(P value) = 0;
 
   public:
     void initialize(const InitArgs &a) override {
@@ -121,18 +120,19 @@ class TextWidget : public Widget {
 
         if (post_args_ptr == nullptr)
             return;
-
-        T value = post_args_ptr->value;
-        new_value = value;
+        if (!is_different(*post_args_ptr))
+            return;
+        this->copy_value(*post_args_ptr);
+        this->set_dirty(true);
     }
 
     void update() override {
         if (!initialized)
             return;
-        if (new_value.has_value() && !is_different(*new_value))
+        if (!this->last.has_value())
             return;
         if (this->hide_if_equal_val.has_value()) {
-            if (this->hide_if_equal_val.value() == *new_value) {
+            if (this->hide_if_equal_val.value() == this->last.value()) {
                 if (this->is_visible()) {
                     this->blank();
                     this->set_visible(false);
@@ -142,10 +142,13 @@ class TextWidget : public Widget {
                 this->set_visible(true);
             }
         }
-        prep(*new_value, fmt.c_str());
+        if (!this->is_dirty())
+            return;
+        prep(this->last.value(), fmt.c_str());
 
         blank();
         write();
+        this->set_dirty(false);
     }
 
     const ui::Box bounds(const char *buffer) const {
