@@ -43,10 +43,10 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
 
     virtual void prep(T value, const char *fmt) = 0;
 
-    bool is_different(T value) const {
+    virtual bool is_different(P value) const {
         if (!last.has_value())
             return true;
-        return value != last.value();
+        return value.value != last.value();
     }
 
   public:
@@ -119,6 +119,11 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
         }
     }
 
+    // must store value in this->last
+    virtual void copy_value(P value) {
+        this->last = std::move(value.value);
+    }
+
     void post(const PostArgs &args) override {
         if (!initialized)
             return;
@@ -127,20 +132,28 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
         if (post_args_ptr == nullptr)
             return;
 
-        T value = post_args_ptr->value;
-        new_value = value;
+        if (!is_different(*post_args_ptr))
+            return;
+
+        this->copy_value(*post_args_ptr);
+        this->set_dirty(true);
     }
 
     void update() {
         if (!initialized)
             return;
-        if (!new_value.has_value())
+        if (!this->is_dirty())
             return;
-        if (new_value.has_value() && !is_different(*new_value))
+        if (!this->last.has_value())
             return;
-        prep(*new_value, fmt.c_str());
+        // if (!new_value.has_value())
+        //     return;
+        // if (new_value.has_value() && !is_different(*new_value))
+        //     return;
+        prep(*this->last, fmt.c_str());
         blank();
         write();
+        this->set_dirty(false);
     }
 
     const ui::Box bounds(const char *buffer) const {
