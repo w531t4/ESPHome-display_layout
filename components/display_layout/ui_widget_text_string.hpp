@@ -22,8 +22,13 @@ class StringWidget : public TextWidget<std::string, StringPostArgs, BufSize> {
     // Format into buf
     void prep(std::string value, const char *fmt) override {
         std::snprintf(this->buf, sizeof(this->buf), fmt, value.c_str());
-        this->last = value;
     }
+    bool is_different(StringPostArgs value) const override {
+        if (!this->last.has_value())
+            return true;
+        return value.value != this->last.value();
+    }
+    void copy_value(StringPostArgs value) override { this->last = value.value; }
 
   public:
 };

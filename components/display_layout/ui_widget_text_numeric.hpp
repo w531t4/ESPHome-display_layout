@@ -30,7 +30,14 @@ class NumericWidget : public TextWidget<T, NumericPostArgs<T>, BufSize> {
             std::snprintf(this->buf, sizeof(this->buf), fmt,
                           static_cast<double>(value));
         }
-        this->last = value;
+    }
+    bool is_different(NumericPostArgs<T> value) const override {
+        if (!this->last.has_value())
+            return true;
+        return value.value != this->last.value();
+    }
+    void copy_value(NumericPostArgs<T> value) override {
+        this->last = value.value;
     }
 
   public:
