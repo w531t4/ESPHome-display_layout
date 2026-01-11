@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 #include "display_layout.h"
 #include "esphome/components/globals/globals_component.h"
+#include "esphome/core/hal.h"
 #include "esphome/core/log.h"
 #include "ui_widget_date.hpp"
 #include "ui_widget_haupdates.hpp"
@@ -272,6 +273,47 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
         break;
     }
 #endif
+#ifdef USE_TIME
+    case WidgetKind::TIME: {
+        auto *clock = cfg.source_time.value_or(nullptr);
+        if (!clock || !widget)
+            return;
+        // TIME updates must feel steady. A fixed 1000ms interval can
+        // drift under load, so we align each tick to the next whole-second
+        // boundary instead of "every 1000ms from now".
+        auto post_now = [widget, clock]() {
+            auto now = clock->now();
+            // Use a single clock snapshot for hour/minute/second to avoid
+            // inconsistent values if the scheduler runs late.
+            widget->post(
+                PostArgs{.extras = ui::TimePostArgs{.hour = now.hour,
+                                                    .minute = now.minute,
+                                                    .second = now.second}});
+        };
+        auto schedule_next = std::make_shared<std::function<void()>>();
+        *schedule_next = [this, post_now, schedule_next]() {
+            // Compute delay to the next second boundary based on uptime micros.
+            // This keeps the on-screen seconds aligned to real time and avoids
+            // accumulating skew from repeated 1000ms timers.
+            const int64_t now_us = static_cast<int64_t>(micros());
+            const int64_t next_us = ((now_us / 1000000) + 1) * 1000000;
+            uint32_t delay_ms =
+                static_cast<uint32_t>((next_us - now_us + 999) / 1000);
+            if (delay_ms == 0)
+                delay_ms = 1;
+            // Schedule the next tick and re-arm after each post.
+            set_timeout(delay_ms, [post_now, schedule_next]() {
+                post_now();
+                (*schedule_next)();
+            });
+        };
+        // Start the aligned scheduling chain and also update immediately so the
+        // widget renders without waiting for the next boundary.
+        (*schedule_next)();
+        post_now();
+        break;
+    }
+#endif
     default:
         break;
     }
@@ -358,6 +400,8 @@ void DisplayLayout::post_from_sources() {
             continue;
         if (cfg.kind == WidgetKind::TEMPERATURES)
             continue;
+        if (cfg.kind == WidgetKind::TIME)
+            continue;
 
         switch (cfg.kind) {
         case WidgetKind::TWITCH_ICONS: {
@@ -390,19 +434,6 @@ void DisplayLayout::post_from_sources() {
             widget->post(
                 PostArgs{.extras = ui::DatePostArgs{.day = now.day_of_month,
                                                     .month = now.month}});
-#endif
-            break;
-        }
-        case WidgetKind::TIME: {
-#ifdef USE_TIME
-            auto *clock = cfg.source_time.value_or(nullptr);
-            if (!clock)
-                break;
-            auto now = clock->now();
-            widget->post(
-                PostArgs{.extras = ui::TimePostArgs{.hour = now.hour,
-                                                    .minute = now.minute,
-                                                    .second = now.second}});
 #endif
             break;
         }
