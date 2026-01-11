@@ -274,6 +274,57 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
     }
 #endif
 #ifdef USE_TIME
+    case WidgetKind::DATE: {
+        auto *clock = cfg.source_time.value_or(nullptr);
+        if (!clock || !widget)
+            return;
+        // Post the current date immediately so the widget has content even
+        // before the first midnight boundary is reached.
+        auto post_now = [widget, clock]() {
+            auto now = clock->now();
+            widget->post(
+                PostArgs{.extras = ui::DatePostArgs{.day = now.day_of_month,
+                                                    .month = now.month}});
+        };
+        // We schedule the next update relative to wall-clock midnight instead
+        // of using a fixed interval so the date stays aligned if time sync
+        // jumps or drifts (e.g. after NTP updates or manual time changes).
+        auto schedule_next = std::make_shared<std::function<void()>>();
+        *schedule_next = [this, post_now, schedule_next, clock]() {
+            // Use wall-clock time; if the clock isn't valid yet, retry soon.
+            auto now = clock->now();
+            if (!now.is_valid()) {
+                // A short retry keeps the date from getting stuck before time
+                // sync without spamming the scheduler.
+                set_timeout(60000, [schedule_next]() { (*schedule_next)(); });
+                return;
+            }
+            // Compute seconds elapsed today so we can align exactly to the next
+            // midnight boundary (00:00:00).
+            const int32_t seconds_today =
+                (now.hour * 3600) + (now.minute * 60) + now.second;
+            // Calculate the seconds remaining until the next midnight tick.
+            int32_t seconds_until = (24 * 3600) - seconds_today;
+            // If we're at/after midnight due to time jumps, roll to next day.
+            if (seconds_until <= 0)
+                seconds_until = 24 * 3600;
+            // Convert to milliseconds; guard against zero to avoid tight loops.
+            uint32_t delay_ms = static_cast<uint32_t>(seconds_until) * 1000;
+            if (delay_ms == 0)
+                delay_ms = 1;
+            // One-shot timeout lets us recompute the next boundary each day,
+            // keeping alignment if the clock shifts while running.
+            set_timeout(delay_ms, [post_now, schedule_next]() {
+                // Update at the boundary, then re-arm for the next midnight.
+                post_now();
+                (*schedule_next)();
+            });
+        };
+        // Start the aligned scheduling chain and also post immediately.
+        (*schedule_next)();
+        post_now();
+        break;
+    }
     case WidgetKind::TIME: {
         auto *clock = cfg.source_time.value_or(nullptr);
         if (!clock || !widget)
@@ -400,6 +451,8 @@ void DisplayLayout::post_from_sources() {
             continue;
         if (cfg.kind == WidgetKind::TEMPERATURES)
             continue;
+        if (cfg.kind == WidgetKind::DATE)
+            continue;
         if (cfg.kind == WidgetKind::TIME)
             continue;
 
@@ -422,18 +475,6 @@ void DisplayLayout::post_from_sources() {
             widget->post(PostArgs{.extras = ui::TwitchStreamerIconsPostArgs{
                                       .image = image, .num_icons = num_icons}});
             globals::id(ready_flag) = false;
-#endif
-            break;
-        }
-        case WidgetKind::DATE: {
-#ifdef USE_TIME
-            auto *clock = cfg.source_time.value_or(nullptr);
-            if (!clock)
-                break;
-            auto now = clock->now();
-            widget->post(
-                PostArgs{.extras = ui::DatePostArgs{.day = now.day_of_month,
-                                                    .month = now.month}});
 #endif
             break;
         }
