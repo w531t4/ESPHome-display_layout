@@ -110,6 +110,7 @@ class DisplayLayout : public Component {
     std::unique_ptr<Widget> make_widget(const WidgetConfig &cfg);
     void register_widget(const WidgetConfig &cfg,
                          std::unique_ptr<Widget> widget);
+    void register_callbacks(const WidgetConfig &cfg, Widget *widget);
     Widget *widget_for_resource(const std::string &resource);
     void post_from_sources();
     bool post_to_resource_internal(const std::string &resource,

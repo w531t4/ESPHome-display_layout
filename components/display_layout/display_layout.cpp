@@ -148,6 +148,24 @@ void DisplayLayout::register_widget(const WidgetConfig &cfg,
     widgets_.push_back(std::move(widget));
 }
 
+void DisplayLayout::register_callbacks(const WidgetConfig &cfg, Widget *widget) {
+#ifdef USE_SENSOR
+    if (cfg.kind == WidgetKind::NETWORK_TPUT) {
+        auto *rx = cfg.source_rx.value_or(nullptr);
+        auto *tx = cfg.source_tx.value_or(nullptr);
+        if (!rx || !tx || !widget)
+            return;
+        auto post_now = [widget, rx, tx]() {
+            widget->post(PostArgs{.extras = ui::NetworkTputPostArgs{
+                                      .rx = rx->state, .tx = tx->state}});
+        };
+        rx->add_on_state_callback([post_now](float) { post_now(); });
+        tx->add_on_state_callback([post_now](float) { post_now(); });
+        post_now();
+    }
+#endif
+}
+
 Widget *DisplayLayout::widget_for_resource(const std::string &resource) {
     auto it = resource_map_.find(resource);
     if (it == resource_map_.end())
@@ -187,6 +205,7 @@ void DisplayLayout::build_widgets(esphome::display::Display &it) {
         }
 
         widget->initialize(args);
+        register_callbacks(cfg, widget.get());
         register_widget(cfg, std::move(widget));
     }
 }
@@ -217,6 +236,8 @@ void DisplayLayout::post_from_sources() {
         auto &cfg = widget_configs_[i];
         auto *widget = widgets_[i].get();
         if (!widget)
+            continue;
+        if (cfg.kind == WidgetKind::NETWORK_TPUT)
             continue;
 
         switch (cfg.kind) {
@@ -280,17 +301,6 @@ void DisplayLayout::post_from_sources() {
                                                     .row2 = &chat_history[1],
                                                     .row3 = &chat_history[2]}});
             cfg.twitch_started = true;
-#endif
-            break;
-        }
-        case WidgetKind::NETWORK_TPUT: {
-#ifdef USE_SENSOR
-            auto *rx = cfg.source_rx.value_or(nullptr);
-            auto *tx = cfg.source_tx.value_or(nullptr);
-            if (!rx || !tx)
-                break;
-            widget->post(PostArgs{.extras = ui::NetworkTputPostArgs{
-                                      .rx = rx->state, .tx = tx->state}});
 #endif
             break;
         }
