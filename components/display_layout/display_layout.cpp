@@ -219,6 +219,24 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
         post_now();
         break;
     }
+    case WidgetKind::TEMPERATURES: {
+        auto *high = cfg.source_temp_high.value_or(nullptr);
+        auto *current = cfg.source_temp_now.value_or(nullptr);
+        auto *low = cfg.source_temp_low.value_or(nullptr);
+        if (!high || !current || !low || !widget)
+            return;
+        auto post_now = [widget, high, current, low]() {
+            const float values[3] = {high->state, current->state, low->state};
+            widget->post(
+                PostArgs{.extras = ui::TemperaturePostArgs{
+                             .values = std::span<const float>(values, 3)}});
+        };
+        high->add_on_state_callback([post_now](float) { post_now(); });
+        current->add_on_state_callback([post_now](float) { post_now(); });
+        low->add_on_state_callback([post_now](float) { post_now(); });
+        post_now();
+        break;
+    }
 #endif
 #ifdef USE_TEXT_SENSOR
     case WidgetKind::PSN: {
@@ -338,6 +356,8 @@ void DisplayLayout::post_from_sources() {
             continue;
         if (cfg.kind == WidgetKind::WEATHER)
             continue;
+        if (cfg.kind == WidgetKind::TEMPERATURES)
+            continue;
 
         switch (cfg.kind) {
         case WidgetKind::TWITCH_ICONS: {
@@ -358,20 +378,6 @@ void DisplayLayout::post_from_sources() {
             widget->post(PostArgs{.extras = ui::TwitchStreamerIconsPostArgs{
                                       .image = image, .num_icons = num_icons}});
             globals::id(ready_flag) = false;
-#endif
-            break;
-        }
-        case WidgetKind::TEMPERATURES: {
-#ifdef USE_SENSOR
-            auto *high = cfg.source_temp_high.value_or(nullptr);
-            auto *current = cfg.source_temp_now.value_or(nullptr);
-            auto *low = cfg.source_temp_low.value_or(nullptr);
-            if (!high || !current || !low)
-                break;
-            const float values[3] = {high->state, current->state, low->state};
-            widget->post(
-                PostArgs{.extras = ui::TemperaturePostArgs{
-                             .values = std::span<const float>(values, 3)}});
 #endif
             break;
         }
