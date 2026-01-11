@@ -20,15 +20,17 @@
 #ifdef USE_TEXT_SENSOR
 #include "esphome/components/text_sensor/text_sensor.h"
 #endif
-#ifdef USE_TIME
 #include "esphome/components/time/real_time_clock.h"
-#endif
+#include "ui_profile.hpp"
 
 namespace esphome {
 namespace display_layout {
 
 static const char *TAG = "display_layout.component";
 static constexpr std::size_t kChatBufferSize = 96;
+namespace {
+static RenderProfile g_prof;
+} // namespace
 
 void DisplayLayout::setup() {}
 
@@ -165,6 +167,7 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
         };
         auto state = std::make_shared<TwitchChatState>();
         auto post_now = [widget, row, channel, state]() {
+            const int64_t t_chat_start = static_cast<int64_t>(micros());
             if (channel && !ui::txt_sensor_has_healthy_state(channel)) {
                 if (state->twitch_started) {
                     widget->blank();
@@ -185,15 +188,26 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
             }
 
             const std::string &incoming = row->state;
+            const int64_t t_hist_start = static_cast<int64_t>(micros());
             if (!incoming.empty() && incoming != state->chat_history[2]) {
                 state->chat_history[0] = state->chat_history[1];
                 state->chat_history[1] = state->chat_history[2];
                 state->chat_history[2] = incoming;
             }
+            const int64_t t_hist_end = static_cast<int64_t>(micros());
             widget->post(PostArgs{.extras = ui::TwitchChatPtrPostArgs{
                                       .row1 = &state->chat_history[0],
                                       .row2 = &state->chat_history[1],
                                       .row3 = &state->chat_history[2]}});
+            const int64_t t_chat_end = static_cast<int64_t>(micros());
+            g_prof.chat_us += (t_chat_end - t_chat_start);
+            g_prof.chat_history_us += (t_hist_end - t_hist_start);
+            g_prof.chat_post_us += (t_chat_end - t_hist_end);
+            g_prof.chat_calls += 1;
+            g_prof.post_kind_us[static_cast<int>(WidgetKind::TWITCH_CHAT)] +=
+                (t_chat_end - t_chat_start);
+            g_prof.post_kind_calls[static_cast<int>(WidgetKind::TWITCH_CHAT)] +=
+                1;
             state->twitch_started = true;
         };
         row->add_on_state_callback([post_now](std::string) { post_now(); });
@@ -215,12 +229,18 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
                 return;
             if (!globals::id(ready_flag))
                 return;
+            const int64_t t_start = static_cast<int64_t>(micros());
             const int num_icons =
                 ui::TwitchStreamerIconsWidget::normalize_input(
                     count_sensor->state.c_str());
             widget->post(PostArgs{.extras = ui::TwitchStreamerIconsPostArgs{
                                       .image = image, .num_icons = num_icons}});
             globals::id(ready_flag) = false;
+            const int64_t t_end = static_cast<int64_t>(micros());
+            g_prof.post_kind_us[static_cast<int>(WidgetKind::TWITCH_ICONS)] +=
+                (t_end - t_start);
+            g_prof.post_kind_calls[static_cast<int>(WidgetKind::TWITCH_ICONS)] +=
+                1;
         };
         count_sensor->add_on_state_callback(
             [post_now](std::string) { post_now(); });
@@ -236,8 +256,22 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
         if (!rx || !tx || !widget)
             return;
         auto post_now = [widget, rx, tx]() {
+            const int64_t t_start = static_cast<int64_t>(micros());
+            const float rx_state = rx->state;
+            const float tx_state = tx->state;
+            const int64_t t_state_end = static_cast<int64_t>(micros());
             widget->post(PostArgs{.extras = ui::NetworkTputPostArgs{
-                                      .rx = rx->state, .tx = tx->state}});
+                                      .rx = rx_state, .tx = tx_state}});
+            const int64_t t_end = static_cast<int64_t>(micros());
+            g_prof.net_us += (t_end - t_start);
+            g_prof.net_state_us += (t_state_end - t_start);
+            g_prof.net_post_us += (t_end - t_state_end);
+            g_prof.net_calls += 1;
+            g_prof.post_kind_us[static_cast<int>(WidgetKind::NETWORK_TPUT)] +=
+                (t_end - t_start);
+            g_prof
+                .post_kind_calls[static_cast<int>(WidgetKind::NETWORK_TPUT)] +=
+                1;
         };
         rx->add_on_state_callback([post_now](float) { post_now(); });
         tx->add_on_state_callback([post_now](float) { post_now(); });
@@ -251,10 +285,17 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
         if (!high || !current || !low || !widget)
             return;
         auto post_now = [widget, high, current, low]() {
+            const int64_t t_start = static_cast<int64_t>(micros());
             const float values[3] = {high->state, current->state, low->state};
             widget->post(
                 PostArgs{.extras = ui::TemperaturePostArgs{
                              .values = std::span<const float>(values, 3)}});
+            const int64_t t_end = static_cast<int64_t>(micros());
+            g_prof.post_kind_us[static_cast<int>(WidgetKind::TEMPERATURES)] +=
+                (t_end - t_start);
+            g_prof
+                .post_kind_calls[static_cast<int>(WidgetKind::TEMPERATURES)] +=
+                1;
         };
         high->add_on_state_callback([post_now](float) { post_now(); });
         current->add_on_state_callback([post_now](float) { post_now(); });
@@ -267,9 +308,15 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
         if (!value || !widget)
             return;
         auto post_now = [widget, value]() {
+            const int64_t t_start = static_cast<int64_t>(micros());
             widget->post(
                 PostArgs{.extras = ui::HAUpdatesPostArgs{
                              .value = static_cast<int>(value->state)}});
+            const int64_t t_end = static_cast<int64_t>(micros());
+            g_prof.post_kind_us[static_cast<int>(WidgetKind::HA_UPDATES)] +=
+                (t_end - t_start);
+            g_prof.post_kind_calls[static_cast<int>(WidgetKind::HA_UPDATES)] +=
+                1;
         };
         value->add_on_state_callback([post_now](float) { post_now(); });
         post_now();
@@ -283,8 +330,18 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
         if (!phil || !nick || !widget)
             return;
         auto post_now = [widget, phil, nick]() {
+            const int64_t t_start = static_cast<int64_t>(micros());
+            const int64_t t_post_start = static_cast<int64_t>(micros());
             widget->post(PostArgs{
                 .extras = ui::PSNPostArgs{.phil = phil, .nick = nick}});
+            const int64_t t_end = static_cast<int64_t>(micros());
+            g_prof.psn_us += (t_end - t_start);
+            g_prof.psn_pre_us += (t_post_start - t_start);
+            g_prof.psn_post_us += (t_end - t_post_start);
+            g_prof.psn_calls += 1;
+            g_prof.post_kind_us[static_cast<int>(WidgetKind::PSN)] +=
+                (t_end - t_start);
+            g_prof.post_kind_calls[static_cast<int>(WidgetKind::PSN)] += 1;
         };
         phil->add_on_state_callback([post_now](std::string) { post_now(); });
         nick->add_on_state_callback([post_now](std::string) { post_now(); });
@@ -299,10 +356,28 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
         if (!weather || !clock || !widget)
             return;
         auto post_now = [widget, weather, clock]() {
+            const int64_t t_weather_start = static_cast<int64_t>(micros());
+            const int64_t t_clock_start = static_cast<int64_t>(micros());
             auto now = clock->now();
+            const int64_t t_clock_end = static_cast<int64_t>(micros());
+            const int64_t t_weather_state_start =
+                static_cast<int64_t>(micros());
+            const std::string *state_ptr = &weather->state;
+            const int64_t t_weather_state_end = static_cast<int64_t>(micros());
+            const int64_t t_weather_post_start = static_cast<int64_t>(micros());
             widget->post(
-                PostArgs{.extras = ui::WeatherPostArgs{.ptr = &weather->state,
+                PostArgs{.extras = ui::WeatherPostArgs{.ptr = state_ptr,
                                                        .this_hour = now.hour}});
+            const int64_t t_weather_end = static_cast<int64_t>(micros());
+            g_prof.weather_us += (t_weather_end - t_weather_start);
+            g_prof.weather_post_us += (t_weather_end - t_weather_post_start);
+            g_prof.weather_clock_us += (t_clock_end - t_clock_start);
+            g_prof.weather_state_us +=
+                (t_weather_state_end - t_weather_state_start);
+            g_prof.weather_calls += 1;
+            g_prof.post_kind_us[static_cast<int>(WidgetKind::WEATHER)] +=
+                (t_weather_end - t_weather_start);
+            g_prof.post_kind_calls[static_cast<int>(WidgetKind::WEATHER)] += 1;
         };
         weather->add_on_state_callback([post_now](std::string) { post_now(); });
         set_interval(60000, [post_now]() { post_now(); });
@@ -318,10 +393,17 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
         // Post the current date immediately so the widget has content even
         // before the first midnight boundary is reached.
         auto post_now = [widget, clock]() {
+            const int64_t t_date_start = static_cast<int64_t>(micros());
             auto now = clock->now();
             widget->post(
                 PostArgs{.extras = ui::DatePostArgs{.day = now.day_of_month,
                                                     .month = now.month}});
+            const int64_t t_date_end = static_cast<int64_t>(micros());
+            g_prof.date_us += (t_date_end - t_date_start);
+            g_prof.date_calls += 1;
+            g_prof.post_kind_us[static_cast<int>(WidgetKind::DATE)] +=
+                (t_date_end - t_date_start);
+            g_prof.post_kind_calls[static_cast<int>(WidgetKind::DATE)] += 1;
         };
         // We schedule the next update relative to wall-clock midnight instead
         // of using a fixed interval so the date stays aligned if time sync
@@ -370,6 +452,7 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
         // drift under load, so we align each tick to the next whole-second
         // boundary instead of "every 1000ms from now".
         auto post_now = [widget, clock]() {
+            const int64_t t_start = static_cast<int64_t>(micros());
             auto now = clock->now();
             // Use a single clock snapshot for hour/minute/second to avoid
             // inconsistent values if the scheduler runs late.
@@ -377,6 +460,10 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
                 PostArgs{.extras = ui::TimePostArgs{.hour = now.hour,
                                                     .minute = now.minute,
                                                     .second = now.second}});
+            const int64_t t_end = static_cast<int64_t>(micros());
+            g_prof.post_kind_us[static_cast<int>(WidgetKind::TIME)] +=
+                (t_end - t_start);
+            g_prof.post_kind_calls[static_cast<int>(WidgetKind::TIME)] += 1;
         };
         auto schedule_next = std::make_shared<std::function<void()>>();
         *schedule_next = [this, post_now, schedule_next]() {
@@ -452,27 +539,67 @@ void DisplayLayout::build_widgets(esphome::display::Display &it) {
 }
 
 void DisplayLayout::render(esphome::display::Display &it) {
+    const int64_t t0 = static_cast<int64_t>(micros());
+
     if (!built_) {
         // Build widgets once
         build_widgets(it);
         built_ = true;
     }
 
+    const int64_t t_post_start = static_cast<int64_t>(micros());
     post_from_sources();
+    const int64_t t_post_end = static_cast<int64_t>(micros());
 
     // Allow widgets that expect continuous movement to advance.
+    const int64_t t_motion_start = t_post_end;
     for (auto *widget : motion_widgets_) {
         if (widget) {
             widget->post(PostArgs{});
         }
     }
+    const int64_t t_motion_end = static_cast<int64_t>(micros());
 
+    const int64_t t_update_start = t_motion_end;
     registry_.update_all();
+    const int64_t t_update_end = static_cast<int64_t>(micros());
+    const int64_t t_relayout_start = t_update_end;
     registry_.relayout();
+    const int64_t t_relayout_end = static_cast<int64_t>(micros());
+
+    g_prof.frames++;
+    g_prof.total_us += (t_relayout_end - t0);
+    g_prof.post_us += (t_post_end - t_post_start);
+    g_prof.motion_us += (t_motion_end - t_motion_start);
+    g_prof.update_us += (t_update_end - t_update_start);
+    g_prof.relayout_us += (t_relayout_end - t_relayout_start);
+
+    if (profile_should_log(g_prof, t_relayout_end)) {
+        profile_log(
+            g_prof, TAG,
+            [this](WidgetKind kind) { return this->kind_to_string(kind); },
+            t_relayout_end);
+    }
 }
 
 void DisplayLayout::post_from_sources() {
     const std::size_t count = std::min(widget_configs_.size(), widgets_.size());
+    static ESPTime now{};
+    static int64_t last_now_us = 0;
+    int64_t now_clock_us = 0;
+    for (std::size_t i = 0; i < count; ++i) {
+        auto *clock = widget_configs_[i].source_time.value_or(nullptr);
+        if (clock) {
+            const int64_t t_now_start = static_cast<int64_t>(micros());
+            if ((t_now_start - last_now_us) >= 300000) { // 300ms cache
+                now = clock->now();
+                last_now_us = t_now_start;
+                const int64_t t_now_end = static_cast<int64_t>(micros());
+                now_clock_us = (t_now_end - t_now_start);
+            }
+            break;
+        }
+    }
     for (std::size_t i = 0; i < count; ++i) {
         auto &cfg = widget_configs_[i];
         auto *widget = widgets_[i].get();
@@ -497,10 +624,17 @@ void DisplayLayout::post_from_sources() {
         if (cfg.kind == WidgetKind::TIME)
             continue;
 
+        const int64_t t_case_start = static_cast<int64_t>(micros());
         switch (cfg.kind) {
         case WidgetKind::PIXEL_MOTION:
         default:
             break;
+        }
+        const int64_t t_case_end = static_cast<int64_t>(micros());
+        const int idx = static_cast<int>(cfg.kind);
+        if (idx >= 0 && idx < kWidgetKindCount) {
+            g_prof.post_kind_us[idx] += (t_case_end - t_case_start);
+            g_prof.post_kind_calls[idx] += 1;
         }
     }
 }
