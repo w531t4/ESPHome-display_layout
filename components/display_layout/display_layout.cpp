@@ -72,7 +72,8 @@ const WidgetMeta kWidgetMeta[] = {
     make_meta<ui::PixelMotionWidget, true>(WidgetKind::PIXEL_MOTION,
                                            "pixel_motion"),
     make_meta<ui::NetworkTputWidget>(WidgetKind::NETWORK_TPUT, "network_tput"),
-    make_meta<ui::WeatherWidget<ui::WeatherCachedPostArgs, ui::WeatherPostArgs>>(
+    make_meta<
+        ui::WeatherWidget<ui::WeatherCachedPostArgs, ui::WeatherPostArgs>>(
         WidgetKind::WEATHER, "weather"),
     make_meta<ui::TemperaturesWidget>(WidgetKind::TEMPERATURES, "temperatures"),
     make_meta<ui::DateWidget>(WidgetKind::DATE, "date"),
@@ -268,16 +269,16 @@ void DisplayLayout::post_from_sources() {
                 seeded = true;
             }
 
-            const std::string incoming = row->state;
+            const std::string &incoming = row->state;
             if (!incoming.empty() && incoming != chat_history[2]) {
                 chat_history[0] = chat_history[1];
                 chat_history[1] = chat_history[2];
                 chat_history[2] = incoming;
             }
             widget->post(PostArgs{
-                .extras = ui::TwitchChatPostArgs{.row1 = chat_history[0],
-                                                 .row2 = chat_history[1],
-                                                 .row3 = chat_history[2]}});
+                .extras = ui::TwitchChatPtrPostArgs{.row1 = &chat_history[0],
+                                                    .row2 = &chat_history[1],
+                                                    .row3 = &chat_history[2]}});
             cfg.twitch_started = true;
 #endif
             break;
