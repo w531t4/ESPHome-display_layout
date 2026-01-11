@@ -236,6 +236,24 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
         break;
     }
 #endif
+#if defined(USE_TEXT_SENSOR) && defined(USE_TIME)
+    case WidgetKind::WEATHER: {
+        auto *weather = cfg.source_weather.value_or(nullptr);
+        auto *clock = cfg.source_time.value_or(nullptr);
+        if (!weather || !clock || !widget)
+            return;
+        auto post_now = [widget, weather, clock]() {
+            auto now = clock->now();
+            widget->post(
+                PostArgs{.extras = ui::WeatherPostArgs{.ptr = &weather->state,
+                                                       .this_hour = now.hour}});
+        };
+        weather->add_on_state_callback([post_now](std::string) { post_now(); });
+        set_interval(60000, [post_now]() { post_now(); });
+        post_now();
+        break;
+    }
+#endif
     default:
         break;
     }
@@ -318,6 +336,8 @@ void DisplayLayout::post_from_sources() {
             continue;
         if (cfg.kind == WidgetKind::TWITCH_CHAT)
             continue;
+        if (cfg.kind == WidgetKind::WEATHER)
+            continue;
 
         switch (cfg.kind) {
         case WidgetKind::TWITCH_ICONS: {
@@ -338,19 +358,6 @@ void DisplayLayout::post_from_sources() {
             widget->post(PostArgs{.extras = ui::TwitchStreamerIconsPostArgs{
                                       .image = image, .num_icons = num_icons}});
             globals::id(ready_flag) = false;
-#endif
-            break;
-        }
-        case WidgetKind::WEATHER: {
-#if defined(USE_TEXT_SENSOR) && defined(USE_TIME)
-            auto *weather = cfg.source_weather.value_or(nullptr);
-            auto *clock = cfg.source_time.value_or(nullptr);
-            if (!weather || !clock)
-                break;
-            auto now = clock->now();
-            widget->post(
-                PostArgs{.extras = ui::WeatherPostArgs{.ptr = &weather->state,
-                                                       .this_hour = now.hour}});
 #endif
             break;
         }
