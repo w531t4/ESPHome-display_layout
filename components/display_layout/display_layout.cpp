@@ -167,6 +167,22 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
         break;
     }
 #endif
+#ifdef USE_TEXT_SENSOR
+    case WidgetKind::PSN: {
+        auto *phil = cfg.source_psn_phil.value_or(nullptr);
+        auto *nick = cfg.source_psn_nick.value_or(nullptr);
+        if (!phil || !nick || !widget)
+            return;
+        auto post_now = [widget, phil, nick]() {
+            widget->post(PostArgs{
+                .extras = ui::PSNPostArgs{.phil = phil, .nick = nick}});
+        };
+        phil->add_on_state_callback([post_now](std::string) { post_now(); });
+        nick->add_on_state_callback([post_now](std::string) { post_now(); });
+        post_now();
+        break;
+    }
+#endif
     default:
         break;
     }
@@ -244,6 +260,8 @@ void DisplayLayout::post_from_sources() {
         if (!widget)
             continue;
         if (cfg.kind == WidgetKind::NETWORK_TPUT)
+            continue;
+        if (cfg.kind == WidgetKind::PSN)
             continue;
 
         switch (cfg.kind) {
@@ -370,17 +388,6 @@ void DisplayLayout::post_from_sources() {
             widget->post(
                 PostArgs{.extras = ui::HAUpdatesPostArgs{
                              .value = static_cast<int>(value->state)}});
-#endif
-            break;
-        }
-        case WidgetKind::PSN: {
-#ifdef USE_TEXT_SENSOR
-            auto *phil = cfg.source_psn_phil.value_or(nullptr);
-            auto *nick = cfg.source_psn_nick.value_or(nullptr);
-            if (!phil || !nick)
-                break;
-            widget->post(PostArgs{
-                .extras = ui::PSNPostArgs{.phil = phil, .nick = nick}});
 #endif
             break;
         }
