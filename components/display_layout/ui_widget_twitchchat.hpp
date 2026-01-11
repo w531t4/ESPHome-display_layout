@@ -7,6 +7,11 @@
 #include "ui_widgetcomposite.hpp"
 
 namespace ui {
+struct TwitchChatPtrPostArgs {
+    std::string *row1;
+    std::string *row2;
+    std::string *row3;
+};
 struct TwitchChatPostArgs {
     std::string row1;
     std::string row2;
@@ -79,15 +84,15 @@ class TwitchChatWidget : public CompositeWidget<3> {
 
     void post(const PostArgs &args) override {
         if (args.extras.has_value()) {
-            const TwitchChatPostArgs *post_args_ptr =
-                std::any_cast<const TwitchChatPostArgs>(&args.extras);
+            const TwitchChatPtrPostArgs *post_args_ptr =
+                std::any_cast<const TwitchChatPtrPostArgs>(&args.extras);
             if (post_args_ptr != nullptr) {
                 members[0]->post(PostArgs{.extras = ui::StringPtrPostArgs{
-                                              .ptr = &post_args_ptr->row1}});
+                                              .ptr = post_args_ptr->row1}});
                 members[1]->post(PostArgs{.extras = ui::StringPtrPostArgs{
-                                              .ptr = &post_args_ptr->row2}});
+                                              .ptr = post_args_ptr->row2}});
                 members[2]->post(PostArgs{.extras = ui::StringPtrPostArgs{
-                                              .ptr = &post_args_ptr->row3}});
+                                              .ptr = post_args_ptr->row3}});
             }
         }
     }
