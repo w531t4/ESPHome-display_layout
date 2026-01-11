@@ -151,6 +151,59 @@ void DisplayLayout::register_widget(const WidgetConfig &cfg,
 void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
                                        Widget *widget) {
     switch (cfg.kind) {
+#ifdef USE_TEXT_SENSOR
+    case WidgetKind::TWITCH_CHAT: {
+        auto *row = cfg.source_chat_row.value_or(nullptr);
+        auto *channel = cfg.source_chat_channel.value_or(nullptr);
+        if (!row || !widget)
+            return;
+        struct TwitchChatState {
+            std::array<std::string, 3> chat_history{"", "", ""};
+            bool seeded = false;
+            bool twitch_started = false;
+        };
+        auto state = std::make_shared<TwitchChatState>();
+        auto post_now = [widget, row, channel, state]() {
+            if (channel && !ui::txt_sensor_has_healthy_state(channel)) {
+                if (state->twitch_started) {
+                    widget->blank();
+                    state->twitch_started = false;
+                }
+                return;
+            }
+            if (!ui::txt_sensor_has_healthy_state(row)) {
+                if (state->twitch_started) {
+                    widget->blank();
+                    state->twitch_started = false;
+                }
+                return;
+            }
+            if (!state->seeded) {
+                state->chat_history[2] = row->state;
+                state->seeded = true;
+            }
+
+            const std::string &incoming = row->state;
+            if (!incoming.empty() && incoming != state->chat_history[2]) {
+                state->chat_history[0] = state->chat_history[1];
+                state->chat_history[1] = state->chat_history[2];
+                state->chat_history[2] = incoming;
+            }
+            widget->post(PostArgs{.extras = ui::TwitchChatPtrPostArgs{
+                                      .row1 = &state->chat_history[0],
+                                      .row2 = &state->chat_history[1],
+                                      .row3 = &state->chat_history[2]}});
+            state->twitch_started = true;
+        };
+        row->add_on_state_callback([post_now](std::string) { post_now(); });
+        if (channel) {
+            channel->add_on_state_callback(
+                [post_now](std::string) { post_now(); });
+        }
+        post_now();
+        break;
+    }
+#endif
 #ifdef USE_SENSOR
     case WidgetKind::NETWORK_TPUT: {
         auto *rx = cfg.source_rx.value_or(nullptr);
@@ -263,6 +316,8 @@ void DisplayLayout::post_from_sources() {
             continue;
         if (cfg.kind == WidgetKind::PSN)
             continue;
+        if (cfg.kind == WidgetKind::TWITCH_CHAT)
+            continue;
 
         switch (cfg.kind) {
         case WidgetKind::TWITCH_ICONS: {
@@ -283,48 +338,6 @@ void DisplayLayout::post_from_sources() {
             widget->post(PostArgs{.extras = ui::TwitchStreamerIconsPostArgs{
                                       .image = image, .num_icons = num_icons}});
             globals::id(ready_flag) = false;
-#endif
-            break;
-        }
-        case WidgetKind::TWITCH_CHAT: {
-#ifdef USE_TEXT_SENSOR
-            auto *row = cfg.source_chat_row.value_or(nullptr);
-            auto *channel = cfg.source_chat_channel.value_or(nullptr);
-            if (!row)
-                break;
-
-            if (channel && !ui::txt_sensor_has_healthy_state(channel)) {
-                if (cfg.twitch_started) {
-                    widget->blank();
-                    cfg.twitch_started = false;
-                }
-                break;
-            }
-            if (!ui::txt_sensor_has_healthy_state(row)) {
-                if (cfg.twitch_started) {
-                    widget->blank();
-                    cfg.twitch_started = false;
-                }
-                break;
-            }
-            static std::array<std::string, 3> chat_history = {"", "", ""};
-            static bool seeded = false;
-            if (!seeded) {
-                chat_history[2] = row->state;
-                seeded = true;
-            }
-
-            const std::string &incoming = row->state;
-            if (!incoming.empty() && incoming != chat_history[2]) {
-                chat_history[0] = chat_history[1];
-                chat_history[1] = chat_history[2];
-                chat_history[2] = incoming;
-            }
-            widget->post(PostArgs{
-                .extras = ui::TwitchChatPtrPostArgs{.row1 = &chat_history[0],
-                                                    .row2 = &chat_history[1],
-                                                    .row3 = &chat_history[2]}});
-            cfg.twitch_started = true;
 #endif
             break;
         }
