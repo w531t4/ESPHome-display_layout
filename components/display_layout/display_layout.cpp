@@ -238,6 +238,19 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
         post_now();
         break;
     }
+    case WidgetKind::HA_UPDATES: {
+        auto *value = cfg.source_updates.value_or(nullptr);
+        if (!value || !widget)
+            return;
+        auto post_now = [widget, value]() {
+            widget->post(
+                PostArgs{.extras = ui::HAUpdatesPostArgs{
+                             .value = static_cast<int>(value->state)}});
+        };
+        value->add_on_state_callback([post_now](float) { post_now(); });
+        post_now();
+        break;
+    }
 #endif
 #ifdef USE_TEXT_SENSOR
     case WidgetKind::PSN: {
@@ -451,6 +464,8 @@ void DisplayLayout::post_from_sources() {
             continue;
         if (cfg.kind == WidgetKind::TEMPERATURES)
             continue;
+        if (cfg.kind == WidgetKind::HA_UPDATES)
+            continue;
         if (cfg.kind == WidgetKind::DATE)
             continue;
         if (cfg.kind == WidgetKind::TIME)
@@ -475,17 +490,6 @@ void DisplayLayout::post_from_sources() {
             widget->post(PostArgs{.extras = ui::TwitchStreamerIconsPostArgs{
                                       .image = image, .num_icons = num_icons}});
             globals::id(ready_flag) = false;
-#endif
-            break;
-        }
-        case WidgetKind::HA_UPDATES: {
-#ifdef USE_SENSOR
-            auto *value = cfg.source_updates.value_or(nullptr);
-            if (!value)
-                break;
-            widget->post(
-                PostArgs{.extras = ui::HAUpdatesPostArgs{
-                             .value = static_cast<int>(value->state)}});
 #endif
             break;
         }
