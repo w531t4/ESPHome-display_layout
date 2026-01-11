@@ -148,9 +148,11 @@ void DisplayLayout::register_widget(const WidgetConfig &cfg,
     widgets_.push_back(std::move(widget));
 }
 
-void DisplayLayout::register_callbacks(const WidgetConfig &cfg, Widget *widget) {
+void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
+                                       Widget *widget) {
+    switch (cfg.kind) {
 #ifdef USE_SENSOR
-    if (cfg.kind == WidgetKind::NETWORK_TPUT) {
+    case WidgetKind::NETWORK_TPUT: {
         auto *rx = cfg.source_rx.value_or(nullptr);
         auto *tx = cfg.source_tx.value_or(nullptr);
         if (!rx || !tx || !widget)
@@ -162,8 +164,12 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg, Widget *widget) 
         rx->add_on_state_callback([post_now](float) { post_now(); });
         tx->add_on_state_callback([post_now](float) { post_now(); });
         post_now();
+        break;
     }
 #endif
+    default:
+        break;
+    }
 }
 
 Widget *DisplayLayout::widget_for_resource(const std::string &resource) {
