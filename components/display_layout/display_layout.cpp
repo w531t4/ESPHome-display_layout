@@ -204,6 +204,30 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
         post_now();
         break;
     }
+    case WidgetKind::TWITCH_ICONS: {
+        auto *image = cfg.source_image.value_or(nullptr);
+        auto *count_sensor = cfg.source_count.value_or(nullptr);
+        auto *ready_flag = cfg.source_ready_flag.value_or(nullptr);
+        if (!image || !count_sensor || !ready_flag || !widget)
+            return;
+        auto post_now = [widget, image, count_sensor, ready_flag]() {
+            if (!count_sensor->has_state() || count_sensor->state.empty())
+                return;
+            if (!globals::id(ready_flag))
+                return;
+            const int num_icons =
+                ui::TwitchStreamerIconsWidget::normalize_input(
+                    count_sensor->state.c_str());
+            widget->post(PostArgs{.extras = ui::TwitchStreamerIconsPostArgs{
+                                      .image = image, .num_icons = num_icons}});
+            globals::id(ready_flag) = false;
+        };
+        count_sensor->add_on_state_callback(
+            [post_now](std::string) { post_now(); });
+        set_interval(250, [post_now]() { post_now(); });
+        post_now();
+        break;
+    }
 #endif
 #ifdef USE_SENSOR
     case WidgetKind::NETWORK_TPUT: {
@@ -458,6 +482,8 @@ void DisplayLayout::post_from_sources() {
             continue;
         if (cfg.kind == WidgetKind::PSN)
             continue;
+        if (cfg.kind == WidgetKind::TWITCH_ICONS)
+            continue;
         if (cfg.kind == WidgetKind::TWITCH_CHAT)
             continue;
         if (cfg.kind == WidgetKind::WEATHER)
@@ -472,27 +498,6 @@ void DisplayLayout::post_from_sources() {
             continue;
 
         switch (cfg.kind) {
-        case WidgetKind::TWITCH_ICONS: {
-#ifdef USE_TEXT_SENSOR
-            auto *image = cfg.source_image.value_or(nullptr);
-            auto *count_sensor = cfg.source_count.value_or(nullptr);
-            auto *ready_flag = cfg.source_ready_flag.value_or(nullptr);
-            if (!image || !count_sensor || !ready_flag)
-                break;
-            if (!count_sensor->has_state() || count_sensor->state.empty())
-                break;
-
-            if (!globals::id(ready_flag))
-                break;
-            const int num_icons =
-                ui::TwitchStreamerIconsWidget::normalize_input(
-                    count_sensor->state.c_str());
-            widget->post(PostArgs{.extras = ui::TwitchStreamerIconsPostArgs{
-                                      .image = image, .num_icons = num_icons}});
-            globals::id(ready_flag) = false;
-#endif
-            break;
-        }
         case WidgetKind::PIXEL_MOTION:
         default:
             break;
