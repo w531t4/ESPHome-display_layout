@@ -80,8 +80,8 @@ template <typename T, typename P> class WeatherWidget : public Widget {
 
         if (!is_different(*post_args_ptr))
             return;
-        last = WeatherCachedPostArgs{.value = *(*post_args_ptr).ptr,
-                                     .this_hour = (*post_args_ptr).this_hour};
+        last = WeatherCachedPostArgs{.value = *post_args_ptr->ptr,
+                                     .this_hour = post_args_ptr->this_hour};
 
         this->set_dirty(true);
     }
