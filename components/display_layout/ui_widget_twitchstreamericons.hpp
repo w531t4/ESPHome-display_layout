@@ -34,6 +34,8 @@ class TwitchStreamerIconsWidget : public Widget {
     bool is_different(TwitchStreamerIconsPostArgs value) const {
         if (!last.has_value())
             return true;
+        // TODO: This isn't sufficient. count(Before)=4 could = count(After)=4
+        // but set(Before) could != set(After)
         return (value.num_icons != last->num_icons);
     }
 
@@ -76,6 +78,7 @@ class TwitchStreamerIconsWidget : public Widget {
                            this->height() - 1);
         it->image(anchor.x, anchor.y, this->img); // draw
         it->end_clipping();
+        // TODO: Why is the following line here?
         it->image(anchor.x, anchor.y, img, esphome::display::COLOR_ON,
                   esphome::display::COLOR_OFF); // draw
         prev_box = {anchor.x, anchor.y, width(), width()};
