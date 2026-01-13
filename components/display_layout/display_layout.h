@@ -5,6 +5,7 @@
 
 #include "esphome/components/display/display.h"
 #include "esphome/components/font/font.h"
+#include "esphome/components/image/image.h"
 #include "esphome/core/component.h"
 #include "magnet.hpp"
 #include "ui_shared.hpp"
@@ -64,7 +65,7 @@ struct WidgetConfig {
     std::optional<int> icon_width;
     std::optional<int> icon_height;
     std::optional<int> max_icons;
-    std::optional<esphome::display::BaseImage *> source_image;
+    std::optional<esphome::image::Image *> source_image;
     std::optional<esphome::text_sensor::TextSensor *> source_count;
     std::optional<esphome::globals::GlobalsComponent<bool> *> source_ready_flag;
     std::optional<esphome::homeassistant::HomeassistantTextSensor *>
