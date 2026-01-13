@@ -8,6 +8,7 @@ path = [
     ".python-requirements",
     ".pre-commit-config.yaml",
     ".devcontainer/devcontainer.json",
+    ".github/workflows/release.yml",
     ".vscode/settings.json"
 
 
