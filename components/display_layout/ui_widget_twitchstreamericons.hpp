@@ -110,8 +110,6 @@ class TwitchStreamerIconsWidget : public Widget {
         blank();
         last = *new_value;
         img = new_value.value().image;
-        if (!(img))
-            return;
         write();
     }
 
