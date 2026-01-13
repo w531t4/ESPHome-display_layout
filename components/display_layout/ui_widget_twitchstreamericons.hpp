@@ -64,6 +64,9 @@ class TwitchStreamerIconsWidget : public Widget {
     }
 
     void write() override {
+        if (!new_value.has_value())
+            return;
+        img = new_value.value().image;
         if (!img)
             return;
         ESP_LOGI(
@@ -109,7 +112,6 @@ class TwitchStreamerIconsWidget : public Widget {
         // before we change our size, wipe out what we're currently using
         blank();
         last = *new_value;
-        img = new_value.value().image;
         write();
     }
 
