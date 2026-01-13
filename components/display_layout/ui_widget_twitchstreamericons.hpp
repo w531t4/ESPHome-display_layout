@@ -2,12 +2,13 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 #include "esphome/components/display/display.h"
+#include "esphome/components/image/image.h"
 #include "ui_shared.hpp"
 #include "ui_widget.hpp"
 
 namespace ui {
 struct TwitchStreamerIconsPostArgs {
-    esphome::display::BaseImage *image;
+    esphome::image::Image *image;
     int num_icons;
 };
 struct TwitchStreamerIconsInitArgs {
@@ -27,7 +28,7 @@ class TwitchStreamerIconsWidget : public Widget {
     std::optional<TwitchStreamerIconsPostArgs> new_value{};
     std::optional<TwitchStreamerIconsPostArgs> last{};
 
-    esphome::display::BaseImage *img = nullptr;
+    esphome::image::Image *img = nullptr;
     int icon_width, icon_height, max_icons;
 
     bool is_different(TwitchStreamerIconsPostArgs value) const {
