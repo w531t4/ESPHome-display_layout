@@ -28,7 +28,6 @@ class TwitchStreamerIconsWidget : public Widget {
     std::optional<TwitchStreamerIconsPostArgs> new_value{};
     std::optional<TwitchStreamerIconsPostArgs> last{};
 
-    esphome::image::Image *img = nullptr;
     int icon_width, icon_height, max_icons;
 
     bool is_different(TwitchStreamerIconsPostArgs value) const {
@@ -64,10 +63,9 @@ class TwitchStreamerIconsWidget : public Widget {
     }
 
     void write() override {
-        if (!new_value.has_value())
+        if (!last.has_value())
             return;
-        img = new_value.value().image;
-        if (!img)
+        if (!last->image)
             return;
         ESP_LOGI(
             TAG,
