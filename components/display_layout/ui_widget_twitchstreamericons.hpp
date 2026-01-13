@@ -29,6 +29,7 @@ class TwitchStreamerIconsWidget : public Widget {
     std::optional<TwitchStreamerIconsPostArgs> last{};
 
     int icon_width, icon_height, max_icons;
+    int prev_num_icons;
 
     bool is_different(TwitchStreamerIconsPostArgs value) const {
         if (!last.has_value())
@@ -49,15 +50,16 @@ class TwitchStreamerIconsWidget : public Widget {
         }
         this->last.reset();
         this->new_value.reset();
-
+        this->prev_num_icons = 0;
         initialized = true;
     }
 
     void blank() override {
         if (!last.has_value())
             return;
-        if ((*last).num_icons > (*new_value).num_icons) {
-            it->filled_rectangle(anchor.x, anchor.y, this->width(),
+        if (this->prev_num_icons > last->num_icons) {
+            it->filled_rectangle(anchor.x, anchor.y,
+                                 this->prev_num_icons * this->icon_width,
                                  this->height(), this->blank_color);
         }
     }
@@ -77,10 +79,10 @@ class TwitchStreamerIconsWidget : public Widget {
         // clip so only the populated portion of twitch_strip is written.
         it->start_clipping(anchor.x, anchor.y, this->width() - 1,
                            this->height() - 1);
-        it->image(anchor.x, anchor.y, this->img); // draw
+        it->image(anchor.x, anchor.y, last->image); // draw
         it->end_clipping();
         // TODO: Why is the following line here?
-        it->image(anchor.x, anchor.y, img, esphome::display::COLOR_ON,
+        it->image(anchor.x, anchor.y, last->image, esphome::display::COLOR_ON,
                   esphome::display::COLOR_OFF); // draw
         prev_box = {anchor.x, anchor.y, width(), width()};
     }
@@ -94,23 +96,25 @@ class TwitchStreamerIconsWidget : public Widget {
         if (post_args_ptr == nullptr)
             return;
 
-        TwitchStreamerIconsPostArgs value = *post_args_ptr;
         ESP_LOGI(TAG, "[widget=%s] post(): new_num_icons=%d",
-                 this->get_name().c_str(), value.num_icons);
-        new_value = value;
+                 this->get_name().c_str(), post_args_ptr->num_icons);
+        if (!is_different(*post_args_ptr))
+            return;
+        if (last.has_value())
+            this->prev_num_icons = last->num_icons;
+        last = *post_args_ptr;
+        this->set_dirty(true);
     }
 
     void update() override {
         if (!initialized)
             return;
-        if (!new_value.has_value())
-            return;
-        if (new_value.has_value() && !is_different(*new_value))
+        if (!this->is_dirty())
             return;
         // before we change our size, wipe out what we're currently using
         blank();
-        last = *new_value;
         write();
+        this->set_dirty(false);
     }
 
     const int width() const override {
@@ -118,7 +122,9 @@ class TwitchStreamerIconsWidget : public Widget {
             return -1;
         if (!(this->is_visible()))
             return 0;
-        return icon_width * (*last).num_icons;
+        if (!last.has_value())
+            return 0;
+        return icon_width * last->num_icons;
     }
 
     const int height() const override {
