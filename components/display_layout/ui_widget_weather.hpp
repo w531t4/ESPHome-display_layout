@@ -24,10 +24,8 @@ template <typename T, typename P> class WeatherWidget : public Widget {
     ui::Box prev_box{};
     esphome::Color blank_color = esphome::Color::BLACK;
     // Remember last value
-    std::optional<P> new_value{};
     std::optional<T> last{};
 
-    esphome::image::Image *img = nullptr;
     int night_start = 21;
     int night_end = 6;
     // Pick a default printf format based on T
@@ -52,14 +50,21 @@ template <typename T, typename P> class WeatherWidget : public Widget {
         this->blank_color = a.blank_color.value_or(esphome::Color::BLACK);
 
         this->last.reset();
-        this->new_value.reset();
-
         initialized = true;
     }
 
     void blank() override { ui::mywipe(it, prev_box, blank_color); }
 
     void write() override {
+        if (!last.has_value())
+            return;
+        auto itf = icon_registry().find(last->value);
+        if (itf == icon_registry().end())
+            return;
+        esphome::image::Image *img =
+            ui::is_night_hour(last->this_hour, night_start, night_end)
+                ? itf->second.night
+                : itf->second.day;
         if (!img)
             return;
         it->image(anchor.x, anchor.y, img, esphome::display::COLOR_ON,
@@ -89,14 +94,7 @@ template <typename T, typename P> class WeatherWidget : public Widget {
     void update() override {
         if (!initialized)
             return;
-        if (!this->is_dirty()) return;
-        auto itf = icon_registry().find(last->value);
-        if (itf == icon_registry().end())
-            return;
-        img = ui::is_night_hour(last->this_hour, night_start, night_end)
-                  ? itf->second.night
-                  : itf->second.day;
-        if (!img)
+        if (!this->is_dirty())
             return;
         blank();
         write();
