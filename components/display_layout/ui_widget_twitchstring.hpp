@@ -3,7 +3,7 @@
 #pragma once
 #include "ui_colors.hpp"
 #include "ui_shared.hpp"
-#include "ui_widget_dyntext_string.hpp"
+#include "base_widget_dyntext_string.hpp"
 
 namespace ui {
 struct TwitchStringComponents {
