@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2025 Aaron White <w531t4@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
-#include "ui_widget_text.hpp"
+#include "base_widget_text.hpp"
 
 namespace ui {
 struct StringPostArgs {
