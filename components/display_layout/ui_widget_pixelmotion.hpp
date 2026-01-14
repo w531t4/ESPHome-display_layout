@@ -3,7 +3,7 @@
 #pragma once
 #include "ui_colors.hpp"
 #include "ui_shared.hpp"
-#include "ui_widget.hpp"
+#include "base_widget.hpp"
 
 namespace ui {
 class PixelMotionWidget : public Widget {

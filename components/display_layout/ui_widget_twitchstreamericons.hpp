@@ -4,7 +4,7 @@
 #include "esphome/components/display/display.h"
 #include "esphome/components/image/image.h"
 #include "ui_shared.hpp"
-#include "ui_widget.hpp"
+#include "base_widget.hpp"
 
 namespace ui {
 struct TwitchStreamerIconsPostArgs {
