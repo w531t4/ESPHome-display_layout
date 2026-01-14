@@ -7,7 +7,7 @@
 #include "composite_widget_date.hpp"
 #include "composite_widget_haupdates.hpp"
 #include "composite_widget_network_tput.hpp"
-#include "ui_widget_pixelmotion.hpp"
+#include "widget_pixelmotion.hpp"
 #include "composite_widget_psn.hpp"
 #include "composite_widget_temperatures.hpp"
 #include "composite_widget_time.hpp"
