@@ -6,7 +6,7 @@
 #include "ui_shared.hpp"
 #include "ui_widget_text_numeric.hpp"
 #include "ui_widget_text_string.hpp"
-#include "ui_widgetcomposite.hpp"
+#include "base_widget_composite.hpp"
 #include <array>
 
 namespace ui {
