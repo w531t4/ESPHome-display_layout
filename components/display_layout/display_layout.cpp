@@ -10,7 +10,7 @@
 #include "ui_widget_pixelmotion.hpp"
 #include "composite_widget_psn.hpp"
 #include "composite_widget_temperatures.hpp"
-#include "ui_widget_time.hpp"
+#include "composite_widget_time.hpp"
 #include "ui_widget_twitchchat.hpp"
 #include "ui_widget_twitchstreamericons.hpp"
 #include "ui_widget_weather.hpp"
