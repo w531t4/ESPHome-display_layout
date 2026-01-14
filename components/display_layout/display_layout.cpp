@@ -8,7 +8,7 @@
 #include "composite_widget_haupdates.hpp"
 #include "composite_widget_network_tput.hpp"
 #include "ui_widget_pixelmotion.hpp"
-#include "ui_widget_psn.hpp"
+#include "composite_widget_psn.hpp"
 #include "ui_widget_temperatures.hpp"
 #include "ui_widget_time.hpp"
 #include "ui_widget_twitchchat.hpp"
