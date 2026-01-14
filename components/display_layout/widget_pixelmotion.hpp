@@ -37,9 +37,7 @@ class PixelMotionWidget : public Widget {
 
     void write() override { it->draw_pixel_at(anchor.x, *new_value, GREEN); }
 
-    void post(const PostArgs &args) override {
-        if (!initialized)
-            return;
+    void action() {
         if (mvright && *new_value < (height() - 1)) {
             (*new_value)++;
         } else if (mvright && *new_value == (height() - 1)) {
@@ -51,6 +49,11 @@ class PixelMotionWidget : public Widget {
             (*new_value)++;
             mvright = true;
         }
+    }
+    void post(const PostArgs &args) override {
+        if (!initialized)
+            return;
+        this->action();
     }
 
     // void post() { post(PostArgs{}); }
