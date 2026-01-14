@@ -13,7 +13,7 @@
 #include "composite_widget_time.hpp"
 #include "composite_widget_twitchchat.hpp"
 #include "widget_twitchstreamericons.hpp"
-#include "ui_widget_weather.hpp"
+#include "widget_weather.hpp"
 #ifdef USE_SENSOR
 #include "esphome/components/sensor/sensor.h"
 #endif
