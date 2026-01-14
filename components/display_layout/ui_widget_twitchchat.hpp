@@ -4,7 +4,7 @@
 #include "ui_colors.hpp"
 #include "ui_shared.hpp"
 #include "ui_widget_twitchstring.hpp"
-#include "ui_widgetcomposite.hpp"
+#include "base_widget_composite.hpp"
 
 namespace ui {
 struct TwitchChatPtrPostArgs {
