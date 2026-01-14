@@ -4,7 +4,7 @@
 #include "esphome/components/globals/globals_component.h"
 #include "esphome/core/hal.h"
 #include "esphome/core/log.h"
-#include "ui_widget_date.hpp"
+#include "composite_widget_date.hpp"
 #include "ui_widget_haupdates.hpp"
 #include "ui_widget_network_tput.hpp"
 #include "ui_widget_pixelmotion.hpp"
