@@ -13,7 +13,7 @@ class PixelMotionWidget : public Widget {
 
     std::optional<int> new_value{};
     std::optional<int> last{};
-    bool mvright = true;
+    bool forward = true;
 
     bool is_different(const int value) const {
         if (!last.has_value())
@@ -38,16 +38,16 @@ class PixelMotionWidget : public Widget {
     void write() override { it->draw_pixel_at(anchor.x, *new_value, GREEN); }
 
     void action() {
-        if (mvright && *new_value < (height() - 1)) {
+        if (forward && *new_value < (height() - 1)) {
             (*new_value)++;
-        } else if (mvright && *new_value == (height() - 1)) {
+        } else if (forward && *new_value == (height() - 1)) {
             (*new_value)--;
-            mvright = false;
+            forward = false;
         } else if (*new_value > anchor.y) {
             (*new_value)--;
         } else if (*new_value == anchor.y) {
             (*new_value)++;
-            mvright = true;
+            forward = true;
         }
     }
     void post(const PostArgs &args) override {
