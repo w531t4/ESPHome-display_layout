@@ -4,7 +4,7 @@
 #include "argsbag.hpp"
 #include "ui_colors.hpp"
 #include "ui_shared.hpp"
-#include "ui_widget_text_numeric.hpp"
+#include "base_widget_text_numeric.hpp"
 #include "ui_widget_text_string.hpp"
 #include "base_widget_composite.hpp"
 #include <array>
