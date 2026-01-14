@@ -11,7 +11,7 @@
 #include "composite_widget_psn.hpp"
 #include "composite_widget_temperatures.hpp"
 #include "composite_widget_time.hpp"
-#include "ui_widget_twitchchat.hpp"
+#include "composite_widget_twitchchat.hpp"
 #include "ui_widget_twitchstreamericons.hpp"
 #include "ui_widget_weather.hpp"
 #ifdef USE_SENSOR
