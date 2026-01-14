@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2025 Aaron White <w531t4@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
-#include "ui_widget_dyntext.hpp"
+#include "base_widget_dyntext.hpp"
 #include "ui_widget_text_string.hpp"
 
 namespace ui {
