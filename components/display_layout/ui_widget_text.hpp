@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 #include "ui_shared.hpp"
-#include "ui_widget.hpp"
+#include "base_widget.hpp"
 #include <algorithm>
 
 namespace ui {

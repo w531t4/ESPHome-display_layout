@@ -4,7 +4,7 @@
 #include "esphome/components/display/display.h"
 #include "ui_shared.hpp"
 #include "ui_weather.hpp"
-#include "ui_widget.hpp"
+#include "base_widget.hpp"
 
 namespace ui {
 struct WeatherCachedPostArgs {

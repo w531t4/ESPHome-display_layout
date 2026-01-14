@@ -45,13 +45,13 @@ class Widget {
     bool initialized = false;
 
     // Originally, post() acted as a facilitator of data storage, and update()
-    // incorporated logic for testing whether there was a change to gate writing pixels
-    // unnecessarily
+    // incorporated logic for testing whether there was a change to gate writing
+    // pixels unnecessarily
 
-    // 'dirty' intends to short-circuit that a bit... post() will be responsible for
-    // determining if a change has occurred (using in-flight pointers, etc). If a change,
-    // it stores the value and sets dirty. update() will be responsible for measuring
-    // dirty and clearing it.
+    // 'dirty' intends to short-circuit that a bit... post() will be responsible
+    // for determining if a change has occurred (using in-flight pointers, etc).
+    // If a change, it stores the value and sets dirty. update() will be
+    // responsible for measuring dirty and clearing it.
     bool dirty = false;
     ui::Coord anchor{-1, -1};
     Magnet magnet;

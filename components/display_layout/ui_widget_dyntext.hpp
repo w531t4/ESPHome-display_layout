@@ -3,7 +3,7 @@
 #pragma once
 #include "ui_capabilities.hpp"
 #include "ui_shared.hpp"
-#include "ui_widget.hpp"
+#include "base_widget.hpp"
 #include "ui_widget_text.hpp"
 #include <algorithm>
 #include <vector>

@@ -9,7 +9,7 @@
 #include "esphome/core/component.h"
 #include "magnet.hpp"
 #include "ui_shared.hpp"
-#include "ui_widget.hpp"
+#include "base_widget.hpp"
 #include "ui_widgetregistry.hpp"
 #ifndef DISPLAY_LAYOUT_MAX_WIDGETS
 #define DISPLAY_LAYOUT_MAX_WIDGETS 16
