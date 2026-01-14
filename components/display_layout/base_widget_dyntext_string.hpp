@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 #pragma once
 #include "base_widget_dyntext.hpp"
-#include "ui_widget_text_string.hpp"
+#include "base_widget_text_string.hpp"
 
 namespace ui {
 // struct StringPostArgs {
