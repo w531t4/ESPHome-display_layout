@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2025 Aaron White <w531t4@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
-#include "ui_shared.hpp"
 #include "base_widget.hpp"
+#include "ui_shared.hpp"
 #include <algorithm>
 #include <array>
 
@@ -25,9 +25,10 @@ template <std::size_t numWidgets> class CompositeWidget : public Widget {
         }
     }
 
-    const bool is_dirty() const noexcept override  {
+    const bool is_dirty() const noexcept override {
         for (auto &ptr : members) { // ptr is a std::unique_ptr<Widget>&
-            if (ptr && ptr->is_dirty()) return true;
+            if (ptr && ptr->is_dirty())
+                return true;
         }
         return false;
     }

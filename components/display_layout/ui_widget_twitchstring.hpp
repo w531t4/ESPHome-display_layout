@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2025 Aaron White <w531t4@gmail.com>
 // SPDX-License-Identifier: MIT
 #pragma once
+#include "base_widget_dyntext_string.hpp"
 #include "ui_colors.hpp"
 #include "ui_shared.hpp"
-#include "base_widget_dyntext_string.hpp"
 
 namespace ui {
 struct TwitchStringComponents {
@@ -71,8 +71,9 @@ class TwitchStringWidget : public DynStringWidget<BufSize>,
                             abc.message.c_str(), YELLOW, this->prev_box);
         } else {
             // ESP_LOGI(
-            //     TAG, "[widget=%s] write(): y=%d, anchor.x=%d, this->width=%d",
-            //     this->get_name().c_str(), y, this->anchor.x, this->width());
+            //     TAG, "[widget=%s] write(): y=%d, anchor.x=%d,
+            //     this->width=%d", this->get_name().c_str(), y, this->anchor.x,
+            //     this->width());
             ui::printf_dual(this->it, this->font, this->anchor.x, y,
                             (abc.user + ": ").c_str(), WHITE,
                             abc.message.c_str(), YELLOW, this->prev_box);
