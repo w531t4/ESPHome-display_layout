@@ -38,14 +38,19 @@ class PixelMotionWidget : public Widget {
     void write() override { it->draw_pixel_at(anchor.x, *new_value, GREEN); }
 
     void action() {
+        // forward = 'downward'
         if (forward && *new_value < (height() - 1)) {
+            // if moving down to bottom
             (*new_value)++;
         } else if (forward && *new_value == (height() - 1)) {
+            // if moving down and have reached the bottom
             (*new_value)--;
             forward = false;
         } else if (*new_value > anchor.y) {
+            // if moving upwards to top
             (*new_value)--;
         } else if (*new_value == anchor.y) {
+            // if moving up and have reached the top
             (*new_value)++;
             forward = true;
         }
