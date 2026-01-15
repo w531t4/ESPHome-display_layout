@@ -8,7 +8,6 @@
 namespace ui {
 class PixelMotionWidget : public Widget {
   protected:
-    ui::Box prev_box{};
     esphome::Color blank_color = esphome::Color::BLACK;
     std::optional<int> last{};
     /// the value immediately preceeding last
