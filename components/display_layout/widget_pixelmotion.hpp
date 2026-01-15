@@ -10,10 +10,11 @@ class PixelMotionWidget : public Widget {
   protected:
     ui::Box prev_box{};
     esphome::Color blank_color = esphome::Color::BLACK;
-
-    std::optional<int> new_value{};
     std::optional<int> last{};
-    bool forward = true;
+    /// the value immediately preceeding last
+    int prev;
+    /// forward: true (downward), false (upward)
+    bool forward;
 
     bool is_different(const int value) const {
         if (!last.has_value())
@@ -27,31 +28,36 @@ class PixelMotionWidget : public Widget {
         this->blank_color = a.blank_color.value_or(esphome::Color::BLACK);
 
         this->last.reset();
-        this->new_value.reset();
-        *this->new_value = 16;
-        *this->last = *this->new_value;
+        *this->last = 16;
+        prev = *(this->last) - 1;
+        this->forward = true;
         initialized = true;
     }
 
-    void blank() override { it->draw_pixel_at(anchor.x, *last, blank_color); }
+    void blank() override {
+        ui::Box box =
+            ui::Box{anchor.x, anchor.y, this->width(), this->height()};
+        ui::mywipe(it, box, blank_color);
+    }
 
-    void write() override { it->draw_pixel_at(anchor.x, *new_value, GREEN); }
+    void write() override { it->draw_pixel_at(anchor.x, *this->last, GREEN); }
 
     void action() {
+        prev = *this->last;
         // forward = 'downward'
-        if (forward && *new_value < (height() - 1)) {
+        if (forward && *this->last < (height() - 1)) {
             // if moving down to bottom
-            (*new_value)++;
-        } else if (forward && *new_value == (height() - 1)) {
+            (*this->last)++;
+        } else if (forward && *this->last == (height() - 1)) {
             // if moving down and have reached the bottom
-            (*new_value)--;
+            (*this->last)--;
             forward = false;
-        } else if (*new_value > anchor.y) {
+        } else if (*this->last > anchor.y) {
             // if moving upwards to top
-            (*new_value)--;
-        } else if (*new_value == anchor.y) {
+            (*this->last)--;
+        } else if (*this->last == anchor.y) {
             // if moving up and have reached the top
-            (*new_value)++;
+            (*this->last)++;
             forward = true;
         }
     }
@@ -59,6 +65,7 @@ class PixelMotionWidget : public Widget {
         if (!initialized)
             return;
         this->action();
+        this->set_dirty(true);
     }
 
     // void post() { post(PostArgs{}); }
@@ -66,12 +73,12 @@ class PixelMotionWidget : public Widget {
     void update() override {
         if (!initialized)
             return;
-        if (new_value.has_value() && !is_different(*new_value))
+        if (!this->is_dirty())
             return;
         // prep(*new_value, fmt.c_str());
         blank();
         write();
-        last = *new_value;
+        this->set_dirty(false);
     }
 
     const int width() const override {
