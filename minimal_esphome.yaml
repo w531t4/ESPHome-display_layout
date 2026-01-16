@@ -109,6 +109,12 @@ font:
     bpp: 2
     id: font_date_hourmin
     size: 35
+  - file:
+      type: gfonts
+      family: JetBrains Mono
+    bpp: 2
+    id: font_date_secs
+    size: 12
 
 external_components:
   - source:
@@ -242,7 +248,7 @@ display_layout:
         y: 0
       priority: 50
       font: font_date_hourmin
-      font2: font1
+      font2: font_date_secs
       sources:
         time: homeassistant_time
     - type: ha_updates
