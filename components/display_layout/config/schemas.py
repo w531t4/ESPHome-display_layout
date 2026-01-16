@@ -23,8 +23,11 @@ BASE_WIDGET_SCHEMA = cv.Schema(
     {
         cv.Required(CONF_TYPE): cv.one_of(*WIDGET_TYPE_MAP, lower=True),
         cv.Required(CONF_NAME): cv.string,
-        cv.Required(const.CONF_ANCHOR): cv.Schema(
-            {cv.Required(const.CONF_X): cv.int_, cv.Required(const.CONF_Y): cv.int_}
+        cv.Optional(const.CONF_ANCHOR): cv.Schema(
+            {
+                cv.Optional(const.CONF_X, default=0): cv.int_,
+                cv.Optional(const.CONF_Y, default=0): cv.int_,
+            }
         ),
         cv.Optional(const.CONF_PRIORITY, default=0): cv.int_range(min=0, max=255),
         cv.Optional(const.CONF_MAGNET, default="right"): cv.one_of(
