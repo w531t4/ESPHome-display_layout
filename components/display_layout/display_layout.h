@@ -17,7 +17,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 namespace esphome {
@@ -55,7 +54,6 @@ enum class WidgetKind {
 struct WidgetConfig {
     WidgetKind kind{WidgetKind::PIXEL_MOTION};
     std::string id;
-    std::string resource;
     ui::Coord anchor{0, 0};
     uint8_t priority{0};
     Magnet magnet{Magnet::RIGHT};
@@ -99,8 +97,6 @@ class DisplayLayout : public Component {
     void set_gap_x(int px) { gap_x_ = px; }
     void set_right_edge_x(int px);
     void render(esphome::display::Display &it);
-    // Post by resource name so callers don't keep widget handles.
-    bool post_to_resource(const std::string &resource, const PostArgs &args);
     // Clear built widgets/registry so they rebuild on the next render call.
     void reset();
 
@@ -112,15 +108,11 @@ class DisplayLayout : public Component {
     void register_widget(const WidgetConfig &cfg,
                          std::unique_ptr<Widget> widget);
     void register_callbacks(const WidgetConfig &cfg, Widget *widget);
-    Widget *widget_for_resource(const std::string &resource);
     void post_from_sources();
-    bool post_to_resource_internal(const std::string &resource,
-                                   const PostArgs &args);
 
     std::vector<WidgetConfig> widget_configs_;
     std::vector<std::unique_ptr<Widget>> widgets_;
     ui::WidgetRegistry<kMaxWidgets> registry_;
-    std::unordered_map<std::string, Widget *> resource_map_;
     // Widgets that need a tick each frame (e.g. PixelMotion).
     std::vector<Widget *> motion_widgets_;
     bool built_ = false;

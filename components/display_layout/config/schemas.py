@@ -33,7 +33,6 @@ BASE_WIDGET_SCHEMA = cv.Schema(
         cv.Optional(const.CONF_MAGNET, default="right"): cv.one_of(
             *MAGNET_MAP, lower=True
         ),
-        cv.Optional(const.CONF_RESOURCE, default=""): cv.string_strict,
         cv.Optional(const.CONF_FONT): cv.use_id(font.Font),
         cv.Optional(const.CONF_FONT2): cv.use_id(font.Font),
         cv.Optional(const.CONF_PIXELS_PER_CHARACTER): cv.int_range(min=1),

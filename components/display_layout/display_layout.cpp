@@ -41,7 +41,6 @@ void DisplayLayout::reset() {
     registry_ = ui::WidgetRegistry<kMaxWidgets>{};
     widgets_.clear();
     motion_widgets_.clear();
-    resource_map_.clear();
     built_ = false;
 }
 struct WidgetMeta {
@@ -139,9 +138,6 @@ void DisplayLayout::register_widget(const WidgetConfig &cfg,
         meta->registrar(registry_, raw);
     }
 
-    if (!cfg.resource.empty()) {
-        resource_map_[cfg.resource] = raw;
-    }
     if (meta->is_motion) {
         motion_widgets_.push_back(raw);
     }
@@ -407,13 +403,6 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
     }
 }
 
-Widget *DisplayLayout::widget_for_resource(const std::string &resource) {
-    auto it = resource_map_.find(resource);
-    if (it == resource_map_.end())
-        return nullptr;
-    return it->second;
-}
-
 void DisplayLayout::build_widgets(esphome::display::Display &it) {
     configure_registry();
 
@@ -505,25 +494,6 @@ void DisplayLayout::post_from_sources() {
     }
 }
 
-bool DisplayLayout::post_to_resource(const std::string &resource,
-                                     const PostArgs &args) {
-    if (!built_)
-        return true;
-    return post_to_resource_internal(resource, args);
-}
-
-bool DisplayLayout::post_to_resource_internal(const std::string &resource,
-                                              const PostArgs &args) {
-    auto *widget = widget_for_resource(resource);
-    if (!widget) {
-        ESP_LOGW(TAG, "post_to_resource(): no widget bound to resource '%s'",
-                 resource.c_str());
-        return false;
-    }
-    widget->post(args);
-    return true;
-}
-
 void DisplayLayout::dump_config() {
     ESP_LOGCONFIG(TAG, "Display Layout");
     ESP_LOGCONFIG(TAG, "  gap_x: %d", gap_x_);
@@ -533,10 +503,10 @@ void DisplayLayout::dump_config() {
     for (const auto &cfg : widget_configs_) {
         ESP_LOGCONFIG(TAG,
                       "  widget id=%s type=%s anchor=(%d,%d) priority=%d "
-                      "resource=%s magnet=%d",
+                      "magnet=%d",
                       cfg.id.c_str(), this->kind_to_string(cfg.kind).c_str(),
                       cfg.anchor.x, cfg.anchor.y, cfg.priority,
-                      cfg.resource.c_str(), static_cast<int>(cfg.magnet));
+                      static_cast<int>(cfg.magnet));
     }
 }
 
