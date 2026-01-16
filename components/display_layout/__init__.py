@@ -47,6 +47,10 @@ async def to_code(config: Dict[str, Any]) -> None:
         cg.add(var.set_right_edge_x(config[const.CONF_RIGHT_EDGE_X]))
 
     for widget in widget_list:
+        anchor = widget.get(const.CONF_ANCHOR, {})
+        anchor_x = anchor.get(const.CONF_X, 0)
+        anchor_y = anchor.get(const.CONF_Y, 0)
+        anchor_expr = cg.RawExpression(f"ui::Coord({anchor_x}, {anchor_y})")
         font_expr = None
         font2_expr = None
         if const.CONF_FONT in widget:
@@ -82,13 +86,7 @@ async def to_code(config: Dict[str, Any]) -> None:
             ("kind", cg.RawExpression(WIDGET_TYPE_MAP[widget[CONF_TYPE]])),
             ("id", widget[CONF_NAME]),
             ("resource", widget.get(const.CONF_RESOURCE, "")),
-            (
-                "anchor",
-                cg.RawExpression(
-                    f"ui::Coord({widget[const.CONF_ANCHOR][const.CONF_X]}, "
-                    f"{widget[const.CONF_ANCHOR][const.CONF_Y]})"
-                ),
-            ),
+            ("anchor", anchor_expr),
             ("priority", widget[const.CONF_PRIORITY]),
             ("magnet", cg.RawExpression(MAGNET_MAP[widget[const.CONF_MAGNET]])),
             ("font", _opt(font_expr)),
