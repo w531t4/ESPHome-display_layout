@@ -85,7 +85,6 @@ async def to_code(config: Dict[str, Any]) -> None:
             WidgetConfig,
             ("kind", cg.RawExpression(WIDGET_TYPE_MAP[widget[CONF_TYPE]])),
             ("id", widget[CONF_NAME]),
-            ("resource", widget.get(const.CONF_RESOURCE, "")),
             ("anchor", anchor_expr),
             ("priority", widget[const.CONF_PRIORITY]),
             ("magnet", cg.RawExpression(MAGNET_MAP[widget[const.CONF_MAGNET]])),

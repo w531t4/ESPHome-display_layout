@@ -151,7 +151,6 @@ display_layout:
   widgets:
     - type: twitch_icons
       name: twitchicons
-      resource: twitch_icons
       priority: 250
       magnet: left
       icon_width: 32
@@ -163,7 +162,6 @@ display_layout:
         ready_flag: twitch_onlineimages_ready_indicator
     - type: twitch_chat
       name: twitch
-      resource: twitch_chat
       priority: 120
       magnet: auto
       font: font1
@@ -173,11 +171,9 @@ display_layout:
         channel: chat_channel
     - type: pixel_motion
       name: motion
-      resource: pixel_motion
       priority: 110
     - type: network_tput
       name: network
-      resource: network
       priority: 100
       font: font1
       sources:
@@ -185,7 +181,6 @@ display_layout:
         tx: wan_tx
     - type: weather
       name: weather
-      resource: weather
       priority: 90
       font: font1
       sources:
@@ -193,7 +188,6 @@ display_layout:
         time: homeassistant_time
     - type: psn
       name: psn
-      resource: psn
       priority: 95
       font: font1
       sources:
@@ -201,7 +195,6 @@ display_layout:
         nick: person2_now_playing
     - type: temperatures
       name: temperatures
-      resource: temperatures
       priority: 60
       font: font1
       sources:
@@ -210,7 +203,6 @@ display_layout:
         low: temp_low
     - type: date
       name: date
-      resource: date
       priority: 55
       font: font1
       font2: font1
@@ -218,7 +210,6 @@ display_layout:
         time: homeassistant_time
     - type: time
       name: time
-      resource: time
       priority: 50
       font: font_date_hourmin
       font2: font_date_secs
@@ -226,7 +217,6 @@ display_layout:
         time: homeassistant_time
     - type: ha_updates
       name: haupdates
-      resource: haupdates
       priority: 20
       font: font1
       sources:
