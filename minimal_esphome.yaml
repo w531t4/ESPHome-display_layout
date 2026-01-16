@@ -103,6 +103,12 @@ font:
   - file: "gfonts://Roboto"
     id: font1
     size: 12
+  - file:
+      type: gfonts
+      family: JetBrains Mono
+    bpp: 2
+    id: font_date_hourmin
+    size: 35
 
 external_components:
   - source:
@@ -235,7 +241,7 @@ display_layout:
         x: 655
         y: 0
       priority: 50
-      font: font1
+      font: font_date_hourmin
       font2: font1
       sources:
         time: homeassistant_time

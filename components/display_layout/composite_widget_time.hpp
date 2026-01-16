@@ -52,7 +52,7 @@ class TimeWidget : public CompositeWidget<4> {
         members[1]->initialize(
             InitArgs{.it = a.it,
                      .id = a.id + "[colon]",
-                     .anchor = ui::Coord(anchor.x + 27, anchor.y),
+                     .anchor = ui::Coord(anchor.x + 28, anchor.y - 2),
                      .font = a.font, // 33
                      .font_color = ORANGE,
                      .extras = ArgsBag::of(
