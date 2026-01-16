@@ -18,11 +18,12 @@ class PSNWidget : public CompositeWidget<2> {
   public:
     void initialize(const InitArgs &a) override {
         CompositeWidget<2>::initialize(a);
+        constexpr int y_offset = 3;
         members[0] = std::make_unique<StringWidget<2>>(); // Phil
         members[0]->initialize(
             InitArgs{.it = a.it,
                      .id = a.id + "[phil]",
-                     .anchor = ui::Coord(anchor.x, anchor.y),
+                     .anchor = ui::Coord(anchor.x, anchor.y + y_offset),
                      .font = *a.font,
                      .font_color = GREEN,
                      .extras = ArgsBag::of(TextInitArgs<std::string>{
@@ -32,7 +33,7 @@ class PSNWidget : public CompositeWidget<2> {
         members[1]->initialize(
             InitArgs{.it = a.it,
                      .id = a.id + "[nick]",
-                     .anchor = ui::Coord(anchor.x, anchor.y + 20),
+                     .anchor = ui::Coord(anchor.x, anchor.y + y_offset + 20),
                      .font = *a.font,
                      .font_color = PINK,
                      .extras = ArgsBag::of(TextInitArgs<std::string>{
