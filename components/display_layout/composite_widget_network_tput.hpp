@@ -17,13 +17,14 @@ class NetworkTputWidget : public CompositeWidget<2> {
   public:
     void initialize(const InitArgs &a) override {
         CompositeWidget<2>::initialize(a);
+        constexpr int y_offset = 7;
         constexpr int float_bufsize = 8; // "1000 TX\0"
         members[0] =
             std::make_unique<NumericWidget<float, float_bufsize>>(); // HIGH
         members[0]->initialize(InitArgs{
             .it = a.it,
             .id = a.id + "[tx]",
-            .anchor = ui::Coord(a.anchor.x, a.anchor.y),
+            .anchor = ui::Coord(a.anchor.x, a.anchor.y + y_offset),
             .font = a.font,
             .font_color = RED,
             .fmt = std::string("%4.0f TX"),
@@ -33,7 +34,7 @@ class NetworkTputWidget : public CompositeWidget<2> {
         members[1]->initialize(InitArgs{
             .it = a.it,
             .id = a.id + "[rx]",
-            .anchor = ui::Coord(a.anchor.x, a.anchor.y + 11),
+            .anchor = ui::Coord(a.anchor.x, a.anchor.y + y_offset + 11),
             .font = a.font,
             .font_color = TEAL,
             .fmt = std::string("%4.0f RX"),
