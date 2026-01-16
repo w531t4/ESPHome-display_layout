@@ -30,6 +30,8 @@ class TemperaturesWidget : public CompositeWidget<3> {
             {"current", TEAL},
             {"low", BLUE},
         };
+
+        constexpr int y_shift = 1;
         constexpr int float_bufsize = 4;
         for (size_t i = 0; i < std::size(k_rows); ++i) {
             members[i] =
@@ -37,7 +39,8 @@ class TemperaturesWidget : public CompositeWidget<3> {
             members[i]->initialize(InitArgs{
                 .it = a.it,
                 .id = a.id + "[" + k_rows[i].name + "]",
-                .anchor = ui::Coord(a.anchor.x, a.anchor.y + (11 * i)),
+                .anchor =
+                    ui::Coord(a.anchor.x, a.anchor.y + y_shift + (11 * i)),
                 .font = a.font,
                 .font_color = k_rows[i].color,
                 .fmt = std::string("%3.0f"),
