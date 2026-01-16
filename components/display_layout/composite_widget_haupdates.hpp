@@ -16,12 +16,13 @@ class HAUpdatesWidget : public CompositeWidget<1> {
   public:
     void initialize(const InitArgs &a) override {
         CompositeWidget<1>::initialize(a);
+        constexpr int y_offset = 16;
         constexpr int bufsize = 3; // "1000 TX\0"
         members[0] = std::make_unique<NumericWidget<int, bufsize>>(); // HIGH
         members[0]->initialize(
             InitArgs{.it = a.it,
                      .id = a.id + "[0]",
-                     .anchor = ui::Coord(a.anchor.x, a.anchor.y),
+                     .anchor = ui::Coord(a.anchor.x, a.anchor.y + y_offset),
                      .font = a.font,
                      .font_color = RED,
                      .fmt = std::string("%d"),
