@@ -17,9 +17,29 @@ struct Coord {
     constexpr Coord(int x_, int y_) : x{x_}, y{y_} {}
 };
 
+using DirtyRectSink = void (*)(void *ctx, int x, int y, int w, int h);
+inline DirtyRectSink g_dirty_rect_sink = nullptr;
+inline void *g_dirty_rect_ctx = nullptr;
+
+inline void set_dirty_rect_sink(DirtyRectSink sink, void *ctx) {
+    g_dirty_rect_sink = sink;
+    g_dirty_rect_ctx = ctx;
+}
+
+inline void note_dirty_rect(int x, int y, int w, int h) {
+    if (!g_dirty_rect_sink || w <= 0 || h <= 0)
+        return;
+    g_dirty_rect_sink(g_dirty_rect_ctx, x, y, w, h);
+}
+
+inline void note_dirty_box(const Box &box) {
+    note_dirty_rect(box.x1, box.y1, box.w, box.h);
+}
+
 inline void mywipe(esphome::display::Display *it, Box &prev_box,
                    esphome::Color blank_color) {
     if (prev_box.w > 0 && prev_box.h > 0) {
+        note_dirty_rect(prev_box.x1, prev_box.y1, prev_box.w + 1, prev_box.h);
         it->filled_rectangle(prev_box.x1, prev_box.y1, prev_box.w + 1,
                              prev_box.h, blank_color);
     }
@@ -71,6 +91,7 @@ inline void printf_dual(
     const int max_b = std::max(lb.y1 + lb.h, rb.y1 + rb.h);
 
     prev_box = ui::Box{min_x, min_y, max_r - min_x, max_b - min_y};
+    note_dirty_box(prev_box);
 }
 
 inline void myprint(esphome::display::Display *it, esphome::font::Font *font,
@@ -80,6 +101,7 @@ inline void myprint(esphome::display::Display *it, esphome::font::Font *font,
     it->get_text_bounds(x, y, buf, font, align, &x1, &y1, &w, &h);
     it->printf(x, y, font, font_color, align, "%s", buf);
     prev_box = {x1, y1, w, h};
+    note_dirty_box(prev_box);
 }
 
 inline bool txt_sensor_has_healthy_state(

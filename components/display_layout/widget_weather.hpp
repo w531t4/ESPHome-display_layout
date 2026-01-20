@@ -70,6 +70,7 @@ template <typename T, typename P> class WeatherWidget : public Widget {
         it->image(anchor.x, anchor.y, img, esphome::display::COLOR_ON,
                   esphome::display::COLOR_OFF); // draw
         prev_box = {anchor.x, anchor.y, width(), width()};
+        ui::note_dirty_rect(anchor.x, anchor.y, width(), height());
     }
 
     void post(const PostArgs &args) override {
