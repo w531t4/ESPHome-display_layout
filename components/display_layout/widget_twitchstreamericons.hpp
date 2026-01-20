@@ -61,9 +61,6 @@ class TwitchStreamerIconsWidget : public Widget {
             it->filled_rectangle(anchor.x, anchor.y,
                                  this->prev_num_icons * this->icon_width,
                                  this->height(), this->blank_color);
-            ui::note_dirty_rect(anchor.x, anchor.y,
-                                this->prev_num_icons * this->icon_width,
-                                this->height());
         }
     }
 
@@ -88,7 +85,6 @@ class TwitchStreamerIconsWidget : public Widget {
         it->image(anchor.x, anchor.y, last->image, esphome::display::COLOR_ON,
                   esphome::display::COLOR_OFF); // draw
         prev_box = {anchor.x, anchor.y, width(), width()};
-        ui::note_dirty_rect(anchor.x, anchor.y, width(), height());
     }
 
     void post(const PostArgs &args) override {
