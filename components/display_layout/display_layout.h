@@ -43,6 +43,7 @@ enum class WidgetKind {
     TWITCH_CHAT,
     PIXEL_MOTION,
     NETWORK_TPUT,
+    PRINTER_STATUS,
     WEATHER,
     TEMPERATURES,
     DATE,
@@ -72,6 +73,7 @@ struct WidgetConfig {
         source_chat_channel;
     std::optional<esphome::sensor::Sensor *> source_rx;
     std::optional<esphome::sensor::Sensor *> source_tx;
+    std::optional<esphome::sensor::Sensor *> source_printer_progress;
     std::optional<esphome::text_sensor::TextSensor *> source_weather;
     std::optional<esphome::time::RealTimeClock *> source_time;
     std::optional<esphome::sensor::Sensor *> source_temp_high;

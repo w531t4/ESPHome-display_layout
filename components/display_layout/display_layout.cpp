@@ -8,12 +8,15 @@
 #include "composite_widget_haupdates.hpp"
 #include "composite_widget_network_tput.hpp"
 #include "widget_pixelmotion.hpp"
+#include "composite_widget_printerstatus.hpp"
 #include "composite_widget_psn.hpp"
 #include "composite_widget_temperatures.hpp"
 #include "composite_widget_time.hpp"
 #include "composite_widget_twitchchat.hpp"
 #include "widget_twitchstreamericons.hpp"
 #include "widget_weather.hpp"
+#include <algorithm>
+#include <cmath>
 #ifdef USE_SENSOR
 #include "esphome/components/sensor/sensor.h"
 #endif
@@ -74,6 +77,8 @@ const WidgetMeta kWidgetMeta[] = {
     make_meta<ui::PixelMotionWidget, true>(WidgetKind::PIXEL_MOTION,
                                            "pixel_motion"),
     make_meta<ui::NetworkTputWidget>(WidgetKind::NETWORK_TPUT, "network_tput"),
+    make_meta<ui::PrinterStatusWidget>(WidgetKind::PRINTER_STATUS,
+                                       "printer_status"),
     make_meta<
         ui::WeatherWidget<ui::WeatherCachedPostArgs, ui::WeatherPostArgs>>(
         WidgetKind::WEATHER, "weather"),
@@ -239,6 +244,23 @@ void DisplayLayout::register_callbacks(const WidgetConfig &cfg,
         };
         rx->add_on_state_callback([post_now](float) { post_now(); });
         tx->add_on_state_callback([post_now](float) { post_now(); });
+        post_now();
+        break;
+    }
+    case WidgetKind::PRINTER_STATUS: {
+        auto *value = cfg.source_printer_progress.value_or(nullptr);
+        if (!value || !widget)
+            return;
+        auto post_now = [widget, value]() {
+            const bool has_value = !std::isnan(value->state);
+            widget->post(
+                PostArgs{.extras = ui::NumericPostArgs<int>{
+                    .value = has_value
+                                 ? std::clamp(static_cast<int>(value->state),
+                                              0, 99)
+                                 : -1}});
+        };
+        value->add_on_state_callback([post_now](float) { post_now(); });
         post_now();
         break;
     }
@@ -476,6 +498,8 @@ void DisplayLayout::post_from_sources() {
         if (cfg.kind == WidgetKind::TWITCH_ICONS)
             continue;
         if (cfg.kind == WidgetKind::TWITCH_CHAT)
+            continue;
+        if (cfg.kind == WidgetKind::PRINTER_STATUS)
             continue;
         if (cfg.kind == WidgetKind::WEATHER)
             continue;

@@ -69,6 +69,11 @@ async def to_code(config: Dict[str, Any]) -> None:
         high_expr = await _maybe_get(sources, const.CONF_HIGH)
         now_expr = await _maybe_get(sources, const.CONF_NOW)
         low_expr = await _maybe_get(sources, const.CONF_LOW)
+        printer_progress_expr = (
+            await _maybe_get(sources, const.CONF_VALUE)
+            if widget[CONF_TYPE] == "printer_status"
+            else None
+        )
         weather_expr = (
             await _maybe_get(sources, const.CONF_VALUE)
             if widget[CONF_TYPE] == "weather"
@@ -101,6 +106,7 @@ async def to_code(config: Dict[str, Any]) -> None:
             ("source_chat_channel", _opt(channel_expr)),
             ("source_rx", _opt(rx_expr)),
             ("source_tx", _opt(tx_expr)),
+            ("source_printer_progress", _opt(printer_progress_expr)),
             ("source_weather", _opt(weather_expr)),
             ("source_time", _opt(time_expr)),
             ("source_temp_high", _opt(high_expr)),
