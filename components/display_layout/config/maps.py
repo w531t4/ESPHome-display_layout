@@ -11,6 +11,7 @@ WIDGET_TYPE_MAP = {
     "twitch_chat": "display_layout::WidgetKind::TWITCH_CHAT",
     "pixel_motion": "display_layout::WidgetKind::PIXEL_MOTION",
     "network_tput": "display_layout::WidgetKind::NETWORK_TPUT",
+    "printer_status": "display_layout::WidgetKind::PRINTER_STATUS",
     "weather": "display_layout::WidgetKind::WEATHER",
     "temperatures": "display_layout::WidgetKind::TEMPERATURES",
     "date": "display_layout::WidgetKind::DATE",

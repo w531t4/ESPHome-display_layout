@@ -57,6 +57,9 @@ sensor:
     internal: true
     name: "Wan RX"
     entity_id: sensor.mysensor_rx
+  - platform: homeassistant
+    entity_id: sensor.printer_progress
+    id: printer_progress
 
 text_sensor:
   - platform: homeassistant
@@ -201,6 +204,13 @@ display_layout:
         high: temp_high
         now: temp_now
         low: temp_low
+    - type: printer_status
+      name: printer
+      priority: 58
+      font: font1
+      font2: font1
+      sources:
+        value: printer_progress
     - type: date
       name: date
       priority: 55

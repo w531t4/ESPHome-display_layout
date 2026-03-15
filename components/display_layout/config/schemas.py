@@ -88,6 +88,16 @@ WIDGET_SCHEMAS = {
         ),
         _require_font,
     ),
+    "printer_status": cv.All(
+        BASE_WIDGET_SCHEMA.extend(
+            {
+                cv.Optional(const.CONF_SOURCES): cv.Schema(
+                    {cv.Required(const.CONF_VALUE): cv.use_id(sensor.Sensor)}
+                )
+            }
+        ),
+        _require_font_pair,
+    ),
     "weather": cv.All(
         BASE_WIDGET_SCHEMA.extend(
             {
