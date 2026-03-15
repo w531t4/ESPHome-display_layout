@@ -97,7 +97,7 @@ class DisplayLayout : public Component {
     void set_gap_x(int px) { gap_x_ = px; }
     void set_right_edge_x(int px);
     void render(esphome::display::Display &it);
-    // Clear built widgets/registry so they rebuild on the next render call.
+    // Force the current widget state to update, relayout, and redraw.
     void reset();
 
   private:
