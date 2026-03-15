@@ -54,7 +54,7 @@ class PrinterStatusWidget : public CompositeWidget<2> {
                                         .anchor =
                                             ui::Coord(a.anchor.x + LABEL_X_OFFSET,
                                                       a.anchor.y),
-                                        .font = *a.font2,
+                                        .font = *a.font,
                                         .font_color = PINK});
 
         members[1] = std::make_unique<NumericWidget<int, 3>>();
@@ -62,7 +62,7 @@ class PrinterStatusWidget : public CompositeWidget<2> {
             InitArgs{.it = a.it,
                      .id = a.id + "[value]",
                      .anchor = ui::Coord(a.anchor.x, a.anchor.y + VALUE_Y_OFFSET),
-                     .font = a.font,
+                     .font = a.font2,
                      .font_color = PINK,
                      .fmt = std::string("%02d"),
                      .extras = ArgsBag::of(TextInitArgs<int>{
