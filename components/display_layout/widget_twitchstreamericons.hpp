@@ -81,7 +81,7 @@ class TwitchStreamerIconsWidget : public Widget {
                            this->height() - 1);
         it->image(anchor.x, anchor.y, last->image); // draw
         it->end_clipping();
-        prev_box = {anchor.x, anchor.y, width(), width()};
+        prev_box = {anchor.x, anchor.y, width(), height()};
     }
 
     void post(const PostArgs &args) override {
