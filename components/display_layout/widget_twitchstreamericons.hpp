@@ -81,9 +81,6 @@ class TwitchStreamerIconsWidget : public Widget {
                            this->height() - 1);
         it->image(anchor.x, anchor.y, last->image); // draw
         it->end_clipping();
-        // TODO: Why is the following line here?
-        it->image(anchor.x, anchor.y, last->image, esphome::display::COLOR_ON,
-                  esphome::display::COLOR_OFF); // draw
         prev_box = {anchor.x, anchor.y, width(), width()};
     }
 
