@@ -158,14 +158,14 @@ class TextWidget : public Widget {
         return ui::Box{x1, y1, w, h};
     }
 
-    const int get_max_width(const char padding_value) const {
+    int get_max_width(const char padding_value) const {
         char fullwidth_buf[BufSize];
         std::fill_n(fullwidth_buf, BufSize - 1, padding_value);
         fullwidth_buf[BufSize - 1] = '\0';
         return bounds(fullwidth_buf).w;
     }
 
-    const int width() const override {
+    int width() const override {
         if (!initialized)
             return 0;
         if (!(this->is_visible()))
@@ -173,7 +173,7 @@ class TextWidget : public Widget {
         return get_max_width(max_width_padding_char);
     }
 
-    const int height() const override {
+    int height() const override {
         if (!initialized)
             return 0;
         return bounds(buf).h - trim_pixels_top - trim_pixels_bottom;

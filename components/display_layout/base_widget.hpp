@@ -60,7 +60,7 @@ class Widget {
   public:
     // Virtual destructor: mandatory in base classes with virtual functions
     virtual ~Widget() = default;
-    virtual const bool is_dirty() const noexcept { return dirty; }
+    virtual bool is_dirty() const noexcept { return dirty; }
     void set_dirty(const bool state) { this->dirty = state; }
     bool is_enabled() const noexcept { return enabled; }
     void set_enabled(const bool state) { this->enabled = state; }
@@ -110,17 +110,17 @@ class Widget {
                                  this->anchor.x + pixels);
         this->anchor.x = this->anchor.x + pixels;
     }
-    const Magnet get_magnet() const { return this->magnet; }
+    Magnet get_magnet() const { return this->magnet; }
     ui::Coord anchor_value() const noexcept {
         return anchor;
     } // non-virtual is fine if stored in base
-    virtual const int width() const = 0;
-    virtual const int height() const = 0;
+    virtual int width() const = 0;
+    virtual int height() const = 0;
     // ----- Optional (can be overridden but not required) -----
 
     // // Provide default behavior
     // virtual void cleanup() { /* default no-op */ };
-    const int get_left_edge_x() const {
+    int get_left_edge_x() const {
         // *--------------|
         // |              |
         // |--------------|
@@ -130,7 +130,7 @@ class Widget {
         return this->anchor_value().x;
     }
 
-    const int get_right_edge_x() const {
+    int get_right_edge_x() const {
         // *--------------|
         // |              |
         // |--------------|

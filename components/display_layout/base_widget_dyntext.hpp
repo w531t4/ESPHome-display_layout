@@ -157,7 +157,7 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
         return ui::Box{x1, y1, w, h};
     }
 
-    const int get_max_width(const char padding_value) const {
+    int get_max_width(const char padding_value) const {
         std::vector<char> tmp(buf.size(), padding_value);
         if (!tmp.empty())
             tmp.back() = '\0';
@@ -165,7 +165,7 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
         ;
     }
 
-    const int width() const override {
+    int width() const override {
         if (!initialized)
             return 0;
         if (!(this->is_visible()))
@@ -173,7 +173,7 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
         return get_max_width(max_width_padding_char);
     }
 
-    const int height() const override {
+    int height() const override {
         if (!initialized)
             return 0;
         return bounds(buf.data()).h - trim_pixels_top - trim_pixels_bottom;
@@ -199,7 +199,7 @@ class DynTextWidget : public Widget, public ui::IBufferResizable {
                                  this->width(), this->prev_box.h};
     }
 
-    const size_t get_capacity() const { return this->buf.size(); }
+    size_t get_capacity() const { return this->buf.size(); }
 
     std::size_t capacity() const { return buf.size(); }
 

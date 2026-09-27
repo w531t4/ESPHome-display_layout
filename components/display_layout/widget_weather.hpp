@@ -101,12 +101,12 @@ template <typename T, typename P> class WeatherWidget : public Widget {
         this->set_dirty(false);
     }
 
-    const int width() const override {
+    int width() const override {
         if (!(this->is_visible()))
             return 0;
         return 32;
     }
 
-    const int height() const override { return 32; }
+    int height() const override { return 32; }
 };
 } // namespace ui

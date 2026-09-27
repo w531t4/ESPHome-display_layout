@@ -80,12 +80,12 @@ class PixelMotionWidget : public Widget {
         this->set_dirty(false);
     }
 
-    const int width() const override {
+    int width() const override {
         if (!(this->is_visible()))
             return 0;
         return 1;
     }
 
-    const int height() const override { return 32; }
+    int height() const override { return 32; }
 };
 } // namespace ui
