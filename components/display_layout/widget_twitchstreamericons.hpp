@@ -114,7 +114,7 @@ class TwitchStreamerIconsWidget : public Widget {
         this->set_dirty(false);
     }
 
-    const int width() const override {
+    int width() const override {
         if (!initialized)
             return -1;
         if (!(this->is_visible()))
@@ -124,7 +124,7 @@ class TwitchStreamerIconsWidget : public Widget {
         return icon_width * last->num_icons;
     }
 
-    const int height() const override {
+    int height() const override {
         if (!initialized)
             return -1;
         return icon_height;

@@ -25,7 +25,7 @@ template <std::size_t numWidgets> class CompositeWidget : public Widget {
         }
     }
 
-    const bool is_dirty() const noexcept override {
+    bool is_dirty() const noexcept override {
         for (auto &ptr : members) { // ptr is a std::unique_ptr<Widget>&
             if (ptr && ptr->is_dirty())
                 return true;
@@ -58,7 +58,7 @@ template <std::size_t numWidgets> class CompositeWidget : public Widget {
         }
     }
 
-    const int width() const override {
+    int width() const override {
         if (std::none_of(members.begin(), members.end(),
                          [](const auto &p) { return p->is_visible(); }))
             return 0;
@@ -81,7 +81,7 @@ template <std::size_t numWidgets> class CompositeWidget : public Widget {
         return found ? (max_right - min_x) : 0;
     }
 
-    const int height() const override {
+    int height() const override {
         bool found = false;
         int min_y = std::numeric_limits<int>::max();
         int max_bottom = std::numeric_limits<int>::min();

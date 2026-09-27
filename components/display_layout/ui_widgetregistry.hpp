@@ -222,8 +222,8 @@ template <std::size_t MaxWidgets> class WidgetRegistry {
         last_pos = x;
     }
 
-    const int get_boundry(Widget **items, const size_t max_items,
-                          Magnet orientation) {
+    int get_boundry(Widget **items, const size_t max_items,
+                    Magnet orientation) {
         int hint, edge;
         if (orientation == Magnet::LEFT) {
             edge = std::numeric_limits<int>::max();

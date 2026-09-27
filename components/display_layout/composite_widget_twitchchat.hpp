@@ -80,7 +80,7 @@ class TwitchChatWidget : public CompositeWidget<3> {
         this->pixel_capacity = cap;
     }
 
-    const size_t get_capacity() const { return this->pixel_capacity; }
+    size_t get_capacity() const { return this->pixel_capacity; }
 
     void post(const PostArgs &args) override {
         if (args.extras.has_value()) {
