@@ -6,5 +6,10 @@ CompileFlags:
     - -fstrict-volatile-bitfields
     - -mlongcalls
   Add:
+    - -Wall
+    - -Wextra
+    - -Wno-unused-parameter
+    - -Wno-sign-compare
+    - -nostdlibinc
     - -I/home/vscode/.cache/.esphome/build/clangd/src
     - -isystem/home/vscode/.cache/.esphome/build/clangd/.piolibdeps/clangd/ArduinoJson/src
