@@ -98,10 +98,20 @@ text_sensor:
     internal: true
 
 image:
-  - file: "mdi:weather-sunny"
+  - platform: file
+    file: "mdi:weather-sunny"
     id: dummy_img
     type: BINARY
-
+  - platform: online_image
+    id: twitch_strip
+    url: "http://localhost:5050/local/twitch/online_strip.bmp"
+    format: bmp
+    type: rgb
+    buffer_size: 22000
+    update_interval: never # disable auto refresh
+    on_download_finished:
+      - lambda: |-
+          id(twitch_onlineimages_ready_indicator) = true;
 font:
   - file: "gfonts://Roboto"
     id: font1
@@ -129,17 +139,6 @@ globals:
     type: bool
     restore_value: no
     initial_value: "true"
-
-online_image:
-  - id: twitch_strip
-    url: "http://localhost:5050/local/twitch/online_strip.bmp"
-    format: bmp
-    type: rgb
-    buffer_size: 22000
-    update_interval: never    # disable auto refresh
-    on_download_finished:
-      - lambda: |-
-          id(twitch_onlineimages_ready_indicator) = true;
 
 time:
   - platform: homeassistant
