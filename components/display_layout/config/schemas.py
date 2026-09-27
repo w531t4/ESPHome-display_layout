@@ -9,7 +9,7 @@ from esphome.const import CONF_NAME, CONF_TYPE
 import esphome.config_validation as cv
 from esphome.components import font
 from esphome.components import globals as globals_component
-from esphome.components import online_image
+from esphome.components.online_image import OnlineImage
 from esphome.components import sensor, text_sensor, time
 from esphome.components.homeassistant import text_sensor as ha_text_sensor
 
@@ -50,7 +50,7 @@ WIDGET_SCHEMAS = {
             cv.Required(const.CONF_MAX_ICONS): cv.positive_int,
             cv.Optional(const.CONF_SOURCES): cv.Schema(
                 {
-                    cv.Required(const.CONF_IMAGE): cv.use_id(online_image.OnlineImage),
+                    cv.Required(const.CONF_IMAGE): cv.use_id(OnlineImage),
                     cv.Required(const.CONF_COUNT): cv.use_id(text_sensor.TextSensor),
                     cv.Optional(const.CONF_READY_FLAG): cv.use_id(GLOBALS_BOOL),
                 }
