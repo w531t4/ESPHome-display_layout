@@ -9,7 +9,7 @@ from esphome.const import CONF_NAME, CONF_TYPE
 import esphome.config_validation as cv
 from esphome.components import font
 from esphome.components import globals as globals_component
-from esphome.components.online_image import OnlineImage
+from esphome.components.online_image.image import OnlineImage
 from esphome.components import sensor, text_sensor, time
 from esphome.components.homeassistant import text_sensor as ha_text_sensor
 
