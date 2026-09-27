@@ -31,13 +31,7 @@ class TwitchStreamerIconsWidget : public Widget {
     int icon_width, icon_height, max_icons;
     int prev_num_icons;
 
-    bool is_different(TwitchStreamerIconsPostArgs value) const {
-        if (!last.has_value())
-            return true;
-        // TODO: This isn't sufficient. count(Before)=4 could = count(After)=4
-        // but set(Before) could != set(After)
-        return (value.num_icons != last->num_icons);
-    }
+    bool is_different(TwitchStreamerIconsPostArgs value) const { return true; }
 
   public:
     void initialize(const InitArgs &a) override {
