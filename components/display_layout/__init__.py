@@ -18,14 +18,17 @@ WidgetConfig = display_layout_ns.struct("WidgetConfig")
 ui_ns = cg.global_ns.namespace("ui")
 Coord = ui_ns.struct("Coord")
 
-CONFIG_SCHEMA = cv.Schema(
-    {
-        cv.GenerateID(): cv.declare_id(DisplayLayout),
-        cv.Optional(const.CONF_WIDGETS): cv.All(cv.ensure_list(_validate_widget)),
-        cv.Optional(const.CONF_GAP_X): cv.int_,
-        cv.Optional(const.CONF_RIGHT_EDGE_X): cv.int_,
-    }
-).extend(cv.COMPONENT_SCHEMA)
+CONFIG_SCHEMA = cv.All(
+    cv.Schema(
+        {
+            cv.GenerateID(): cv.declare_id(DisplayLayout),
+            cv.Optional(const.CONF_WIDGETS): cv.All(cv.ensure_list(_validate_widget)),
+            cv.Optional(const.CONF_GAP_X): cv.int_,
+            cv.Optional(const.CONF_RIGHT_EDGE_X): cv.int_,
+        }
+    ).extend(cv.COMPONENT_SCHEMA),
+    cv.require_esphome_version(2026, 7, 0),
+)
 
 
 async def to_code(config: Dict[str, Any]) -> None:
