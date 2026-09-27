@@ -1,26 +1,26 @@
 # SPDX-FileCopyrightText: 2025 Aaron White <w531t4@gmail.com>
 # SPDX-License-Identifier: MIT
 esphome:
-    name: clangd
-    # platformio_options:
-    #   build_flags:
-    #     - -I../../src
-    #     - -I../../src/esphome
+  name: clangd
+  # platformio_options:
+  #   build_flags:
+  #     - -I../../src
+  #     - -I../../src/esphome
 esp32:
-    board: esp32dev
-    framework:
-        type: esp-idf
+  board: esp32dev
+  framework:
+    type: esp-idf
 
 logger:
 
 api:
 
 ota:
-    platform: esphome
+  platform: esphome
 
 wifi:
-    ssid: "x"
-    password: "12345678"
+  ssid: "x"
+  password: "12345678"
 
 display:
   - platform: ssd1306_i2c
